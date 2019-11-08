@@ -13,8 +13,9 @@ An EDIFACT electronic transmission consists of one or more Interchanges. Each In
 Messages. These Messages contain segments of data relating to the business transaction. At each level, a series of 
 enveloping data pairs keep track of the exchange structure.
 
+Example `EDIFACT EDI Purchase Order`:
+
 ```
-Example EDIFACT EDI Purchase Order
 UNB+UNOA:1+US::US+50138::THEM+140531:0305+001934++ORDERS'
 UNH+1+ORDERS:91:2:UN'
 BGM+220+A761902+4:20140530:102+9'
@@ -32,14 +33,11 @@ CTA+SU'
 COM+0161 4297476:TE+01752 670633:FX'
 UNT+15+1'
 UNZ+1+001934'
-
-Example Message - Segment tags are shown in bold e.g. UNB
-
-Note: Data elements that could identify the participants have been changed, 
-although the text is based on a live transmission.
 ```
-Service Segments
-Service Segments are used to keep track of the transmission. The most common set is shown below.
+
+## Service Segments
+
+Are used to keep track of the transmission. The most common set is shown below.
 
 ```
 UNB - Start of Interchange
