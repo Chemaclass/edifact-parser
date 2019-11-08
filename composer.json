@@ -1,0 +1,28 @@
+{
+    "name": "chemaclass/edi-to-json",
+    "authors": [
+        {
+            "name": "Chema",
+            "email": "chemaclass@outlook.es"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "sabas/edifact": "^0.4.1",
+        "phpunit/phpunit": "^8.4",
+        "friendsofphp/php-cs-fixer": "^2.15"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.3"
+    }
+}
