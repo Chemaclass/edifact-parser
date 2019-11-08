@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+args=""
+for arg in "$@"; do
+  args="$args $arg"
+done
+
+docker exec -ti -u dev edi_to_json_php sh -c "cd /srv/edi-to-json && composer $args"

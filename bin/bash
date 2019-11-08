@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker exec -ti -u dev edi_to_json_php bash

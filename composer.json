@@ -2,12 +2,12 @@
     "name": "chemaclass/edi-to-json",
     "authors": [
         {
-            "name": "Chema",
+            "name": "Jose Maria Valera Reales",
             "email": "chemaclass@outlook.es"
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "sabas/edifact": "^0.4.1",
         "phpunit/phpunit": "^8.4",
         "friendsofphp/php-cs-fixer": "^2.15"
