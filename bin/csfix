@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker exec -ti -u dev edi_to_json_php sh -c "cd /srv/edi-to-json && vendor/bin/php-cs-fixer fix"
+docker exec -ti -u dev edifact_parser_php sh -c "cd /srv/edifact-parser && vendor/bin/php-cs-fixer fix"

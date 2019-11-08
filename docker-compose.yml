@@ -1,8 +1,8 @@
-edi_to_json_php:
+edifact_parser_php:
   build: .
   dockerfile: devops/dev/php.dockerfile
-  container_name: edi_to_json_php
+  container_name: edifact_parser_php
   hostname: php
   volumes:
-    - .:/srv/edi-to-json:delegated
+    - .:/srv/edifact-parser:delegated
     - ~/.ssh:/home/dev/.ssh

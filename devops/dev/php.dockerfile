@@ -10,4 +10,4 @@ RUN chmod 755 /usr/local/bin/composer
 ENV XDEBUG_CONFIG="idekey=anything-works-here"
 ENV PHP_IDE_CONFIG="serverName=Docker"
 RUN useradd -m dev
-WORKDIR /srv/edi-to-json
+WORKDIR /srv/edifact-parser
