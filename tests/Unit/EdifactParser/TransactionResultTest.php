@@ -25,7 +25,7 @@ final class TransactionResultTest extends TestCase
             SegmentedValues::fromRaw((new Parser($fileContent))->get())
         );
 
-        $this->assertEquals([
+        self::assertEquals([
             new TransactionMessage([
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
@@ -48,7 +48,7 @@ EDI;
             SegmentedValues::fromRaw((new Parser($fileContent))->get())
         );
 
-        $this->assertEquals([
+        self::assertEquals([
             new TransactionMessage([
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
@@ -77,7 +77,7 @@ EDI;
             SegmentedValues::fromRaw((new Parser($fileContent))->get())
         );
 
-        $this->assertEquals([
+        self::assertEquals([
             new TransactionMessage([
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),

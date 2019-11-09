@@ -21,7 +21,7 @@ final class TransactionMessageTest extends TestCase
             new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
         ]);
 
-        $this->assertEquals([
+        self::assertEquals([
             CNTControl::NAME => [
                 '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
             ],
@@ -41,7 +41,7 @@ final class TransactionMessageTest extends TestCase
             new MEADimensions(['MEA', 'VOL', '', ['MTQ', '0.06822']]),
         ]);
 
-        $this->assertEquals([
+        self::assertEquals([
             UNHMessageHeader::NAME => [
                 '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             ],
@@ -66,7 +66,7 @@ final class TransactionMessageTest extends TestCase
             new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
         ]);
 
-        $this->assertEquals([
+        self::assertEquals([
             UNHMessageHeader::NAME => [
                 '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             ],
