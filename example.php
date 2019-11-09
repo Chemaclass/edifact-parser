@@ -64,7 +64,7 @@ EDI;
 $transactionResult = (new EdifactParser())->parse($fileContent);
 
 foreach ($transactionResult->messages() as $i => $message) {
-    echo "Message number: {$i}" . PHP_EOL;
+    print "Message number: {$i}" . PHP_EOL;
     printMessage($message);
 }
 
@@ -90,5 +90,5 @@ function printMessage(TransactionMessage $message): void
 
 function printSegment(SegmentInterface $segment): void
 {
-    echo sprintf('%s - %s %s', $segment->name(), $segment->subSegmentKey(), PHP_EOL);
+    print sprintf('%s - %s %s', $segment->name(), $segment->subSegmentKey(), PHP_EOL);
 }
