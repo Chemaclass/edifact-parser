@@ -9,8 +9,9 @@ use EdifactParser\Exception\InvalidFile;
 
 final class EdifactParser
 {
-    public static function parse(Parser $parser): TransactionResult
+    public static function parse(string $fileContent): TransactionResult
     {
+        $parser = new Parser($fileContent);
         $errors = $parser->errors();
 
         if ($errors) {

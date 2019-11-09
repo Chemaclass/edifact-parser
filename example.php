@@ -12,7 +12,6 @@ use EdifactParser\Segments\PCIPackageId;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
-use EDI\Parser;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -61,7 +60,7 @@ UNT+18+2'
 UNZ+2+8'
 EDI;
 
-$transactionResult = EdifactParser::parse(new Parser($fileContent));
+$transactionResult = EdifactParser::parse($fileContent);
 $firstMessage = $transactionResult->messages()[0];
 $segments = $firstMessage->segments();
 
