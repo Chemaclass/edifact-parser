@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-namespace App\EdifactParser\Segments;
-
-final class NADNameAddress implements SegmentInterface
+final class PCIPackageId implements SegmentInterface
 {
-    public const NAME = 'NAD';
+    public const NAME = 'PCI';
 
     /** @var array */
     private $rawValues;

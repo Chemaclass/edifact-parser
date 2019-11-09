@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser\Segments;
+namespace EdifactParser\Tests\Segments;
 
-use App\EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\CNTControl;
 use PHPUnit\Framework\TestCase;
 
 final class CNTControlTest extends TestCase

@@ -15,12 +15,12 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "EdifactParser\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "EdifactParser\\Tests\\": "tests/"
         }
     },
     "require-dev": {

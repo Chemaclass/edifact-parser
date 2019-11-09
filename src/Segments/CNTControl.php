@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class BGMBeginningOfMessage implements SegmentInterface
+namespace EdifactParser\Segments;
+
+final class CNTControl implements SegmentInterface
 {
-    public const NAME = 'BGM';
+    public const NAME = 'CNT';
 
     /** @var array */
     private $rawValues;
@@ -23,7 +25,7 @@ final class BGMBeginningOfMessage implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1];
+        return $this->rawValues[1][0];
     }
 
     public function rawValues(): array

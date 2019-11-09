@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser\Segments;
+namespace EdifactParser\Tests\Segments;
 
-use App\EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNHMessageHeader;
 use PHPUnit\Framework\TestCase;
 
 final class UNHMessageHeaderTest extends TestCase

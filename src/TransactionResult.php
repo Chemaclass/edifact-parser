@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser;
+namespace EdifactParser;
 
-use App\EdifactParser\Segments\SegmentInterface;
-use App\EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\SegmentInterface;
+use EdifactParser\Segments\UNHMessageHeader;
 
 /**
  * A transactionResult is a list of transactionMessages.

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class DTMDateTimePeriod implements SegmentInterface
+final class UNHMessageHeader implements SegmentInterface
 {
-    public const NAME = 'DTM';
+    public const NAME = 'UNH';
 
     /** @var array */
     private $rawValues;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser;
+namespace EdifactParser;
 
-use App\EdifactParser\Exception\InvalidFile;
 use EDI\Parser;
+use EdifactParser\Exception\InvalidFile;
 
 final class EdifactParser
 {

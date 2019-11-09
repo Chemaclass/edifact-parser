@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-use App\EdifactParser\EdifactParser;
-use App\EdifactParser\Segments\BGMBeginningOfMessage;
-use App\EdifactParser\Segments\CNTControl;
-use App\EdifactParser\Segments\DTMDateTimePeriod;
-use App\EdifactParser\Segments\MEADimensions;
-use App\EdifactParser\Segments\NADNameAddress;
-use App\EdifactParser\Segments\PCIPackageId;
-use App\EdifactParser\Segments\SegmentInterface;
-use App\EdifactParser\Segments\UNHMessageHeader;
-use App\EdifactParser\Segments\UNTMessageFooter;
+use EdifactParser\EdifactParser;
+use EdifactParser\Segments\BGMBeginningOfMessage;
+use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\DTMDateTimePeriod;
+use EdifactParser\Segments\MEADimensions;
+use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\PCIPackageId;
+use EdifactParser\Segments\SegmentInterface;
+use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNTMessageFooter;
 use EDI\Parser;
 
 require __DIR__ . '/bootstrap.php';

@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-namespace App\EdifactParser\Segments;
-
-final class MEADimensions implements SegmentInterface
+final class DTMDateTimePeriod implements SegmentInterface
 {
-    public const NAME = 'MEA';
+    public const NAME = 'DTM';
 
     /** @var array */
     private $rawValues;
@@ -25,7 +23,7 @@ final class MEADimensions implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1];
+        return $this->rawValues[1][0];
     }
 
     public function rawValues(): array

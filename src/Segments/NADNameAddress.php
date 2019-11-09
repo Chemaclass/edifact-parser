@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class CNTControl implements SegmentInterface
+final class NADNameAddress implements SegmentInterface
 {
-    public const NAME = 'CNT';
+    public const NAME = 'NAD';
 
     /** @var array */
     private $rawValues;
@@ -25,7 +25,7 @@ final class CNTControl implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1][0];
+        return $this->rawValues[1];
     }
 
     public function rawValues(): array

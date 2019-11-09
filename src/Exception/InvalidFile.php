@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Exception;
+namespace EdifactParser\Exception;
 
 use Exception;
 use function json_encode;

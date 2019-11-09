@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class PCIPackageId implements SegmentInterface
+final class UNTMessageFooter implements SegmentInterface
 {
-    public const NAME = 'PCI';
+    public const NAME = 'UNT';
 
     /** @var array */
     private $rawValues;

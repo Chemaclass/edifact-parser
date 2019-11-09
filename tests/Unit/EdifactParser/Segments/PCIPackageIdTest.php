@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser\Segments;
+namespace EdifactParser\Tests\Segments;
 
-use App\EdifactParser\Segments\PCIPackageId;
+use EdifactParser\Segments\PCIPackageId;
 use PHPUnit\Framework\TestCase;
 
 final class PCIPackageIdTest extends TestCase

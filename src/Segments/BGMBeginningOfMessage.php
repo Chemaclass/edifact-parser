@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class UNHMessageHeader implements SegmentInterface
+final class BGMBeginningOfMessage implements SegmentInterface
 {
-    public const NAME = 'UNH';
+    public const NAME = 'BGM';
 
     /** @var array */
     private $rawValues;
@@ -23,7 +23,7 @@ final class UNHMessageHeader implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1][0];
+        return $this->rawValues[1];
     }
 
     public function rawValues(): array

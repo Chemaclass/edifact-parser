@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
 interface SegmentInterface
 {

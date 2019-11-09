@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser\Segments;
+namespace EdifactParser\Tests\Segments;
 
-use App\EdifactParser\Segments\BGMBeginningOfMessage;
+use EdifactParser\Segments\BGMBeginningOfMessage;
 use PHPUnit\Framework\TestCase;
 
 final class BGMBeginningOfMessageTest extends TestCase

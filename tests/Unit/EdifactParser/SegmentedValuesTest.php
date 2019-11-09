@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser;
+namespace EdifactParser\Tests;
 
-use App\EdifactParser\SegmentedValues;
-use App\EdifactParser\Segments\UNHMessageHeader;
 use EDI\Parser;
+use EdifactParser\SegmentedValues;
+use EdifactParser\Segments\UNHMessageHeader;
 use PHPUnit\Framework\TestCase;
 
 final class SegmentedValuesTest extends TestCase

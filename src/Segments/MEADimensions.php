@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class UnknownSegment implements SegmentInterface
+namespace EdifactParser\Segments;
+
+final class MEADimensions implements SegmentInterface
 {
-    public const NAME = 'Unknown';
+    public const NAME = 'MEA';
 
     /** @var array */
     private $rawValues;
@@ -23,9 +25,7 @@ final class UnknownSegment implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        $encodedValues = json_encode($this->rawValues);
-
-        return ($encodedValues) ? md5($encodedValues) : md5(self::NAME);
+        return $this->rawValues[1];
     }
 
     public function rawValues(): array

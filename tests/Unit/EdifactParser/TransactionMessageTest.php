@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser;
+namespace EdifactParser\Tests;
 
-use App\EdifactParser\Segments\CNTControl;
-use App\EdifactParser\Segments\MEADimensions;
-use App\EdifactParser\Segments\UNHMessageHeader;
-use App\EdifactParser\Segments\UNTMessageFooter;
-use App\EdifactParser\TransactionMessage;
+use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\MEADimensions;
+use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNTMessageFooter;
+use EdifactParser\TransactionMessage;
 use PHPUnit\Framework\TestCase;
 
 final class TransactionMessageTest extends TestCase

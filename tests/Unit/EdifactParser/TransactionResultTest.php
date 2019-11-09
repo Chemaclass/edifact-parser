@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EdifactParser;
+namespace EdifactParser\Tests;
 
-use App\EdifactParser\SegmentedValues;
-use App\EdifactParser\Segments\CNTControl;
-use App\EdifactParser\Segments\UNHMessageHeader;
-use App\EdifactParser\Segments\UnknownSegment;
-use App\EdifactParser\Segments\UNTMessageFooter;
-use App\EdifactParser\TransactionMessage;
-use App\EdifactParser\TransactionResult;
 use EDI\Parser;
+use EdifactParser\SegmentedValues;
+use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UnknownSegment;
+use EdifactParser\Segments\UNTMessageFooter;
+use EdifactParser\TransactionMessage;
+use EdifactParser\TransactionResult;
 use PHPUnit\Framework\TestCase;
 
 final class TransactionResultTest extends TestCase

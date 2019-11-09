@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser\Segments;
+namespace EdifactParser\Segments;
 
-final class UNTMessageFooter implements SegmentInterface
+final class UnknownSegment implements SegmentInterface
 {
-    public const NAME = 'UNT';
+    public const NAME = 'Unknown';
 
     /** @var array */
     private $rawValues;
@@ -23,7 +23,9 @@ final class UNTMessageFooter implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1];
+        $encodedValues = json_encode($this->rawValues);
+
+        return ($encodedValues) ? md5($encodedValues) : md5(self::NAME);
     }
 
     public function rawValues(): array

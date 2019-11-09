@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\EdifactParser\EdifactParser;
-use App\EdifactParser\Exception\InvalidFile;
-use App\EdifactParser\Segments\CNTControl;
-use App\EdifactParser\Segments\UNHMessageHeader;
-use App\EdifactParser\Segments\UNTMessageFooter;
 use EDI\Parser;
+use EdifactParser\EdifactParser;
+use EdifactParser\Exception\InvalidFile;
+use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
 
 final class EdifactParserTest extends TestCase

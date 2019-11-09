@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\EdifactParser;
+namespace EdifactParser;
 
-use App\EdifactParser\Segments\SegmentInterface;
+use EdifactParser\Segments\SegmentInterface;
 
 final class TransactionMessage
 {
