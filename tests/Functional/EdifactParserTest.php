@@ -23,7 +23,7 @@ EDI;
     }
 
     /** @test */
-    public function parserMoreThanOneMessage(): void
+    public function parseMoreThanOneMessage(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
