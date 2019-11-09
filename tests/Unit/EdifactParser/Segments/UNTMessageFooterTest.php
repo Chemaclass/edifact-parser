@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnalyticsBundle\tests\unit\Service\EDIParser\Segments;
+namespace App\Tests\EdifactParser\Segments;
 
 use App\EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
@@ -10,9 +10,13 @@ use PHPUnit\Framework\TestCase;
 final class UNTMessageFooterTest extends TestCase
 {
     /** @test */
-    public function subSegmentKey(): void
+    public function segmentValues(): void
     {
-        $segment = new UNTMessageFooter(['UNT', '19', '1']);
-        $this->assertEquals('19', $segment->subSegmentKey());
+        $rawValues = ['UNT', '19', '1'];
+        $segment = new UNTMessageFooter($rawValues);
+
+        self::assertEquals('UNT', $segment->name());
+        self::assertEquals('19', $segment->subSegmentKey());
+        self::assertEquals($rawValues, $segment->rawValues());
     }
 }

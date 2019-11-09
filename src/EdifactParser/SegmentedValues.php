@@ -23,6 +23,17 @@ final class SegmentedValues
         return self::fromSegmentInterfaces($segments);
     }
 
+    /** @return SegmentInterface[] */
+    public function list(): array
+    {
+        return $this->list;
+    }
+
+    private function addSegment(SegmentInterface $segment): void
+    {
+        $this->list[] = $segment;
+    }
+
     private static function fromSegmentInterfaces(array $segments): self
     {
         $self = new self();
@@ -32,16 +43,5 @@ final class SegmentedValues
         }
 
         return $self;
-    }
-
-    private function addSegment(SegmentInterface $segment): void
-    {
-        $this->list[] = $segment;
-    }
-
-    /** @return SegmentInterface[] */
-    public function list(): array
-    {
-        return $this->list;
     }
 }

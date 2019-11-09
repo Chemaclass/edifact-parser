@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\EdifactParser\EdifactParser;
+use App\EdifactParser\Exception\InvalidFile;
 use App\EdifactParser\Segments\CNTControl;
 use App\EdifactParser\Segments\UNHMessageHeader;
 use App\EdifactParser\Segments\UNTMessageFooter;
@@ -11,6 +12,16 @@ use PHPUnit\Framework\TestCase;
 
 final class EdifactParserTest extends TestCase
 {
+    /** @test */
+    public function invalidFileDueToANonPrintableChar(): void
+    {
+        $fileContent = <<<EDI
+\xE2\x80\xAF
+EDI;
+        $this->expectException(InvalidFile::class);
+        EdifactParser::parse(new Parser($fileContent));
+    }
+
     /** @test */
     public function parserMoreThanOneMessage(): void
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnalyticsBundle\tests\unit\Service\EDIParser\Segments;
+namespace App\Tests\EdifactParser\Segments;
 
 use App\EdifactParser\Segments\NADNameAddress;
 use PHPUnit\Framework\TestCase;
@@ -10,21 +10,24 @@ use PHPUnit\Framework\TestCase;
 final class NADNameAddressTest extends TestCase
 {
     /** @test */
-    public function subSegmentKey(): void
+    public function segmentValues(): void
     {
-        $segment = new NADNameAddress([
+        $rawValues = [
             'NAD',
             'CZ',
-            ['0410106314', '160', 'Z12'],
+            ['0410314', '160', 'Z12'],
             '',
             'Company Returns Centre',
             'c/o Carrier AB',
             'Malmo',
             '',
             '20713',
-            'SE',
-        ]);
+            'DE',
+        ];
+        $segment = new NADNameAddress($rawValues);
 
-        $this->assertEquals('CZ', $segment->subSegmentKey());
+        self::assertEquals('NAD', $segment->name());
+        self::assertEquals('CZ', $segment->subSegmentKey());
+        self::assertEquals($rawValues, $segment->rawValues());
     }
 }

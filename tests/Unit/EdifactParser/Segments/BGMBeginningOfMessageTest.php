@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnalyticsBundle\tests\unit\Service\EDIParser\Segments;
+namespace App\Tests\EdifactParser\Segments;
 
 use App\EdifactParser\Segments\BGMBeginningOfMessage;
 use PHPUnit\Framework\TestCase;
@@ -10,9 +10,13 @@ use PHPUnit\Framework\TestCase;
 final class BGMBeginningOfMessageTest extends TestCase
 {
     /** @test */
-    public function subSegmentKey(): void
+    public function segmentValues(): void
     {
-        $segment = new BGMBeginningOfMessage(['BGM', '340', '00250559268149700889', '9']);
-        $this->assertEquals('340', $segment->subSegmentKey());
+        $rawValues = ['BGM', '340', '00250559268149700889', '9'];
+        $segment = new BGMBeginningOfMessage($rawValues);
+
+        self::assertEquals('BGM', $segment->name());
+        self::assertEquals('340', $segment->subSegmentKey());
+        self::assertEquals($rawValues, $segment->rawValues());
     }
 }

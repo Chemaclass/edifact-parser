@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnalyticsBundle\tests\unit\Service\EDIParser\Segments;
+namespace App\Tests\EdifactParser\Segments;
 
 use App\EdifactParser\Segments\UNHMessageHeader;
 use PHPUnit\Framework\TestCase;
@@ -10,9 +10,13 @@ use PHPUnit\Framework\TestCase;
 final class UNHMessageHeaderTest extends TestCase
 {
     /** @test */
-    public function subSegmentKey(): void
+    public function segmentValues(): void
     {
-        $segment = new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]);
-        $this->assertEquals('1', $segment->subSegmentKey());
+        $rawValues = ['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']];
+        $segment = new UNHMessageHeader($rawValues);
+
+        self::assertEquals('UNH', $segment->name());
+        self::assertEquals('1', $segment->subSegmentKey());
+        self::assertEquals($rawValues, $segment->rawValues());
     }
 }

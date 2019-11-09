@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnalyticsBundle\tests\unit\Service\EDIParser\Segments;
+namespace App\Tests\EdifactParser\Segments;
 
 use App\EdifactParser\Segments\DTMDateTimePeriod;
 use PHPUnit\Framework\TestCase;
@@ -10,9 +10,13 @@ use PHPUnit\Framework\TestCase;
 final class DTMDateTimePeriodTest extends TestCase
 {
     /** @test */
-    public function subSegmentKey(): void
+    public function segmentValues(): void
     {
-        $segment = new DTMDateTimePeriod(['DTM', ['10', '20191002', '102']]);
-        $this->assertEquals('10', $segment->subSegmentKey());
+        $rawValues = ['DTM', ['10', '20191002', '102']];
+        $segment = new DTMDateTimePeriod($rawValues);
+
+        self::assertEquals('DTM', $segment->name());
+        self::assertEquals('10', $segment->subSegmentKey());
+        self::assertEquals($rawValues, $segment->rawValues());
     }
 }

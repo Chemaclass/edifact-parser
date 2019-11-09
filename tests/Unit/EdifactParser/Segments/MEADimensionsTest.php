@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnalyticsBundle\tests\unit\Service\EDIParser\Segments;
+namespace App\Tests\EdifactParser\Segments;
 
 use App\EdifactParser\Segments\MEADimensions;
 use PHPUnit\Framework\TestCase;
@@ -10,9 +10,13 @@ use PHPUnit\Framework\TestCase;
 final class MEADimensionsTest extends TestCase
 {
     /** @test */
-    public function subSegmentKey(): void
+    public function segmentValues(): void
     {
-        $segment = new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]);
-        $this->assertEquals('WT', $segment->subSegmentKey());
+        $rawValues = ['MEA', 'WT', 'G', ['KGM', '0.1']];
+        $segment = new MEADimensions($rawValues);
+
+        self::assertEquals('MEA', $segment->name());
+        self::assertEquals('WT', $segment->subSegmentKey());
+        self::assertEquals($rawValues, $segment->rawValues());
     }
 }

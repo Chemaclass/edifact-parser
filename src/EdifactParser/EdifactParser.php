@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EdifactParser;
 
-use App\EdifactParser\Exception\ParsingFileException;
+use App\EdifactParser\Exception\InvalidFile;
 use EDI\Parser;
 
 final class EdifactParser
@@ -14,7 +14,7 @@ final class EdifactParser
         $errors = $parser->errors();
 
         if ($errors) {
-            throw new ParsingFileException($errors);
+            throw InvalidFile::withErrors($errors);
         }
 
         return TransactionResult::fromSegmentedValues(
