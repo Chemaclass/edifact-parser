@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\Tests;
+namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
 use EdifactParser\SegmentedValues;
@@ -22,19 +22,5 @@ final class SegmentedValuesTest extends TestCase
             new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
         ], $values->list());
-    }
-
-    /** @test */
-    public function factoryToUNH(): void
-    {
-        $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'";
-        $parser = new Parser($fileContent);
-        $values = SegmentedValues::fromRaw($parser->get())->list();
-
-        self::assertEquals(new UNHMessageHeader([
-            'UNH',
-            '1',
-            ['IFTMIN', 'S', '93A', 'UN', 'PN001'],
-        ]), $values[0]);
     }
 }

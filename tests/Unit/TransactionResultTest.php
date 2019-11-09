@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\Tests;
+namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
 use EdifactParser\SegmentedValues;

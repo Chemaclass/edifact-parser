@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
+namespace EdifactParser\Tests\Functional;
+
 use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +21,7 @@ final class EdifactParserTest extends TestCase
 \xE2\x80\xAF
 EDI;
         $this->expectException(InvalidFile::class);
-        EdifactParser::parse($fileContent);
+        (new EdifactParser)->parse($fileContent);
     }
 
     /** @test */
@@ -34,7 +37,7 @@ UNH+3+IFTMIN:S:94A:UN:PN003'
 UNT+19+3'
 UNZ+3+4'
 EDI;
-        $transactionResult = EdifactParser::parse($fileContent);
+        $transactionResult = (new EdifactParser)->parse($fileContent);
         self::assertCount(3, $transactionResult->messages());
     }
 
@@ -49,7 +52,10 @@ CNT+11:1:PCE'
 UNT+19+1'
 UNZ+1+3'
 EDI;
-        $transactionResult = EdifactParser::parse($fileContent);
+
+        $parser = new EdifactParser();
+        $transactionResult = $parser->parse($fileContent);
+
         self::assertCount(1, $transactionResult->messages());
         $firstMessage = $transactionResult->messages()[0];
         $segments = $firstMessage->segments();
@@ -69,5 +75,28 @@ EDI;
         /** @var UNTMessageFooter $unt */
         $unt = $segments[UNTMessageFooter::NAME]['19'];
         self::assertEquals(['UNT', '19', '1'], $unt->rawValues());
+    }
+
+    /** @test */
+    public function useACustomSegmentFactory(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+IFTMIN:S:93A:UN:PN001'
+CUSTOM+anyKey+whatever:value:9'
+CNT+11:1:PCE'
+UNT+19+1'
+UNZ+1+3'
+EDI;
+        $parser = new EdifactParser(new TestingCustomSegmentFactory('CUSTOM'));
+        $transactionResult = $parser->parse($fileContent);
+
+        self::assertCount(1, $transactionResult->messages());
+        $firstMessage = $transactionResult->messages()[0];
+        $segments = $firstMessage->segments();
+
+        /** @var SegmentInterface $custom */
+        $custom = $segments['CUSTOM']['anyKey'];
+        self::assertEquals(['CUSTOM', 'anyKey', ['whatever', 'value', '9']], $custom->rawValues());
     }
 }

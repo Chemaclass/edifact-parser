@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\Tests\Segments;
+namespace EdifactParser\Tests\Unit\Segments;
 
 use EdifactParser\Segments\NADNameAddress;
 use PHPUnit\Framework\TestCase;
