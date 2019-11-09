@@ -1,12 +1,20 @@
 {
     "name": "chemaclass/edifact-parser",
     "description": "An EDIFACT file parser to extract the values from any defined segment",
+    "type": "library",
+    "keywords": [
+        "edifact",
+        "parser",
+        "php"
+    ],
+    "license": "MIT",
     "authors": [
         {
             "name": "Jose Maria Valera Reales",
             "email": "chemaclass@outlook.es"
         }
     ],
+    "prefer-stable": true,
     "require": {
         "ext-json": "*",
         "php": "^7.3",
