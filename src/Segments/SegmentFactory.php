@@ -6,7 +6,7 @@ namespace EdifactParser\Segments;
 
 final class SegmentFactory
 {
-    /** @var CustomSegmentFactoryInterface|null */
+    /** @var null|CustomSegmentFactoryInterface */
     private $customSegmentsFactory;
 
     public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory)
@@ -50,6 +50,7 @@ final class SegmentFactory
     {
         if ($this->customSegmentsFactory) {
             $segment = $this->customSegmentsFactory->segmentFromArray($rawArray);
+
             if ($segment) {
                 return $segment;
             }

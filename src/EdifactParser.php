@@ -10,7 +10,7 @@ use EdifactParser\Segments\CustomSegmentFactoryInterface;
 
 final class EdifactParser
 {
-    /** @var CustomSegmentFactoryInterface|null */
+    /** @var null|CustomSegmentFactoryInterface */
     private $customSegmentsFactory;
 
     public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory = null)

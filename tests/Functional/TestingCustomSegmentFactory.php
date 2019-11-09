@@ -23,8 +23,7 @@ final class TestingCustomSegmentFactory implements CustomSegmentFactoryInterface
             return null;
         }
 
-        return new class($rawArray) implements SegmentInterface
-        {
+        return new class($rawArray) implements SegmentInterface {
             /** @var array */
             private $rawArray;
 

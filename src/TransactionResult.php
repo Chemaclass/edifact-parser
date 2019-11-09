@@ -15,6 +15,11 @@ final class TransactionResult
     /** @var TransactionMessage[] */
     private $messages;
 
+    public static function fromSegmentedValues(SegmentedValues $values): self
+    {
+        return new self($values);
+    }
+
     private function __construct(SegmentedValues $values)
     {
         /** @var TransactionMessage[] $messages */
@@ -42,11 +47,6 @@ final class TransactionResult
         }
 
         $this->messages = $messages;
-    }
-
-    public static function fromSegmentedValues(SegmentedValues $values): self
-    {
-        return new self($values);
     }
 
     /** @return TransactionMessage[] */

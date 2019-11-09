@@ -21,7 +21,7 @@ final class EdifactParserTest extends TestCase
 \xE2\x80\xAF
 EDI;
         $this->expectException(InvalidFile::class);
-        (new EdifactParser)->parse($fileContent);
+        (new EdifactParser())->parse($fileContent);
     }
 
     /** @test */
@@ -37,7 +37,7 @@ UNH+3+IFTMIN:S:94A:UN:PN003'
 UNT+19+3'
 UNZ+3+4'
 EDI;
-        $transactionResult = (new EdifactParser)->parse($fileContent);
+        $transactionResult = (new EdifactParser())->parse($fileContent);
         self::assertCount(3, $transactionResult->messages());
     }
 
