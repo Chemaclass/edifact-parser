@@ -9,8 +9,7 @@ use EdifactParser\Segments\SegmentInterface;
 
 final class TestingCustomSegmentFactory implements CustomSegmentFactoryInterface
 {
-    /** @var string */
-    private $customKey;
+    private string $customKey;
 
     public function __construct(string $customKey)
     {
@@ -24,8 +23,7 @@ final class TestingCustomSegmentFactory implements CustomSegmentFactoryInterface
         }
 
         return new class($rawArray) implements SegmentInterface {
-            /** @var array */
-            private $rawArray;
+            private array $rawArray;
 
             public function __construct(array $rawArray)
             {
@@ -42,7 +40,7 @@ final class TestingCustomSegmentFactory implements CustomSegmentFactoryInterface
                 return $this->rawArray[1];
             }
 
-            public function rawValues()
+            public function rawValues(): array
             {
                 return $this->rawArray;
             }

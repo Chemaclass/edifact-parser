@@ -10,7 +10,7 @@ use EdifactParser\Segments\SegmentInterface;
 
 final class SegmentedValues
 {
-    /** @var array */
+    /** @psalm-var list<SegmentInterface> */
     private $list;
 
     public static function fromRaw(

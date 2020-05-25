@@ -10,5 +10,5 @@ interface SegmentInterface
 
     public function subSegmentKey(): string;
 
-    public function rawValues();
+    public function rawValues(): array;
 }
