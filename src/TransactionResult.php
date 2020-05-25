@@ -12,8 +12,8 @@ use EdifactParser\Segments\UNHMessageHeader;
  */
 final class TransactionResult
 {
-    /** @var TransactionMessage[] */
-    private $messages;
+    /** @psalm-var list<TransactionMessage> */
+    private array $messages;
 
     public static function fromSegmentedValues(SegmentedValues $values): self
     {
@@ -27,7 +27,6 @@ final class TransactionResult
         /** @var ?TransactionMessage $message */
         $message = null;
 
-        /** @var SegmentInterface $segment */
         foreach ($values->list() as $segment) {
             if ($segment instanceof UNHMessageHeader) {
                 if ($message) {
@@ -49,7 +48,7 @@ final class TransactionResult
         $this->messages = $messages;
     }
 
-    /** @return TransactionMessage[] */
+    /** @psalm-return list<TransactionMessage> */
     public function messages(): array
     {
         return $this->messages;

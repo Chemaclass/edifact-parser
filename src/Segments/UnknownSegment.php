@@ -8,8 +8,7 @@ final class UnknownSegment implements SegmentInterface
 {
     public const NAME = 'Unknown';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

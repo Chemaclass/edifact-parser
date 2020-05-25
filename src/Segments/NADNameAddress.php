@@ -10,8 +10,7 @@ final class NADNameAddress implements SegmentInterface
 {
     public const NAME = 'NAD';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

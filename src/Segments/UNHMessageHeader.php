@@ -8,8 +8,7 @@ final class UNHMessageHeader implements SegmentInterface
 {
     public const NAME = 'UNH';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

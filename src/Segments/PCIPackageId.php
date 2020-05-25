@@ -8,8 +8,7 @@ final class PCIPackageId implements SegmentInterface
 {
     public const NAME = 'PCI';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

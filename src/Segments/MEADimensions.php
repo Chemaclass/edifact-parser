@@ -10,8 +10,7 @@ final class MEADimensions implements SegmentInterface
 {
     public const NAME = 'MEA';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

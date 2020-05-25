@@ -8,8 +8,7 @@ final class BGMBeginningOfMessage implements SegmentInterface
 {
     public const NAME = 'BGM';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

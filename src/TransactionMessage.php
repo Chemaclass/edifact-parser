@@ -12,9 +12,9 @@ final class TransactionMessage
      * First string: segment key
      * Second key: sub segment key.
      *
-     * @var array<string, array<string,SegmentInterface>>
+     * @psalm-var array<string, array<string,SegmentInterface>>
      */
-    private $segments = [];
+    private array $segments = [];
 
     public function __construct(array $segments = [])
     {
@@ -34,7 +34,7 @@ final class TransactionMessage
         $this->segments[$name][$segment->subSegmentKey()] = $segment;
     }
 
-    /** @return array<string, array<string,SegmentInterface>> */
+    /** @psalm-return array<string, array<string,SegmentInterface>> */
     public function segments(): array
     {
         return $this->segments;

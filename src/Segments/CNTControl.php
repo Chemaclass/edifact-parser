@@ -10,8 +10,7 @@ final class CNTControl implements SegmentInterface
 {
     public const NAME = 'CNT';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

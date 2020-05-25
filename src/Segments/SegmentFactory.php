@@ -6,8 +6,7 @@ namespace EdifactParser\Segments;
 
 final class SegmentFactory
 {
-    /** @var null|CustomSegmentFactoryInterface */
-    private $customSegmentsFactory;
+    private ?CustomSegmentFactoryInterface $customSegmentsFactory;
 
     public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory)
     {

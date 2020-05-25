@@ -8,8 +8,7 @@ final class UNTMessageFooter implements SegmentInterface
 {
     public const NAME = 'UNT';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {

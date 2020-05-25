@@ -8,8 +8,7 @@ final class DTMDateTimePeriod implements SegmentInterface
 {
     public const NAME = 'DTM';
 
-    /** @var array */
-    private $rawValues;
+    private array $rawValues;
 
     public function __construct(array $rawValues)
     {
