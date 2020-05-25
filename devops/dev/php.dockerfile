@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:7.4-fpm
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y git
@@ -10,4 +10,4 @@ RUN chmod 755 /usr/local/bin/composer
 ENV XDEBUG_CONFIG="idekey=anything-works-here"
 ENV PHP_IDE_CONFIG="serverName=Docker"
 RUN useradd -m dev
-WORKDIR /srv/EdifactParser
+WORKDIR /srv/edifact-parser
