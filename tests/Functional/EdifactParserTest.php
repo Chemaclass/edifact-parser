@@ -88,7 +88,7 @@ UNT+19+1'
 UNZ+1+3'
 EDI;
         $parser = EdifactParser::create(new TestingSegmentFactory('CUSTOM'));
-        $transactionResult = $parser->parse($fileContent);
+        $transactionResult = $parser($fileContent);
 
         self::assertCount(1, $transactionResult->messages());
         $firstMessage = $transactionResult->messages()[0];

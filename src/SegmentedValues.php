@@ -15,9 +15,9 @@ final class SegmentedValues
 
     private SegmentFactoryInterface $segmentFactory;
 
-    public static function factory(): self
+    public static function factory(?SegmentFactoryInterface $segmentFactory = null): self
     {
-        return new self(new SegmentFactory());
+        return new self($segmentFactory ?? new SegmentFactory());
     }
 
     public function __construct(SegmentFactoryInterface $segmentFactory)

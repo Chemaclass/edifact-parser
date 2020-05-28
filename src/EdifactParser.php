@@ -23,6 +23,11 @@ final class EdifactParser
         $this->segmentFactory = $segmentFactory;
     }
 
+    public function __invoke(string $fileContent): TransactionResult
+    {
+        return $this->parse($fileContent);
+    }
+
     public function parse(string $fileContent): TransactionResult
     {
         $parser = new Parser($fileContent);
@@ -32,7 +37,7 @@ final class EdifactParser
             throw InvalidFile::withErrors($errors);
         }
 
-        $segmentedValues = (new SegmentedValues($this->segmentFactory))->fromRaw($parser->get());
+        $segmentedValues = SegmentedValues::factory($this->segmentFactory)->fromRaw($parser->get());
 
         return TransactionResult::fromSegmentedValues($segmentedValues);
     }
