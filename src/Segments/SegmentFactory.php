@@ -4,23 +4,10 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-final class SegmentFactory implements CustomSegmentFactoryInterface
+final class SegmentFactory implements SegmentFactoryInterface
 {
-    private ?CustomSegmentFactoryInterface $customSegmentsFactory;
-
-    public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory = null)
-    {
-        $this->customSegmentsFactory = $customSegmentsFactory;
-    }
-
     public function segmentFromArray(array $rawArray): SegmentInterface
     {
-        $customSegment = $this->customSegment($rawArray);
-
-        if ($customSegment) {
-            return $customSegment;
-        }
-
         $name = $rawArray[0];
 
         switch ($name) {
@@ -43,18 +30,5 @@ final class SegmentFactory implements CustomSegmentFactoryInterface
         }
 
         return new UnknownSegment($rawArray);
-    }
-
-    private function customSegment(array $rawArray): ?SegmentInterface
-    {
-        if ($this->customSegmentsFactory) {
-            $segment = $this->customSegmentsFactory->segmentFromArray($rawArray);
-
-            if ($segment) {
-                return $segment;
-            }
-        }
-
-        return null;
     }
 }

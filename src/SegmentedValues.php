@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
 
 final class SegmentedValues
@@ -12,14 +13,14 @@ final class SegmentedValues
     /** @psalm-var list<SegmentInterface> */
     private array $list = [];
 
-    private SegmentFactory $segmentFactory;
+    private SegmentFactoryInterface $segmentFactory;
 
     public static function factory(): self
     {
         return new self(new SegmentFactory());
     }
 
-    public function __construct(SegmentFactory $segmentFactory)
+    public function __construct(SegmentFactoryInterface $segmentFactory)
     {
         $this->segmentFactory = $segmentFactory;
     }
@@ -38,5 +39,4 @@ final class SegmentedValues
     {
         return $this->list;
     }
-
 }

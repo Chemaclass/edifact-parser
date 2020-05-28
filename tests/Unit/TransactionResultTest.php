@@ -7,7 +7,6 @@ namespace EdifactParser\Tests\Unit;
 use EDI\Parser;
 use EdifactParser\SegmentedValues;
 use EdifactParser\Segments\CNTControl;
-use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;

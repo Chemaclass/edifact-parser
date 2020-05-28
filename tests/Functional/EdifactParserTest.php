@@ -21,7 +21,7 @@ final class EdifactParserTest extends TestCase
 \xE2\x80\xAF
 EDI;
         $this->expectException(InvalidFile::class);
-        (new EdifactParser())->parse($fileContent);
+        EdifactParser::create()->parse($fileContent);
     }
 
     /** @test */
@@ -37,7 +37,7 @@ UNH+3+IFTMIN:S:94A:UN:PN003'
 UNT+19+3'
 UNZ+3+4'
 EDI;
-        $transactionResult = (new EdifactParser())->parse($fileContent);
+        $transactionResult = EdifactParser::create()->parse($fileContent);
         self::assertCount(3, $transactionResult->messages());
     }
 
@@ -53,8 +53,7 @@ UNT+19+1'
 UNZ+1+3'
 EDI;
 
-        $parser = new EdifactParser();
-        $transactionResult = $parser->parse($fileContent);
+        $transactionResult = EdifactParser::create()->parse($fileContent);
 
         self::assertCount(1, $transactionResult->messages());
         $firstMessage = $transactionResult->messages()[0];
@@ -88,7 +87,7 @@ CNT+11:1:PCE'
 UNT+19+1'
 UNZ+1+3'
 EDI;
-        $parser = new EdifactParser(new TestingCustomSegmentFactory('CUSTOM'));
+        $parser = EdifactParser::create(new TestingSegmentFactory('CUSTOM'));
         $transactionResult = $parser->parse($fileContent);
 
         self::assertCount(1, $transactionResult->messages());
@@ -98,5 +97,9 @@ EDI;
         /** @var SegmentInterface $custom */
         $custom = $segments['CUSTOM']['anyKey'];
         self::assertEquals(['CUSTOM', 'anyKey', ['whatever', 'value', '9']], $custom->rawValues());
+
+        /** @var CNTControl $cnt11 */
+        $cnt11 = $segments[CNTControl::class]['11'];
+        self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
     }
 }
