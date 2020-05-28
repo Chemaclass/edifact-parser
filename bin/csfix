@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-docker exec -ti -u dev edifact_parser_php sh -c "cd /srv/edifact-parser && vendor/bin/php-cs-fixer fix"

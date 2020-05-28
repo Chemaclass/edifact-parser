@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-args=""
-for arg in "$@"; do
-  args="$args $arg"
-done
-
-docker exec -ti -u dev edifact_parser_php sh \
-    -c "cd /srv/edifact-parser && vendor/bin/phpunit $args --coverage-html coverage"

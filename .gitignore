@@ -4,6 +4,7 @@
 /var/
 /vendor/
 /coverage/
+psalm.log
 
 ###> phpunit/phpunit ###
 .phpunit.result.cache
