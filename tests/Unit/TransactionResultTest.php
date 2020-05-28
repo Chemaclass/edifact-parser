@@ -7,6 +7,7 @@ namespace EdifactParser\Tests\Unit;
 use EDI\Parser;
 use EdifactParser\SegmentedValues;
 use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
@@ -22,7 +23,7 @@ final class TransactionResultTest extends TestCase
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
 
         $result = TransactionResult::fromSegmentedValues(
-            SegmentedValues::fromRaw((new Parser($fileContent))->get())
+            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
         );
 
         self::assertEquals([
@@ -45,7 +46,7 @@ UNT+19+2'
 UNZ+2+3'
 EDI;
         $result = TransactionResult::fromSegmentedValues(
-            SegmentedValues::fromRaw((new Parser($fileContent))->get())
+            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
         );
 
         self::assertEquals([
@@ -74,7 +75,7 @@ UNT+19+1'
 UNZ+2+3'
 EDI;
         $result = TransactionResult::fromSegmentedValues(
-            SegmentedValues::fromRaw((new Parser($fileContent))->get())
+            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
         );
 
         self::assertEquals([

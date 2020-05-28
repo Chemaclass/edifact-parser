@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-final class SegmentFactory
+final class SegmentFactory implements CustomSegmentFactoryInterface
 {
     private ?CustomSegmentFactoryInterface $customSegmentsFactory;
 
-    public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory)
+    public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory = null)
     {
         $this->customSegmentsFactory = $customSegmentsFactory;
     }

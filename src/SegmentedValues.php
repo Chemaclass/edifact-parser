@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
-use EdifactParser\Segments\CustomSegmentFactoryInterface;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentInterface;
 
 final class SegmentedValues
 {
     /** @psalm-var list<SegmentInterface> */
-    private array $list;
+    private array $list = [];
 
-    public static function fromRaw(
-        array $rawArrays,
-        ?CustomSegmentFactoryInterface $customSegmentsFactory = null
-    ): self {
-        $factory = new SegmentFactory($customSegmentsFactory);
+    private SegmentFactory $segmentFactory;
 
-        $self = new self();
-        $segments = [];
+    public static function factory(): self
+    {
+        return new self(new SegmentFactory());
+    }
 
+    public function __construct(SegmentFactory $segmentFactory)
+    {
+        $this->segmentFactory = $segmentFactory;
+    }
+
+    public function fromRaw(array $rawArrays): self
+    {
         foreach ($rawArrays as $rawArray) {
-            $segments[] = $factory->segmentFromArray($rawArray);
+            $this->list[] = $this->segmentFactory->segmentFromArray($rawArray);
         }
 
-        foreach ($segments as $segment) {
-            $self->addSegment($segment);
-        }
-
-        return $self;
+        return $this;
     }
 
     /** @return SegmentInterface[] */
@@ -39,8 +39,4 @@ final class SegmentedValues
         return $this->list;
     }
 
-    private function addSegment(SegmentInterface $segment): void
-    {
-        $this->list[] = $segment;
-    }
 }
