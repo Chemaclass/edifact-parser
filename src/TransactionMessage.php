@@ -34,7 +34,6 @@ final class TransactionMessage
         $this->segments[$name][$segment->subSegmentKey()] = $segment;
     }
 
-    /** @psalm-return array<string, array<string,SegmentInterface>> */
     public function segments(): array
     {
         return $this->segments;
