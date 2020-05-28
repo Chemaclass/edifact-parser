@@ -61,19 +61,19 @@ EDI;
         $segments = $firstMessage->segments();
 
         /** @var UNHMessageHeader $unh */
-        $unh = $segments[UNHMessageHeader::NAME]['1'];
+        $unh = $segments[UNHMessageHeader::class]['1'];
         self::assertEquals(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']], $unh->rawValues());
 
         /** @var CNTControl $cnt7 */
-        $cnt7 = $segments[CNTControl::NAME]['7'];
+        $cnt7 = $segments[CNTControl::class]['7'];
         self::assertEquals(['CNT', ['7', '0.1', 'KGM']], $cnt7->rawValues());
 
         /** @var CNTControl $cnt11 */
-        $cnt11 = $segments[CNTControl::NAME]['11'];
+        $cnt11 = $segments[CNTControl::class]['11'];
         self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
 
         /** @var UNTMessageFooter $unt */
-        $unt = $segments[UNTMessageFooter::NAME]['19'];
+        $unt = $segments[UNTMessageFooter::class]['19'];
         self::assertEquals(['UNT', '19', '1'], $unt->rawValues());
     }
 

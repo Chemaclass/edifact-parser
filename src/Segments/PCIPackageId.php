@@ -6,8 +6,6 @@ namespace EdifactParser\Segments;
 
 final class PCIPackageId implements SegmentInterface
 {
-    public const NAME = 'PCI';
-
     private array $rawValues;
 
     public function __construct(array $rawValues)
@@ -17,7 +15,7 @@ final class PCIPackageId implements SegmentInterface
 
     public function name(): string
     {
-        return self::NAME;
+        return self::class;
     }
 
     public function subSegmentKey(): string

@@ -8,8 +8,6 @@ namespace EdifactParser\Segments;
 
 final class MEADimensions implements SegmentInterface
 {
-    public const NAME = 'MEA';
-
     private array $rawValues;
 
     public function __construct(array $rawValues)
@@ -19,7 +17,7 @@ final class MEADimensions implements SegmentInterface
 
     public function name(): string
     {
-        return self::NAME;
+        return self::class;
     }
 
     public function subSegmentKey(): string

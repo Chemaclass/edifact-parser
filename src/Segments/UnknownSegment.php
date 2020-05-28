@@ -6,8 +6,6 @@ namespace EdifactParser\Segments;
 
 final class UnknownSegment implements SegmentInterface
 {
-    public const NAME = 'Unknown';
-
     private array $rawValues;
 
     public function __construct(array $rawValues)
@@ -17,14 +15,14 @@ final class UnknownSegment implements SegmentInterface
 
     public function name(): string
     {
-        return self::NAME;
+        return self::class;
     }
 
     public function subSegmentKey(): string
     {
         $encodedValues = json_encode($this->rawValues);
 
-        return ($encodedValues) ? md5($encodedValues) : md5(self::NAME);
+        return ($encodedValues) ? md5($encodedValues) : md5(self::class);
     }
 
     public function rawValues(): array
