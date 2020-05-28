@@ -9,6 +9,7 @@ use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 
+/** @psalmphp-immutable */
 final class EdifactParser
 {
     private SegmentFactoryInterface $segmentFactory;

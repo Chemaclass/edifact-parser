@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+/** @psalmphp-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
 {
     public function segmentFromArray(array $rawArray): SegmentInterface

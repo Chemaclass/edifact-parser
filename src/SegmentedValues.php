@@ -8,6 +8,7 @@ use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
 
+/** @psalmphp-immutable */
 final class SegmentedValues
 {
     /** @psalm-var list<SegmentInterface> */

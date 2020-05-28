@@ -6,6 +6,7 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
+/** @psalmphp-immutable */
 final class TransactionMessage
 {
     /**
