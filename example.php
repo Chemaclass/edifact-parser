@@ -14,7 +14,7 @@ use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\TransactionMessage;
 
-require __DIR__ . '/bootstrap.php';
+require __DIR__ . '/vendor/autoload.php';
 
 $fileContent = <<<EDI
 UNA:+.? '
@@ -73,20 +73,20 @@ function printMessage(TransactionMessage $message): void
 {
     $segments = $message->segments();
 
-    $unhSubSegmentKey = array_key_first($segments[UNHMessageHeader::NAME]);
-    printSegment($segments[UNHMessageHeader::NAME][$unhSubSegmentKey]);
+    $unhSubSegmentKey = array_key_first($segments[UNHMessageHeader::class]);
+    printSegment($segments[UNHMessageHeader::class][$unhSubSegmentKey]);
 
-    printSegment($segments[BGMBeginningOfMessage::NAME]['340']);
-    printSegment($segments[DTMDateTimePeriod::NAME]['10']);
-    printSegment($segments[CNTControl::NAME]['7']);
-    printSegment($segments[CNTControl::NAME]['11']);
-    printSegment($segments[NADNameAddress::NAME]['CZ']);
-    printSegment($segments[MEADimensions::NAME]['WT']);
-    printSegment($segments[MEADimensions::NAME]['VOL']);
-    printSegment($segments[PCIPackageId::NAME]['18']);
+    printSegment($segments[BGMBeginningOfMessage::class]['340']);
+    printSegment($segments[DTMDateTimePeriod::class]['10']);
+    printSegment($segments[CNTControl::class]['7']);
+    printSegment($segments[CNTControl::class]['11']);
+    printSegment($segments[NADNameAddress::class]['CZ']);
+    printSegment($segments[MEADimensions::class]['WT']);
+    printSegment($segments[MEADimensions::class]['VOL']);
+    printSegment($segments[PCIPackageId::class]['18']);
 
-    $untSubSegmentKey = array_key_first($segments[UNTMessageFooter::NAME]);
-    printSegment($segments[UNTMessageFooter::NAME][$untSubSegmentKey]);
+    $untSubSegmentKey = array_key_first($segments[UNTMessageFooter::class]);
+    printSegment($segments[UNTMessageFooter::class][$untSubSegmentKey]);
 }
 
 function printSegment(SegmentInterface $segment): void
