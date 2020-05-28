@@ -6,8 +6,6 @@ namespace EdifactParser\Segments;
 
 final class UNTMessageFooter implements SegmentInterface
 {
-    public const NAME = 'UNT';
-
     private array $rawValues;
 
     public function __construct(array $rawValues)
@@ -17,7 +15,7 @@ final class UNTMessageFooter implements SegmentInterface
 
     public function name(): string
     {
-        return self::NAME;
+        return self::class;
     }
 
     public function subSegmentKey(): string

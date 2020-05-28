@@ -15,7 +15,7 @@ final class UNHMessageHeaderTest extends TestCase
         $rawValues = ['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']];
         $segment = new UNHMessageHeader($rawValues);
 
-        self::assertEquals('UNH', $segment->name());
+        self::assertEquals(UNHMessageHeader::class, $segment->name());
         self::assertEquals('1', $segment->subSegmentKey());
         self::assertEquals($rawValues, $segment->rawValues());
     }

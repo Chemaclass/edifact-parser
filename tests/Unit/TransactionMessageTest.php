@@ -22,10 +22,10 @@ final class TransactionMessageTest extends TestCase
         ]);
 
         self::assertEquals([
-            CNTControl::NAME => [
+            CNTControl::class => [
                 '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
             ],
-            MEADimensions::NAME => [
+            MEADimensions::class => [
                 'WT' => new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
             ],
         ], $message->segments());
@@ -42,13 +42,13 @@ final class TransactionMessageTest extends TestCase
         ]);
 
         self::assertEquals([
-            UNHMessageHeader::NAME => [
+            UNHMessageHeader::class => [
                 '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             ],
-            UNTMessageFooter::NAME => [
+            UNTMessageFooter::class => [
                 '19' => new UNTMessageFooter(['UNT', '19', '1']),
             ],
-            MEADimensions::NAME => [
+            MEADimensions::class => [
                 'WT' => new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
                 'VOL' => new MEADimensions(['MEA', 'VOL', '', ['MTQ', '0.06822']]),
             ],
@@ -67,13 +67,13 @@ final class TransactionMessageTest extends TestCase
         ]);
 
         self::assertEquals([
-            UNHMessageHeader::NAME => [
+            UNHMessageHeader::class => [
                 '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             ],
-            UNTMessageFooter::NAME => [
+            UNTMessageFooter::class => [
                 '19' => new UNTMessageFooter(['UNT', '19', '1']),
             ],
-            CNTControl::NAME => [
+            CNTControl::class => [
                 '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
                 '11' => new CNTControl(['CNT', ['11', '1', 'PCE']]),
                 '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),

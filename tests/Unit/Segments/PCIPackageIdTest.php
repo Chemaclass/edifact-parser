@@ -15,7 +15,7 @@ final class PCIPackageIdTest extends TestCase
         $rawValues = ['PCI', '18', '00250559268149700889'];
         $segment = new PCIPackageId($rawValues);
 
-        self::assertEquals('PCI', $segment->name());
+        self::assertEquals(PCIPackageId::class, $segment->name());
         self::assertEquals('18', $segment->subSegmentKey());
         self::assertEquals($rawValues, $segment->rawValues());
     }

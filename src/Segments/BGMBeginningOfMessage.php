@@ -6,8 +6,6 @@ namespace EdifactParser\Segments;
 
 final class BGMBeginningOfMessage implements SegmentInterface
 {
-    public const NAME = 'BGM';
-
     private array $rawValues;
 
     public function __construct(array $rawValues)
@@ -17,7 +15,7 @@ final class BGMBeginningOfMessage implements SegmentInterface
 
     public function name(): string
     {
-        return self::NAME;
+        return self::class;
     }
 
     public function subSegmentKey(): string

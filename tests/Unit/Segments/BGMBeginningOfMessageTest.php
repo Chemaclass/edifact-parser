@@ -15,7 +15,7 @@ final class BGMBeginningOfMessageTest extends TestCase
         $rawValues = ['BGM', '340', '00250559268149700889', '9'];
         $segment = new BGMBeginningOfMessage($rawValues);
 
-        self::assertEquals('BGM', $segment->name());
+        self::assertEquals(BGMBeginningOfMessage::class, $segment->name());
         self::assertEquals('340', $segment->subSegmentKey());
         self::assertEquals($rawValues, $segment->rawValues());
     }
