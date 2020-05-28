@@ -9,9 +9,7 @@ final class SegmentFactory implements SegmentFactoryInterface
 {
     public function segmentFromArray(array $rawArray): SegmentInterface
     {
-        $name = $rawArray[0];
-
-        switch ($name) {
+        switch ($rawArray[0]) {
             case 'UNH':
                 return new UNHMessageHeader($rawArray);
             case 'DTM':

@@ -21,16 +21,12 @@ final class TransactionResultTest extends TestCase
     {
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
 
-        $result = TransactionResult::fromSegmentedValues(
-            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
-        );
-
         self::assertEquals([
             new TransactionMessage([
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
             ]),
-        ], $result->messages());
+        ], $this->resultFactory($fileContent)->messages());
     }
 
     /** @test */
@@ -44,10 +40,6 @@ UNH+2+IFTMIN:S:94A:UN:PN002'
 UNT+19+2'
 UNZ+2+3'
 EDI;
-        $result = TransactionResult::fromSegmentedValues(
-            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
-        );
-
         self::assertEquals([
             new TransactionMessage([
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
@@ -58,7 +50,7 @@ EDI;
                 new UNTMessageFooter(['UNT', '19', '2']),
                 new UnknownSegment(['UNZ', '2', '3']),
             ]),
-        ], $result->messages());
+        ], $this->resultFactory($fileContent)->messages());
     }
 
     /** @test */
@@ -73,10 +65,6 @@ CNT+15:0.068224:MTQ'
 UNT+19+1'
 UNZ+2+3'
 EDI;
-        $result = TransactionResult::fromSegmentedValues(
-            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
-        );
-
         self::assertEquals([
             new TransactionMessage([
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
@@ -86,6 +74,13 @@ EDI;
                 new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 new UnknownSegment(['UNZ', '2', '3']),
             ]),
-        ], $result->messages());
+        ], $this->resultFactory($fileContent)->messages());
+    }
+
+    private function resultFactory(string $fileContent): TransactionResult
+    {
+        return TransactionResult::fromSegmentedValues(
+            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
+        );
     }
 }
