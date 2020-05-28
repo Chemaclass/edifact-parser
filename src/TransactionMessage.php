@@ -17,11 +17,15 @@ final class TransactionMessage
      */
     private array $segments = [];
 
-    public function __construct(array $segments = [])
+    public static function withSegments(SegmentInterface...$segments): self
     {
+        $self = new self();
+
         foreach ($segments as $segment) {
-            $this->addSegment($segment);
+            $self->addSegment($segment);
         }
+
+        return $self;
     }
 
     public function addSegment(SegmentInterface $segment): void

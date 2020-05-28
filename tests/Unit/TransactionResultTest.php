@@ -22,10 +22,10 @@ final class TransactionResultTest extends TestCase
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
 
         self::assertEquals([
-            new TransactionMessage([
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
-            ]),
+            ),
         ], $this->resultFactory($fileContent)->messages());
     }
 
@@ -41,15 +41,15 @@ UNT+19+2'
 UNZ+2+3'
 EDI;
         self::assertEquals([
-            new TransactionMessage([
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
-            ]),
-            new TransactionMessage([
+            ),
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
                 new UNTMessageFooter(['UNT', '19', '2']),
                 new UnknownSegment(['UNZ', '2', '3']),
-            ]),
+            ),
         ], $this->resultFactory($fileContent)->messages());
     }
 
@@ -66,14 +66,14 @@ UNT+19+1'
 UNZ+2+3'
 EDI;
         self::assertEquals([
-            new TransactionMessage([
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
                 new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
                 new CNTControl(['CNT', ['11', '1', 'PCE']]),
                 new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 new UnknownSegment(['UNZ', '2', '3']),
-            ]),
+            ),
         ], $this->resultFactory($fileContent)->messages());
     }
 

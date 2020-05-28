@@ -33,7 +33,6 @@ final class TransactionResult
                 if ($message) {
                     $messages[] = $message;
                 }
-
                 $message = new TransactionMessage();
             }
 
