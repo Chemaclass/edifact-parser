@@ -3,8 +3,10 @@
     "description": "An EDIFACT file parser to extract the values from any defined segment",
     "type": "library",
     "keywords": [
+        "edi",
         "edifact",
         "edifile",
+        "un-edifact",
         "parser",
         "php"
     ],
@@ -19,11 +21,11 @@
     "require": {
         "ext-json": "*",
         "php": "^7.4",
-        "sabas/edifact": "^0.4.1"
+        "sabas/edifact": "^0.5"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.15",
-        "phpunit/phpunit": "^8.4",
+        "phpunit/phpunit": "^9.1",
         "symfony/var-dumper": "^4.3",
         "vimeo/psalm": "^3.11"
     },
