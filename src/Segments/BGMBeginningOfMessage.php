@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-/** @psalmphp-immutable */
 final class BGMBeginningOfMessage implements SegmentInterface
 {
     private array $rawValues;

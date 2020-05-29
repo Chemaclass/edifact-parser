@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-/** @psalmphp-immutable */
 final class PCIPackageId implements SegmentInterface
 {
     private array $rawValues;
