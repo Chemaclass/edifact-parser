@@ -6,16 +6,27 @@ namespace EdifactParser;
 
 use EDI\Parser;
 use EdifactParser\Exception\InvalidFile;
-use EdifactParser\Segments\CustomSegmentFactoryInterface;
+use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\Segments\SegmentFactoryInterface;
 
+/** @psalmphp-immutable */
 final class EdifactParser
 {
-    /** @var null|CustomSegmentFactoryInterface */
-    private ?CustomSegmentFactoryInterface $customSegmentsFactory;
+    private SegmentFactoryInterface $segmentFactory;
 
-    public function __construct(?CustomSegmentFactoryInterface $customSegmentsFactory = null)
+    public static function create(?SegmentFactoryInterface $segmentFactory = null): self
     {
-        $this->customSegmentsFactory = $customSegmentsFactory;
+        return new self($segmentFactory ?? new SegmentFactory());
+    }
+
+    private function __construct(SegmentFactoryInterface $segmentFactory)
+    {
+        $this->segmentFactory = $segmentFactory;
+    }
+
+    public function __invoke(string $fileContent): TransactionResult
+    {
+        return $this->parse($fileContent);
     }
 
     public function parse(string $fileContent): TransactionResult
@@ -27,7 +38,7 @@ final class EdifactParser
             throw InvalidFile::withErrors($errors);
         }
 
-        $segmentedValues = SegmentedValues::fromRaw($parser->get(), $this->customSegmentsFactory);
+        $segmentedValues = SegmentedValues::factory($this->segmentFactory)->fromRaw($parser->get());
 
         return TransactionResult::fromSegmentedValues($segmentedValues);
     }

@@ -6,6 +6,7 @@ namespace EdifactParser\Segments;
 
 namespace EdifactParser\Segments;
 
+/** @psalmphp-immutable */
 final class NADNameAddress implements SegmentInterface
 {
     private array $rawValues;

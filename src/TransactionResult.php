@@ -8,6 +8,8 @@ use EdifactParser\Segments\UNHMessageHeader;
 
 /**
  * A transactionResult is a list of transactionMessages.
+ *
+ * @psalmphp-immutable
  */
 final class TransactionResult
 {

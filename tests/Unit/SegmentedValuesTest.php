@@ -6,6 +6,7 @@ namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
 use EdifactParser\SegmentedValues;
+use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\UNHMessageHeader;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +17,7 @@ final class SegmentedValuesTest extends TestCase
     {
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNH+2+IFTMIN:S:93A:UN:PN001'";
         $parser = new Parser($fileContent);
-        $values = SegmentedValues::fromRaw($parser->get());
+        $values = (new SegmentedValues(new SegmentFactory()))->fromRaw($parser->get());
 
         self::assertEquals([
             new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),

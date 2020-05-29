@@ -4,22 +4,26 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Functional;
 
-use EdifactParser\Segments\CustomSegmentFactoryInterface;
+use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
 
-final class TestingCustomSegmentFactory implements CustomSegmentFactoryInterface
+final class TestingSegmentFactory implements SegmentFactoryInterface
 {
     private string $customKey;
+
+    private SegmentFactory $defaultFactory;
 
     public function __construct(string $customKey)
     {
         $this->customKey = $customKey;
+        $this->defaultFactory = new SegmentFactory();
     }
 
-    public function segmentFromArray(array $rawArray): ?SegmentInterface
+    public function segmentFromArray(array $rawArray): SegmentInterface
     {
         if ($this->customKey !== $rawArray[0]) {
-            return null;
+            return $this->defaultFactory->segmentFromArray($rawArray);
         }
 
         return new class($rawArray) implements SegmentInterface {

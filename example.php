@@ -61,7 +61,7 @@ UNT+19+2'
 UNZ+2+8'
 EDI;
 
-$transactionResult = (new EdifactParser())->parse($fileContent);
+$transactionResult = EdifactParser::create()->parse($fileContent);
 
 foreach ($transactionResult->messages() as $i => $message) {
     print "Message number: {$i}" . PHP_EOL;
