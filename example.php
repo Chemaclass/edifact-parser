@@ -12,7 +12,6 @@ use EdifactParser\Segments\PCIPackageId;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
-use EdifactParser\TransactionMessage;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -63,15 +62,19 @@ EDI;
 
 $transactionResult = EdifactParser::create()->parse($fileContent);
 
-foreach ($transactionResult->messages() as $i => $message) {
+foreach ($transactionResult as $i => $message) {
     print "Message number: {$i}" . PHP_EOL;
     printMessage($message);
     print PHP_EOL;
 }
 
-function printMessage(TransactionMessage $message): void
+function printMessage(array $segments): void
 {
-    $segments = $message->segments();
+    if (!isset($segments[UNHMessageHeader::class])) {
+        print "No `UNHMessageHeader::class` segment was found \n";
+
+        return;
+    }
 
     $unhSubSegmentKey = array_key_first($segments[UNHMessageHeader::class]);
     printSegment($segments[UNHMessageHeader::class][$unhSubSegmentKey]);
@@ -92,10 +95,9 @@ function printMessage(TransactionMessage $message): void
 function printSegment(SegmentInterface $segment): void
 {
     print sprintf(
-        '%s - %s <= %s %s',
-        $segment->name(),
-        $segment->subSegmentKey(),
-        json_encode($segment->rawValues()),
-        PHP_EOL
+        "%s - %s <| %s \n",
+        str_pad($segment->name(), 44),
+        str_pad($segment->subSegmentKey(), 3),
+        json_encode($segment->rawValues())
     );
 }
