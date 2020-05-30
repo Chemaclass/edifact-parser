@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+/** @psalm-immutable */
 final class UNHMessageHeader implements SegmentInterface
 {
     private array $rawValues;

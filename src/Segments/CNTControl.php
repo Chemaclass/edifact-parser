@@ -6,6 +6,7 @@ namespace EdifactParser\Segments;
 
 namespace EdifactParser\Segments;
 
+/** @psalm-immutable */
 final class CNTControl implements SegmentInterface
 {
     private array $rawValues;

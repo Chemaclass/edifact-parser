@@ -7,6 +7,7 @@ namespace EdifactParser\Exception;
 use Exception;
 use function json_encode;
 
+/** @psalm-immutable */
 final class InvalidFile extends Exception
 {
     public static function withErrors(array $errors): self
