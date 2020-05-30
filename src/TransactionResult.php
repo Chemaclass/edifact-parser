@@ -4,29 +4,21 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 
-/**
- * A transactionResult is a list of transactionMessages.
- */
+///** @psalm-immutable */
 final class TransactionResult
 {
-    /** @psalm-var list<TransactionMessage> */
-    private array $messages;
-
-    public static function fromSegmentedValues(SegmentedValues $values): self
-    {
-        return new self($values);
-    }
-
-    private function __construct(SegmentedValues $values)
+    /** @psalm-return list<TransactionMessage> */
+    public static function fromSegmentedValues(SegmentInterface...$segments): array
     {
         /** @var TransactionMessage[] $messages */
         $messages = [];
         /** @var ?TransactionMessage $message */
         $message = null;
 
-        foreach ($values->list() as $segment) {
+        foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
                 if ($message) {
                     $messages[] = $message;
@@ -43,12 +35,6 @@ final class TransactionResult
             $messages[] = $message;
         }
 
-        $this->messages = $messages;
-    }
-
-    /** @psalm-return list<TransactionMessage> */
-    public function messages(): array
-    {
-        return $this->messages;
+        return $messages;
     }
 }

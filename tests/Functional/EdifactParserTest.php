@@ -38,7 +38,7 @@ UNT+19+3'
 UNZ+3+4'
 EDI;
         $transactionResult = EdifactParser::create()->parse($fileContent);
-        self::assertCount(3, $transactionResult->messages());
+        self::assertCount(3, $transactionResult);
     }
 
     /** @test */
@@ -55,8 +55,8 @@ EDI;
 
         $transactionResult = EdifactParser::create()->parse($fileContent);
 
-        self::assertCount(1, $transactionResult->messages());
-        $firstMessage = $transactionResult->messages()[0];
+        self::assertCount(1, $transactionResult);
+        $firstMessage = $transactionResult[0];
         $segments = $firstMessage->segments();
 
         /** @var UNHMessageHeader $unh */
@@ -88,10 +88,10 @@ UNT+19+1'
 UNZ+1+3'
 EDI;
         $parser = EdifactParser::create(new TestingSegmentFactory('CUSTOM'));
-        $transactionResult = $parser($fileContent);
+        $transactionResult = $parser->parse($fileContent);
 
-        self::assertCount(1, $transactionResult->messages());
-        $firstMessage = $transactionResult->messages()[0];
+        self::assertCount(1, $transactionResult);
+        $firstMessage = $transactionResult[0];
         $segments = $firstMessage->segments();
 
         /** @var SegmentInterface $custom */

@@ -26,7 +26,7 @@ final class TransactionResultTest extends TestCase
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
             ),
-        ], $this->resultFactory($fileContent)->messages());
+        ], $this->resultFactory($fileContent));
     }
 
     /** @test */
@@ -50,7 +50,7 @@ EDI;
                 new UNTMessageFooter(['UNT', '19', '2']),
                 new UnknownSegment(['UNZ', '2', '3']),
             ),
-        ], $this->resultFactory($fileContent)->messages());
+        ], $this->resultFactory($fileContent));
     }
 
     /** @test */
@@ -74,13 +74,13 @@ EDI;
                 new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 new UnknownSegment(['UNZ', '2', '3']),
             ),
-        ], $this->resultFactory($fileContent)->messages());
+        ], $this->resultFactory($fileContent));
     }
 
-    private function resultFactory(string $fileContent): TransactionResult
+    private function resultFactory(string $fileContent): array
     {
         return TransactionResult::fromSegmentedValues(
-            SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
+            ...SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
         );
     }
 }
