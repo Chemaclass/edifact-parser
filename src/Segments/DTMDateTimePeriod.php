@@ -21,7 +21,7 @@ final class DTMDateTimePeriod implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1][0];
+        return (string)$this->rawValues[1][0];
     }
 
     public function rawValues(): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use EdifactParser\ReadModel\MessageSection;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 
@@ -11,7 +12,7 @@ final class TransactionMessage
 {
     /**
      * @psalm-pure
-     * @return array<array<string, array<string,SegmentInterface>>>
+     * @return MessageSection[]
      */
     public static function fromSegmentedValues(SegmentInterface...$segments): array
     {
@@ -21,36 +22,15 @@ final class TransactionMessage
         foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
                 if ($segmentsGroup) {
-                    $messages[] = static::withSegments(...$segmentsGroup);
+                    $messages[] = MessageSection::fromSegments(...$segmentsGroup);
                 }
                 $segmentsGroup = [];
             }
             $segmentsGroup[] = $segment;
         }
 
-        $messages[] = static::withSegments(...$segmentsGroup);
+        $messages[] = MessageSection::fromSegments(...$segmentsGroup);
 
         return $messages;
-    }
-
-    /**
-     * @psalm-pure
-     * @return array<string, array<string,SegmentInterface>> First key: segment name, second key: subSegment key.
-     */
-    public static function withSegments(SegmentInterface...$segments): array
-    {
-        $return = [];
-
-        foreach ($segments as $segment) {
-            $name = $segment->name();
-
-            if (!isset($return[$name])) {
-                $return[$name] = [];
-            }
-
-            $return[$name][$segment->subSegmentKey()] = $segment;
-        }
-
-        return $return;
     }
 }

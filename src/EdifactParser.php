@@ -6,6 +6,7 @@ namespace EdifactParser;
 
 use EDI\Parser;
 use EdifactParser\Exception\InvalidFile;
+use EdifactParser\ReadModel\MessageSection;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
@@ -34,9 +35,7 @@ final class EdifactParser
         return $this->parse($fileContent);
     }
 
-    /**
-     * @return array<array<string, array<string,SegmentInterface>>>
-     */
+    /** @return MessageSection[] */
     public function parse(string $fileContent): array
     {
         $parser = new Parser($fileContent);

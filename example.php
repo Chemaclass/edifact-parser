@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use EdifactParser\EdifactParser;
+use EdifactParser\ReadModel\MessageSection;
 use EdifactParser\Segments\BGMBeginningOfMessage;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\DTMDateTimePeriod;
@@ -27,7 +28,7 @@ CNT+7:0.51:KGM'
 CNT+11:1:PCE'
 RFF+CU:ValidationSet1'
 TDT+20'
-NAD+CZ+0410106314:160:Z12++Comany Returns Centre+c/o Carrier AB+City1++12345+DE'
+NAD+CZ+0410106314:160:Z12++Company Centre+c/o Carrier AB+City1++12345+DE'
 NAD+CN+++Person Name+Street Nr 2+City2++12345+DE'
 CTA+IC+:Person Name'
 COM+?+46980100:AL'
@@ -46,7 +47,7 @@ CNT+7:0.62:KGM'
 CNT+11:1:PCE'
 RFF+CU:ValidationSet2'
 TDT+20'
-NAD+CZ+0410106314:160:Z12++Comany Returns Centre+c/o Carrier AB+City1++12345+DE'
+NAD+CZ+0410106314:160:Z12++Company Returns+c/o Carrier AB+City1++12345+DE'
 NAD+CN+++Person Name+Street Nr 2+City2++12345+DE'
 CTA+IC+:Person Name'
 COM+?+46980100:AL'
@@ -68,28 +69,28 @@ foreach ($transactionResult as $i => $message) {
     print PHP_EOL;
 }
 
-function printMessage(array $segments): void
+function printMessage(MessageSection $section): void
 {
-    if (!isset($segments[UNHMessageHeader::class])) {
+    if (!$section->segmentByName(UNHMessageHeader::class)) {
         print "No `UNHMessageHeader::class` segment was found \n";
 
         return;
     }
 
-    $unhSubSegmentKey = array_key_first($segments[UNHMessageHeader::class]);
-    printSegment($segments[UNHMessageHeader::class][$unhSubSegmentKey]);
+    $unhSubSegmentKey = array_key_first($section->segmentByName(UNHMessageHeader::class));
+    printSegment($section->segmentByName(UNHMessageHeader::class)[$unhSubSegmentKey]);
 
-    printSegment($segments[BGMBeginningOfMessage::class]['340']);
-    printSegment($segments[DTMDateTimePeriod::class]['10']);
-    printSegment($segments[CNTControl::class]['7']);
-    printSegment($segments[CNTControl::class]['11']);
-    printSegment($segments[NADNameAddress::class]['CZ']);
-    printSegment($segments[MEADimensions::class]['WT']);
-    printSegment($segments[MEADimensions::class]['VOL']);
-    printSegment($segments[PCIPackageId::class]['18']);
+    printSegment($section->segmentByName(BGMBeginningOfMessage::class)['340']);
+    printSegment($section->segmentByName(DTMDateTimePeriod::class)['10']);
+    printSegment($section->segmentByName(CNTControl::class)['7']);
+    printSegment($section->segmentByName(CNTControl::class)['11']);
+    printSegment($section->segmentByName(NADNameAddress::class)['CZ']);
+    printSegment($section->segmentByName(MEADimensions::class)['WT']);
+    printSegment($section->segmentByName(MEADimensions::class)['VOL']);
+    printSegment($section->segmentByName(PCIPackageId::class)['18']);
 
-    $untSubSegmentKey = array_key_first($segments[UNTMessageFooter::class]);
-    printSegment($segments[UNTMessageFooter::class][$untSubSegmentKey]);
+    $untSubSegmentKey = array_key_first($section->segmentByName(UNTMessageFooter::class));
+    printSegment($section->segmentByName(UNTMessageFooter::class)[$untSubSegmentKey]);
 }
 
 function printSegment(SegmentInterface $segment): void

@@ -37,12 +37,12 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
 
             public function name(): string
             {
-                return $this->rawArray[0];
+                return (string)$this->rawArray[0];
             }
 
             public function subSegmentKey(): string
             {
-                return $this->rawArray[1];
+                return (string)$this->rawArray[1];
             }
 
             public function rawValues(): array
