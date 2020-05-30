@@ -48,6 +48,6 @@ final class EdifactParser
 
         $segments = SegmentedValues::factory($this->segmentFactory)->fromRaw($parser->get());
 
-        return TransactionResult::fromSegmentedValues(...$segments);
+        return TransactionMessage::fromSegmentedValues(...$segments);
     }
 }

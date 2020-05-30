@@ -6,6 +6,7 @@ namespace EdifactParser\Tests\Functional;
 
 use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
+use EdifactParser\ReadModel\Segment;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
