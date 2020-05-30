@@ -8,6 +8,7 @@ use EDI\Parser;
 use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
+use EdifactParser\Segments\SegmentInterface;
 
 /** @psalm-immutable */
 final class EdifactParser
@@ -33,7 +34,9 @@ final class EdifactParser
         return $this->parse($fileContent);
     }
 
-    /** @psalm-return list<TransactionMessage> */
+    /**
+     * @return array<array<string, array<string,SegmentInterface>>>
+     */
     public function parse(string $fileContent): array
     {
         $parser = new Parser($fileContent);
@@ -43,8 +46,8 @@ final class EdifactParser
             throw InvalidFile::withErrors($errors);
         }
 
-        return TransactionResult::fromSegmentedValues(
-            ...SegmentedValues::factory($this->segmentFactory)->fromRaw($parser->get())
-        );
+        $segments = SegmentedValues::factory($this->segmentFactory)->fromRaw($parser->get());
+
+        return TransactionResult::fromSegmentedValues(...$segments);
     }
 }

@@ -9,37 +9,23 @@ use EdifactParser\Segments\SegmentInterface;
 final class TransactionMessage
 {
     /**
-     * First string: segment key
-     * Second key: sub segment key.
-     *
-     * @psalm-var array<string, array<string,SegmentInterface>>
+     * @psalm-pure
+     * @return array<string, array<string,SegmentInterface>> First key: segment name, second key: subSegment key.
      */
-    private array $segments = [];
-
-    public static function withSegments(SegmentInterface...$segments): self
+    public static function withSegments(SegmentInterface...$segments): array
     {
-        $self = new self();
+        $return = [];
 
         foreach ($segments as $segment) {
-            $self->addSegment($segment);
+            $name = $segment->name();
+
+            if (!isset($return[$name])) {
+                $return[$name] = [];
+            }
+
+            $return[$name][$segment->subSegmentKey()] = $segment;
         }
 
-        return $self;
-    }
-
-    public function addSegment(SegmentInterface $segment): void
-    {
-        $name = $segment->name();
-
-        if (!isset($this->segments[$name])) {
-            $this->segments[$name] = [];
-        }
-
-        $this->segments[$name][$segment->subSegmentKey()] = $segment;
-    }
-
-    public function segments(): array
-    {
-        return $this->segments;
+        return $return;
     }
 }

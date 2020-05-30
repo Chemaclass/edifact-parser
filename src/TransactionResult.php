@@ -7,33 +7,29 @@ namespace EdifactParser;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 
-///** @psalm-immutable */
+/** @psalm-immutable */
 final class TransactionResult
 {
-    /** @psalm-return list<TransactionMessage> */
+    /**
+     * @psalm-pure
+     * @psalm-return list<array<string, array<string,SegmentInterface>>>
+     */
     public static function fromSegmentedValues(SegmentInterface...$segments): array
     {
-        /** @var TransactionMessage[] $messages */
         $messages = [];
-        /** @var ?TransactionMessage $message */
-        $message = null;
+        $segmentsGroup = [];
 
         foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
-                if ($message) {
-                    $messages[] = $message;
+                if ($segmentsGroup) {
+                    $messages[] = TransactionMessage::withSegments(...$segmentsGroup);
                 }
-                $message = new TransactionMessage();
+                $segmentsGroup = [];
             }
-
-            if ($message) {
-                $message->addSegment($segment);
-            }
+            $segmentsGroup[] = $segment;
         }
 
-        if ($message) {
-            $messages[] = $message;
-        }
+        $messages[] = TransactionMessage::withSegments(...$segmentsGroup);
 
         return $messages;
     }

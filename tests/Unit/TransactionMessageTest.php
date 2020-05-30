@@ -28,7 +28,7 @@ final class TransactionMessageTest extends TestCase
             MEADimensions::class => [
                 'WT' => new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
             ],
-        ], $message->segments());
+        ], $message);
     }
 
     /** @test */
@@ -52,7 +52,7 @@ final class TransactionMessageTest extends TestCase
                 'WT' => new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
                 'VOL' => new MEADimensions(['MEA', 'VOL', '', ['MTQ', '0.06822']]),
             ],
-        ], $message->segments());
+        ], $message);
     }
 
     /** @test */
@@ -78,6 +78,6 @@ final class TransactionMessageTest extends TestCase
                 '11' => new CNTControl(['CNT', ['11', '1', 'PCE']]),
                 '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
             ],
-        ], $message->segments());
+        ], $message);
     }
 }
