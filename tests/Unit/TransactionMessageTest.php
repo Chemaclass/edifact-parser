@@ -14,10 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 final class TransactionMessageTest extends TestCase
 {
-    /**
-     * @test
-     * @group groupSegmentsByMessage
-     */
+    /** @test */
     public function segmentsInOneMessage(): void
     {
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
@@ -31,13 +28,10 @@ final class TransactionMessageTest extends TestCase
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
             ]),
-        ], $this->resultFactory($fileContent));
+        ], $this->transactionMessages($fileContent));
     }
 
-    /**
-     * @test
-     * @group groupSegmentsByMessage
-     */
+    /** @test */
     public function segmentsInTwoMessages(): void
     {
         $fileContent = <<<EDI
@@ -64,13 +58,10 @@ EDI;
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
             ]),
-        ], $this->resultFactory($fileContent));
+        ], $this->transactionMessages($fileContent));
     }
 
-    /**
-     * @test
-     * @group groupSegmentsByMessage
-     */
+    /** @test */
     public function oneMessageWithMultipleSegmentsWithTheSameName(): void
     {
         $fileContent = <<<EDI
@@ -95,10 +86,10 @@ EDI;
                     '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 ],
             ]),
-        ], $this->resultFactory($fileContent));
+        ], $this->transactionMessages($fileContent));
     }
 
-    private function resultFactory(string $fileContent): array
+    private function transactionMessages(string $fileContent): array
     {
         return TransactionMessage::groupSegmentsByMessage(
             ...SegmentList::factory()->fromRaw((new Parser($fileContent))->get())

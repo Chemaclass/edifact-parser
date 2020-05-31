@@ -26,10 +26,8 @@ final class TransactionMessage
         $groupedSegments = [];
 
         foreach ($segments as $segment) {
-            if ($segment instanceof UNHMessageHeader) {
-                if ($groupedSegments) {
-                    $messages[] = self::groupSegmentsByName(...$groupedSegments);
-                }
+            if ($segment instanceof UNHMessageHeader && $groupedSegments) {
+                $messages[] = self::groupSegmentsByName(...$groupedSegments);
                 $groupedSegments = [];
             }
             $groupedSegments[] = $segment;
