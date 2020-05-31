@@ -8,6 +8,7 @@ use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
 
+/** @psalm-immutable */
 final class TestingSegmentFactory implements SegmentFactoryInterface
 {
     private string $customKey;
@@ -26,7 +27,7 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
             return $this->defaultFactory->segmentFromArray($rawArray);
         }
 
-        return new class($rawArray) implements SegmentInterface {
+        return new /** @psalm-immutable */ class($rawArray) implements SegmentInterface {
             private array $rawArray;
 
             public function __construct(array $rawArray)
@@ -36,12 +37,12 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
 
             public function name(): string
             {
-                return $this->rawArray[0];
+                return (string) $this->rawArray[0];
             }
 
             public function subSegmentKey(): string
             {
-                return $this->rawArray[1];
+                return (string) $this->rawArray[1];
             }
 
             public function rawValues(): array

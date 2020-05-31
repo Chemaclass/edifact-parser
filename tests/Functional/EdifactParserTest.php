@@ -6,6 +6,7 @@ namespace EdifactParser\Tests\Functional;
 
 use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
+
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
@@ -38,7 +39,7 @@ UNT+19+3'
 UNZ+3+4'
 EDI;
         $transactionResult = EdifactParser::create()->parse($fileContent);
-        self::assertCount(3, $transactionResult->messages());
+        self::assertCount(3, $transactionResult);
     }
 
     /** @test */
@@ -54,25 +55,23 @@ UNZ+1+3'
 EDI;
 
         $transactionResult = EdifactParser::create()->parse($fileContent);
-
-        self::assertCount(1, $transactionResult->messages());
-        $firstMessage = $transactionResult->messages()[0];
-        $segments = $firstMessage->segments();
+        self::assertCount(1, $transactionResult);
+        $message = $transactionResult[0];
 
         /** @var UNHMessageHeader $unh */
-        $unh = $segments[UNHMessageHeader::class]['1'];
+        $unh = $message->segmentByName(UNHMessageHeader::class)['1'];
         self::assertEquals(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']], $unh->rawValues());
 
         /** @var CNTControl $cnt7 */
-        $cnt7 = $segments[CNTControl::class]['7'];
+        $cnt7 = $message->segmentByName(CNTControl::class)['7'];
         self::assertEquals(['CNT', ['7', '0.1', 'KGM']], $cnt7->rawValues());
 
         /** @var CNTControl $cnt11 */
-        $cnt11 = $segments[CNTControl::class]['11'];
+        $cnt11 = $message->segmentByName(CNTControl::class)['11'];
         self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
 
         /** @var UNTMessageFooter $unt */
-        $unt = $segments[UNTMessageFooter::class]['19'];
+        $unt = $message->segmentByName(UNTMessageFooter::class)['19'];
         self::assertEquals(['UNT', '19', '1'], $unt->rawValues());
     }
 
@@ -88,18 +87,16 @@ UNT+19+1'
 UNZ+1+3'
 EDI;
         $parser = EdifactParser::create(new TestingSegmentFactory('CUSTOM'));
-        $transactionResult = $parser($fileContent);
-
-        self::assertCount(1, $transactionResult->messages());
-        $firstMessage = $transactionResult->messages()[0];
-        $segments = $firstMessage->segments();
+        $transactionResult = $parser->parse($fileContent);
+        self::assertCount(1, $transactionResult);
+        $message = $transactionResult[0];
 
         /** @var SegmentInterface $custom */
-        $custom = $segments['CUSTOM']['anyKey'];
+        $custom = $message->segmentByName('CUSTOM')['anyKey'];
         self::assertEquals(['CUSTOM', 'anyKey', ['whatever', 'value', '9']], $custom->rawValues());
 
         /** @var CNTControl $cnt11 */
-        $cnt11 = $segments[CNTControl::class]['11'];
+        $cnt11 = $message->segmentByName(CNTControl::class)['11'];
         self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
     }
 }

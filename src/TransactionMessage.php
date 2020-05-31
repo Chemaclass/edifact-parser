@@ -5,41 +5,60 @@ declare(strict_types=1);
 namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
+use EdifactParser\Segments\UNHMessageHeader;
 
+/** @psalm-immutable */
 final class TransactionMessage
 {
-    /**
-     * First string: segment key
-     * Second key: sub segment key.
-     *
-     * @psalm-var array<string, array<string,SegmentInterface>>
-     */
-    private array $segments = [];
+    /** @var array<string, array<string,SegmentInterface>> */
+    private array $groupedSegments;
 
-    public static function withSegments(SegmentInterface...$segments): self
+    /**
+     * A message starts with the "UNHMessageHeader" segment until another
+     * "UNHMessageHeader" segment appears, then starts another segment and so on.
+     *
+     * @psalm-pure
+     * @psalm-return list<TransactionMessage>
+     */
+    public static function groupSegmentsByMessage(SegmentInterface...$segments): array
     {
-        $self = new self();
+        $messages = [];
+        $groupedSegments = [];
 
         foreach ($segments as $segment) {
-            $self->addSegment($segment);
+            if ($segment instanceof UNHMessageHeader && $groupedSegments) {
+                $messages[] = self::groupSegmentsByName(...$groupedSegments);
+                $groupedSegments = [];
+            }
+            $groupedSegments[] = $segment;
         }
 
-        return $self;
+        $messages[] = self::groupSegmentsByName(...$groupedSegments);
+
+        return $messages;
     }
 
-    public function addSegment(SegmentInterface $segment): void
+    /** @param array<string, array<string,SegmentInterface>> $groupedSegments */
+    public function __construct(array $groupedSegments)
     {
-        $name = $segment->name();
+        $this->groupedSegments = $groupedSegments;
+    }
 
-        if (!isset($this->segments[$name])) {
-            $this->segments[$name] = [];
+    public function segmentByName(string $name): array
+    {
+        return $this->groupedSegments[$name] ?? [];
+    }
+
+    /** @psalm-pure */
+    private static function groupSegmentsByName(SegmentInterface...$segments): self
+    {
+        $return = [];
+
+        foreach ($segments as $s) {
+            $return[$s->name()] ??= [];
+            $return[$s->name()][$s->subSegmentKey()] = $s;
         }
 
-        $this->segments[$name][$segment->subSegmentKey()] = $segment;
-    }
-
-    public function segments(): array
-    {
-        return $this->segments;
+        return new self($return);
     }
 }

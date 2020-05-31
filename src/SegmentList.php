@@ -8,35 +8,28 @@ use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
 
-final class SegmentedValues
+/** @psalm-immutable */
+final class SegmentList
 {
-    /** @psalm-var list<SegmentInterface> */
-    private array $list = [];
-
     private SegmentFactoryInterface $segmentFactory;
 
+    /** @psalm-pure */
     public static function factory(?SegmentFactoryInterface $segmentFactory = null): self
     {
         return new self($segmentFactory ?? new SegmentFactory());
     }
 
-    public function __construct(SegmentFactoryInterface $segmentFactory)
+    private function __construct(SegmentFactoryInterface $segmentFactory)
     {
         $this->segmentFactory = $segmentFactory;
     }
 
-    public function fromRaw(array $rawArrays): self
-    {
-        foreach ($rawArrays as $rawArray) {
-            $this->list[] = $this->segmentFactory->segmentFromArray($rawArray);
-        }
-
-        return $this;
-    }
-
     /** @return SegmentInterface[] */
-    public function list(): array
+    public function fromRaw(array $rawArrays): array
     {
-        return $this->list;
+        return array_map(
+            fn (array $raw) => $this->segmentFactory->segmentFromArray($raw),
+            $rawArrays
+        );
     }
 }

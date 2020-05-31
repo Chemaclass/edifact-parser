@@ -6,6 +6,7 @@ namespace EdifactParser\Segments;
 
 namespace EdifactParser\Segments;
 
+/** @psalm-immutable */
 final class MEADimensions implements SegmentInterface
 {
     private array $rawValues;
@@ -22,7 +23,7 @@ final class MEADimensions implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1];
+        return (string) $this->rawValues[1];
     }
 
     public function rawValues(): array

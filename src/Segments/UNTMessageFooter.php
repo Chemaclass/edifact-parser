@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+/** @psalm-immutable */
 final class UNTMessageFooter implements SegmentInterface
 {
     private array $rawValues;
@@ -20,7 +21,7 @@ final class UNTMessageFooter implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return $this->rawValues[1];
+        return (string) $this->rawValues[1];
     }
 
     public function rawValues(): array
