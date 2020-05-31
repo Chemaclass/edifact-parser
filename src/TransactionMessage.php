@@ -14,40 +14,30 @@ final class TransactionMessage
     private array $groupedSegments;
 
     /**
+     * A message starts with the "UNHMessageHeader" segment until another
+     * "UNHMessageHeader" segment appears, then starts another segment and so on.
+     *
      * @psalm-pure
      * @psalm-return list<TransactionMessage>
      */
     public static function groupSegmentsByMessage(SegmentInterface...$segments): array
     {
         $messages = [];
-        $segmentsGroup = [];
+        $groupedSegments = [];
 
         foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
-                if ($segmentsGroup) {
-                    $messages[] = self::withSegments(...$segmentsGroup);
+                if ($groupedSegments) {
+                    $messages[] = self::groupSegmentsByName(...$groupedSegments);
                 }
-                $segmentsGroup = [];
+                $groupedSegments = [];
             }
-            $segmentsGroup[] = $segment;
+            $groupedSegments[] = $segment;
         }
 
-        $messages[] = self::withSegments(...$segmentsGroup);
+        $messages[] = self::groupSegmentsByName(...$groupedSegments);
 
         return $messages;
-    }
-
-    /** @psalm-pure */
-    public static function withSegments(SegmentInterface...$segments): self
-    {
-        $return = [];
-
-        foreach ($segments as $s) {
-            $return[$s->name()] ??= [];
-            $return[$s->name()][$s->subSegmentKey()] = $s;
-        }
-
-        return new self($return);
     }
 
     /** @param array<string, array<string,SegmentInterface>> $groupedSegments */
@@ -59,5 +49,18 @@ final class TransactionMessage
     public function segmentByName(string $name): array
     {
         return $this->groupedSegments[$name] ?? [];
+    }
+
+    /** @psalm-pure */
+    private static function groupSegmentsByName(SegmentInterface...$segments): self
+    {
+        $return = [];
+
+        foreach ($segments as $s) {
+            $return[$s->name()] ??= [];
+            $return[$s->name()][$s->subSegmentKey()] = $s;
+        }
+
+        return new self($return);
     }
 }
