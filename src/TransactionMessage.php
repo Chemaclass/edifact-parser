@@ -8,10 +8,12 @@ use EdifactParser\ReadModel\MessageSection;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 
+/** @psalm-immutable */
 final class TransactionMessage
 {
     /**
      * @psalm-pure
+     *
      * @return MessageSection[]
      */
     public static function fromSegmentedValues(SegmentInterface...$segments): array

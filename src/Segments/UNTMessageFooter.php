@@ -21,7 +21,7 @@ final class UNTMessageFooter implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return (string)$this->rawValues[1];
+        return (string) $this->rawValues[1];
     }
 
     public function rawValues(): array

@@ -23,7 +23,11 @@ final class CNTControl implements SegmentInterface
 
     public function subSegmentKey(): string
     {
-        return (string)$this->rawValues[1][0];
+        if (!isset($this->rawValues[1][0])) {
+            throw new \Exception('missing sub segment key');
+        }
+
+        return (string) $this->rawValues[1][0];
     }
 
     public function rawValues(): array

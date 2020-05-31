@@ -9,7 +9,6 @@ use EdifactParser\Exception\InvalidFile;
 use EdifactParser\ReadModel\MessageSection;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
-use EdifactParser\Segments\SegmentInterface;
 
 /** @psalm-immutable */
 final class EdifactParser
@@ -26,13 +25,9 @@ final class EdifactParser
         $this->segmentFactory = $segmentFactory;
     }
 
+    /** @codeCoverageIgnore */
     private function __clone()
     {
-    }
-
-    public function __invoke(string $fileContent): array
-    {
-        return $this->parse($fileContent);
     }
 
     /** @return MessageSection[] */
