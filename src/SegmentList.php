@@ -9,9 +9,9 @@ use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
 
 /** @psalm-immutable */
-final class SegmentedValues
+final class SegmentList
 {
-    private SegmentFactoryInterface $factory;
+    private SegmentFactoryInterface $segmentFactory;
 
     /** @psalm-pure */
     public static function factory(?SegmentFactoryInterface $segmentFactory = null): self
@@ -21,14 +21,14 @@ final class SegmentedValues
 
     private function __construct(SegmentFactoryInterface $segmentFactory)
     {
-        $this->factory = $segmentFactory;
+        $this->segmentFactory = $segmentFactory;
     }
 
     /** @return SegmentInterface[] */
     public function fromRaw(array $rawArrays): array
     {
         return array_map(
-            fn (array $raw) => $this->factory->segmentFromArray($raw),
+            fn (array $raw) => $this->segmentFactory->segmentFromArray($raw),
             $rawArrays
         );
     }

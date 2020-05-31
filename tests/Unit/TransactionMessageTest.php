@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
-
-use EdifactParser\SegmentedValues;
+use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\MEADimensions;
 use EdifactParser\Segments\UNHMessageHeader;
@@ -17,10 +16,13 @@ use PHPUnit\Framework\TestCase;
 
 final class TransactionMessageTest extends TestCase
 {
-    /** @test */
+    /**
+     * @test
+     * @group withSegments
+     */
     public function twoSegmentsWithDifferentNames(): void
     {
-        $message = TransactionMessage::fromSegments(
+        $message = TransactionMessage::withSegments(
             new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
             new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
         );
@@ -35,10 +37,13 @@ final class TransactionMessageTest extends TestCase
         ]), $message);
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group withSegments
+     */
     public function twoSegmentsWithTheSameName(): void
     {
-        $message = TransactionMessage::fromSegments(
+        $message = TransactionMessage::withSegments(
             new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             new UNTMessageFooter(['UNT', '19', '1']),
             new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
@@ -59,10 +64,13 @@ final class TransactionMessageTest extends TestCase
         ]), $message);
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group withSegments
+     */
     public function moreThanTwoSegmentsWithTheSameName(): void
     {
-        $message = TransactionMessage::fromSegments(
+        $message = TransactionMessage::withSegments(
             new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             new UNTMessageFooter(['UNT', '19', '1']),
             new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
@@ -85,20 +93,26 @@ final class TransactionMessageTest extends TestCase
         ]), $message);
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group groupSegmentsByMessage
+     */
     public function oneMessage(): void
     {
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
 
         self::assertEquals([
-            TransactionMessage::fromSegments(
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
             ),
         ], $this->resultFactory($fileContent));
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group groupSegmentsByMessage
+     */
     public function twoMessages(): void
     {
         $fileContent = <<<EDI
@@ -110,11 +124,11 @@ UNT+19+2'
 UNZ+2+3'
 EDI;
         self::assertEquals([
-            TransactionMessage::fromSegments(
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
             ),
-            TransactionMessage::fromSegments(
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
                 new UNTMessageFooter(['UNT', '19', '2']),
                 new UnknownSegment(['UNZ', '2', '3']),
@@ -122,7 +136,10 @@ EDI;
         ], $this->resultFactory($fileContent));
     }
 
-    /** @test */
+    /**
+     * @test
+     * @group groupSegmentsByMessage
+     */
     public function oneMessageWithMultipleSegmentsWithTheSameName(): void
     {
         $fileContent = <<<EDI
@@ -135,7 +152,7 @@ UNT+19+1'
 UNZ+2+3'
 EDI;
         self::assertEquals([
-            TransactionMessage::fromSegments(
+            TransactionMessage::withSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
                 new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
@@ -148,8 +165,8 @@ EDI;
 
     private function resultFactory(string $fileContent): array
     {
-        return TransactionMessage::fromSegmentedValues(
-            ...SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get())
+        return TransactionMessage::groupSegmentsByMessage(
+            ...SegmentList::factory()->fromRaw((new Parser($fileContent))->get())
         );
     }
 }

@@ -17,7 +17,7 @@ final class TransactionMessage
      * @psalm-pure
      * @psalm-return list<TransactionMessage>
      */
-    public static function fromSegmentedValues(SegmentInterface...$segments): array
+    public static function groupSegmentsByMessage(SegmentInterface...$segments): array
     {
         $messages = [];
         $segmentsGroup = [];
@@ -25,20 +25,20 @@ final class TransactionMessage
         foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
                 if ($segmentsGroup) {
-                    $messages[] = self::fromSegments(...$segmentsGroup);
+                    $messages[] = self::withSegments(...$segmentsGroup);
                 }
                 $segmentsGroup = [];
             }
             $segmentsGroup[] = $segment;
         }
 
-        $messages[] = self::fromSegments(...$segmentsGroup);
+        $messages[] = self::withSegments(...$segmentsGroup);
 
         return $messages;
     }
 
     /** @psalm-pure */
-    public static function fromSegments(SegmentInterface...$segments): self
+    public static function withSegments(SegmentInterface...$segments): self
     {
         $return = [];
 

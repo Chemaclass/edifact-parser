@@ -30,7 +30,7 @@ final class EdifactParser
     {
     }
 
-    /** @return TransactionMessage[] */
+    /** @psalm-return list<TransactionMessage> */
     public function parse(string $fileContent): array
     {
         $parser = new Parser($fileContent);
@@ -40,8 +40,8 @@ final class EdifactParser
             throw InvalidFile::withErrors($errors);
         }
 
-        $segments = SegmentedValues::factory($this->segmentFactory)->fromRaw($parser->get());
+        $segments = SegmentList::factory($this->segmentFactory)->fromRaw($parser->get());
 
-        return TransactionMessage::fromSegmentedValues(...$segments);
+        return TransactionMessage::groupSegmentsByMessage(...$segments);
     }
 }

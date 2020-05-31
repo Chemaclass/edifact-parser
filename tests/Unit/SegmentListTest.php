@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
-use EdifactParser\SegmentedValues;
+use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\UNHMessageHeader;
 use PHPUnit\Framework\TestCase;
 
-final class SegmentedValuesTest extends TestCase
+final class SegmentListTest extends TestCase
 {
     /** @test */
     public function listWithOneSegment(): void
@@ -36,6 +36,6 @@ final class SegmentedValuesTest extends TestCase
 
     private function segmentsFromFileContent(string $fileContent)
     {
-        return SegmentedValues::factory()->fromRaw((new Parser($fileContent))->get());
+        return SegmentList::factory()->fromRaw((new Parser($fileContent))->get());
     }
 }
