@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use EdifactParser\EdifactParser;
-use EdifactParser\ReadModel\MessageSection;
+
 use EdifactParser\Segments\BGMBeginningOfMessage;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\DTMDateTimePeriod;
@@ -13,6 +13,7 @@ use EdifactParser\Segments\PCIPackageId;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
+use EdifactParser\TransactionMessage;
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -69,7 +70,7 @@ foreach ($transactionResult as $i => $message) {
     print PHP_EOL;
 }
 
-function printMessage(MessageSection $section): void
+function printMessage(TransactionMessage $section): void
 {
     if (!$section->segmentByName(UNHMessageHeader::class)) {
         print "No `UNHMessageHeader::class` segment was found \n";

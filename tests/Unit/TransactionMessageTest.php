@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
-use EdifactParser\ReadModel\MessageSection;
+
 use EdifactParser\SegmentedValues;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\MEADimensions;
@@ -20,12 +20,12 @@ final class TransactionMessageTest extends TestCase
     /** @test */
     public function twoSegmentsWithDifferentNames(): void
     {
-        $message = MessageSection::fromSegments(
+        $message = TransactionMessage::fromSegments(
             new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
             new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
         );
 
-        self::assertEquals(new MessageSection([
+        self::assertEquals(new TransactionMessage([
             CNTControl::class => [
                 '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
             ],
@@ -38,14 +38,14 @@ final class TransactionMessageTest extends TestCase
     /** @test */
     public function twoSegmentsWithTheSameName(): void
     {
-        $message = MessageSection::fromSegments(
+        $message = TransactionMessage::fromSegments(
             new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             new UNTMessageFooter(['UNT', '19', '1']),
             new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.1']]),
             new MEADimensions(['MEA', 'VOL', '', ['MTQ', '0.06822']]),
         );
 
-        self::assertEquals(new MessageSection([
+        self::assertEquals(new TransactionMessage([
             UNHMessageHeader::class => [
                 '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             ],
@@ -62,7 +62,7 @@ final class TransactionMessageTest extends TestCase
     /** @test */
     public function moreThanTwoSegmentsWithTheSameName(): void
     {
-        $message = MessageSection::fromSegments(
+        $message = TransactionMessage::fromSegments(
             new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             new UNTMessageFooter(['UNT', '19', '1']),
             new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
@@ -70,7 +70,7 @@ final class TransactionMessageTest extends TestCase
             new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
         );
 
-        self::assertEquals(new MessageSection([
+        self::assertEquals(new TransactionMessage([
             UNHMessageHeader::class => [
                 '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
             ],
@@ -91,7 +91,7 @@ final class TransactionMessageTest extends TestCase
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
 
         self::assertEquals([
-            MessageSection::fromSegments(
+            TransactionMessage::fromSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
             ),
@@ -110,11 +110,11 @@ UNT+19+2'
 UNZ+2+3'
 EDI;
         self::assertEquals([
-            MessageSection::fromSegments(
+            TransactionMessage::fromSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
             ),
-            MessageSection::fromSegments(
+            TransactionMessage::fromSegments(
                 new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
                 new UNTMessageFooter(['UNT', '19', '2']),
                 new UnknownSegment(['UNZ', '2', '3']),
@@ -135,7 +135,7 @@ UNT+19+1'
 UNZ+2+3'
 EDI;
         self::assertEquals([
-            MessageSection::fromSegments(
+            TransactionMessage::fromSegments(
                 new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 new UNTMessageFooter(['UNT', '19', '1']),
                 new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
