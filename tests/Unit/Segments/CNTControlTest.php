@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\Segments;
 
+use EdifactParser\Exception\MissingSubSegmentKey;
 use EdifactParser\Segments\CNTControl;
 use PHPUnit\Framework\TestCase;
 
@@ -18,5 +19,13 @@ final class CNTControlTest extends TestCase
         self::assertEquals(CNTControl::class, $segment->name());
         self::assertEquals('7', $segment->subSegmentKey());
         self::assertEquals($rawValues, $segment->rawValues());
+    }
+
+    /** @test */
+    public function missingSubSegmentKey(): void
+    {
+        $segment = new CNTControl(['CNT']);
+        self::expectException(MissingSubSegmentKey::class);
+        $segment->subSegmentKey();
     }
 }
