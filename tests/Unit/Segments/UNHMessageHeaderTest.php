@@ -25,7 +25,7 @@ final class UNHMessageHeaderTest extends TestCase
     public function missingSubSegmentKey(): void
     {
         $segment = new UNHMessageHeader(['UNH']);
-        self::expectException(MissingSubSegmentKey::class);
+        $this->expectException(MissingSubSegmentKey::class);
         $segment->subSegmentKey();
     }
 }

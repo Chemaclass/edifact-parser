@@ -26,7 +26,7 @@ final class DTMDateTimePeriodTest extends TestCase
     public function missingSubSegmentKey(): void
     {
         $segment = new DTMDateTimePeriod(['DTM']);
-        self::expectException(MissingSubSegmentKey::class);
+        $this->expectException(MissingSubSegmentKey::class);
         $segment->subSegmentKey();
     }
 }

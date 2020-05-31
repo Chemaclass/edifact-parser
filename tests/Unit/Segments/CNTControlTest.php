@@ -25,7 +25,7 @@ final class CNTControlTest extends TestCase
     public function missingSubSegmentKey(): void
     {
         $segment = new CNTControl(['CNT']);
-        self::expectException(MissingSubSegmentKey::class);
+        $this->expectException(MissingSubSegmentKey::class);
         $segment->subSegmentKey();
     }
 }
