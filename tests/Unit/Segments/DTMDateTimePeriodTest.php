@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit\Segments;
 
 use EdifactParser\Exception\MissingSubSegmentKey;
-use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\DTMDateTimePeriod;
 use PHPUnit\Framework\TestCase;
 

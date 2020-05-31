@@ -29,7 +29,7 @@ final class CNTControl implements SegmentInterface
             throw new MissingSubSegmentKey('[1][0]', $this->rawValues);
         }
 
-        return (string)$this->rawValues[1][0];
+        return (string) $this->rawValues[1][0];
     }
 
     public function rawValues(): array

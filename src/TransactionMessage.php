@@ -35,7 +35,11 @@ final class TransactionMessage
 
         $messages[] = self::groupSegmentsByName(...$groupedSegments);
 
-        return $messages;
+        return array_values(
+            array_filter($messages, function (self $m) {
+                return !empty($m->segmentByName(UNHMessageHeader::class));
+            })
+        );
     }
 
     /** @param array<string, array<string,SegmentInterface>> $groupedSegments */
