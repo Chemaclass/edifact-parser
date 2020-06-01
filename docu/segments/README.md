@@ -49,6 +49,9 @@ The end of each segment is determined by the Data Segment Terminator.
 In EDIFACT the standard data segment terminator is `'`.
  
 ---
+## Structure
+
+![Image of the EDIFACT structure](EDIFACT-structure.png)
 
 An interchange consists of:
 
