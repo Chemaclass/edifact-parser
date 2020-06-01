@@ -2,48 +2,136 @@
 
 ## EDIFACT Segment Definition
 
-EDIFACT Segment is a collection of logically-related data elements in a fixed, defined sequence. Today’s post gives 
-deeper understanding of a segment. As we have spoken before, EDIFACT provides a hierarchical structure for messages. 
-EDIFACT messages begin with the Message Header (UNH) Segment and end with the Message Trailer (UNT) Segment. These two 
-segments are the first, and innermost, level of the three levels of “electronic envelopes” within EDIFACT.
+EDIFACT Segment is a collection of logically-related data elements in a fixed, defined sequence. 
+
+### EDIFACT provides a hierarchical structure for messages
+ 
+EDIFACT messages begin with the `Message Header Segment` (UNH) and end with the` Message Trailer Segment` (UNT). 
+These two segments are the first, and innermost, level of the three levels of “electronic envelopes” within EDIFACT.
 
 EDIFACT Segment contains:
 
-* A three-character alphanumeric code that identifies the segment. This is called the segment tag.
+* A **three-character alphanumeric** code that identifies the segment. This is called the segment tag.
 * Variable length data elements. These can be either simple or composite.
 
-Segments must be separated by a data element separator (data element delimiter), which is normally + and :, and 
-terminated by a segment terminator, normally ‘.
+Segments must be separated by a **data element separator/delimiter**, which is normally `+` and `:`, and 
+terminated by a segment terminator, normally `'`.
 
-Each EDIFACT Segment is fully documented in the United Nations Trade Data Interchange Directory (UNTDID). These tables 
-list the segment position, segment tag and segment name. EDIFACT Segment tables also specify if a segment must appear 
-in a message using the requirements designator M (Mandatory) or C (Conditional), and how many times a particular segment
- may repeat (repetition field).
+Good to know: 
 
-#### In EDIFACT, there are two kinds of segments
+> Each EDIFACT Segment is fully documented in the "United Nations Trade Data Interchange Directory" (UNTDID). 
+These tables list the segment position, segment tag and segment name. 
+EDIFACT Segment tables also specify if a segment must appear in a message using the requirements' designator
+`M` (Mandatory) or `C` (Conditional), and how many times a particular segment may repeat (repetition field).
+
+### There are two kinds of segments
 
 * Service Segments
 * Generic Segments
 
-#### Service Segments are:
+#### Service Segments
 
-* Envelopes (UNB-UNZ, UNG-UNE, UNH-UNT)
-* Delimiter String Advice (UNA)
-* Section Separator (UNS)
+* Envelopes (`UNB`-`UNZ`, `UNG`-`UNE`, `UNH`-`UNT`)
+* Delimiter String Advice (`UNA`)
+* Section Separator (`UNS`)
 
-#### Generic Segments are:
+#### Generic Segments
 
-* DOC to identify and specify documents
-* MOA for monetary amounts
-* DTM for dates and times
-* NAD for name and address data.
+* `DOC` to identify and specify documents
+* `MOA` for monetary amounts
+* `DTM` for dates and times
+* `NAD` for name and address data
+* And others...
 
 #### EDIFACT Segment Terminators and Delimiters
 
-The end of each segment is determined by the Data Segment Terminator. In EDIFACT the standard data segment terminator is
- `'`. Optional or conditional data elements that are not used must be accounted for by their position within the segment. 
- However, optional or conditional data elements without data that appear at the end of a data segment do not need 
- additional data element separators to correctly position the data.
+The end of each segment is determined by the Data Segment Terminator. 
+In EDIFACT the standard data segment terminator is `'`.
+ 
+---
 
-### References
-* [Ediacademy](https://ediacademy.com/blog/edifact-segment/)
+An interchange consists of:
+
+```
+            Service String Advice     UNA   Conditional
+     _____  Interchange Header        UNB   Mandatory
+    |  ___  Functional Group Header   UNG   Conditional
+    | |  _  Message Header            UNH   Mandatory
+    | | |   User Data Segments              As required
+    | | |_  Message Trailer           UNT   Mandatory
+    | |___  Functional Group Trailer  UNE   Conditional
+    |_____  Interchange Trailer       UNZ   Mandatory
+
+In addition to the above service segments, the service
+segment UNS can, when required, be used to divide a message
+into sections. See annex B.
+
+
+-----------------------------------------
+|Establishment |CONNECTION| Termination |  A CONNECTION contains one
+--------------------|--------------------  or more interchanges. The
+                    |                      technical protocols for
+                    |                      for establishment
+                    |                      maintenance and
+                    |                      termination etc.are not
++-------------------+-------------------+  part of this standard.
+|                                       |
+-----------------------------------------
+|Interchange |INTERCHANGE |Interchange  |  An INTERCHANGE contains:
+-------------------|---------------------  - UNA, Service string advice, if used
+                   |                       - UNB, Interchange header
+                   |                       - Either only Functional groups, 
+                   |                         if used, or only Messages
+                   |
+.....--------------+--------------------+  - UNZ, Interchange trailer
+.   |                                   |
+-----------------------------------------
+|UNA|UNB|'|    Either   |or only  |UNZ|'| A FUNCTIONAL GROUP contains
+|   |   | |FUNCTION.GRPS|MESSAGES |   | |  - UNG, Functional group
+-----------------|----------.------------    header
+                 |          .              - Messages of the same
+                 |          .                type
++----------------+----------.-----------+  - UNE, Functional group
+|               +........+..+           |    trailer
+|               .        .              |
+-----------------------------------------
+|UNG |'|Message |MESSAGE |Message |UNE|'|  A MESSAGE contains:
+--------------------|--------------------  - UNH, Message header
+                    |                      - Data segments
++-------------------+-------------------+  - UNT, Message trailer
+|                                       |
+-----------------------------------------
+|UNH |'|Data    |DATA    |Data    |UNT|'|  A SEGMENT contains:
+|    | |segment |SEGMENT |segment |   | |  - A Segment TAG
+-------------------|---------------------  - Simple data elements or
+                   |                       - Composite data elements
++------------------+-------------------+     or both as applicable
+|                                      |
+----------------------------------------
+|TAG |+|SIMPLE       |+|COMPOSITE    |'|   A SEGMENT TAG contains:
+|    | |DATA ELEMENT | |DATA ELEMENT | |   - A segment code and,
+---|--------------|----------|-----|----     if explicit indication,
+   |              |          |     |         repeating and nesting
+   |              |          |     |         value(s). 
+   |              |          |     |
+   |              |          |     |   A SIMPLE DATA ELEMENT contains
+--------------   -------   -------------   - A single data element
+|Code|:|Value|   |Value|   |COMP|:|COMP|     value
+--------------   -------   |D/E | |D/E |   A COMPOSITE DATA ELEMENT
+                           |    | |    |   contains:
+                           --|------|---   - Component data elements
+                             |      |
+                         ------- -------  A COMPONENT DATA ELEMENT
+                         |     | |     |  contains:
+                         |Value| |Value|  - A single data element
+                         ------- -------    value
+
+  --.--                  --|--
+    . means alternative to |
+```
+
+## References
+
+* [EDIFACT | Wikipedia](https://en.wikipedia.org/wiki/EDIFACT)
+* [Edifact Segment | Ediacademy](https://ediacademy.com/blog/edifact-segment/)
+* [Structures | unece](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm#structures)
