@@ -4,16 +4,15 @@ The full description of the data elements in the service
 segments is part of ISO 7372 Trade Data Elements Directory
 (UNTDED).
 
-* [UNA](service-segments-spec/una.md) (separators, delimiters...) 
-* [UNB](service-segments-spec/unb.md) (file header)
-* [UNG](service-segments-spec/ung.md) (group start)
-* [UNH](service-segments-spec/unh.md) (message header)
-* [UNT](service-segments-spec/unt.md) (message end)
-* [UNE](service-segments-spec/une.md) (group end)
-* [UNZ](service-segments-spec/unz.md) (file end)
-* [UNS](service-segments-spec/uns.md) (section control)
-* [TXT](service-segments-spec/txt.md) (additional info)
-
+* [UNA](una.md) (separators, delimiters...) 
+* [UNB](unb.md) (file header)
+* [UNG](ung.md) (group start)
+* [UNH](unh.md) (message header)
+* [UNT](unt.md) (message end)
+* [UNE](une.md) (group end)
+* [UNZ](unz.md) (file end)
+* [UNS](uns.md) (section control)
+* [TXT](txt.md) (additional info)
 
 Legend:
 

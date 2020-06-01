@@ -26,7 +26,7 @@ EDIFACT Segment tables also specify if a segment must appear in a message using 
 
 ### There are two kinds of segments
 
-* Service Segments
+* [Service Segments](service-segments-spec/README.md)
 * Generic Segments
 
 #### Service Segments
