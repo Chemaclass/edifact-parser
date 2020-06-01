@@ -1,5 +1,7 @@
 # Service Segments Specifications
 
+[Segments in EDIFACT?](README.md)
+
 The full description of the data elements in the service
 segments is part of ISO 7372 Trade Data Elements Directory
 (UNTDED).
@@ -49,4 +51,6 @@ Remarks IA    Interchange Agreement between interchanging
               partners
 ```
 
-[(source)](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm#structures)
+## References
+
+* [Structures | unece](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm#structures)

@@ -1,4 +1,4 @@
-[Go back to the list](README.md)
+[Go back to the list](service-segments-spec.md)
 
 # TXT, Text
 

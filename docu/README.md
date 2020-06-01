@@ -1,14 +1,14 @@
 # EDIFACT
 
-* [Segments in EDIFACT?](segments.md)
-* [Service Segments Specification](service-segments-spec/README.md)
-  * [UNA](service-segments-spec/una.md) (separators, delimiters...) 
-  * [UNB](service-segments-spec/unb.md) (file header)
-  * [UNG](service-segments-spec/ung.md) (group start)
-  * [UNH](service-segments-spec/unh.md) (message header)
-  * [UNT](service-segments-spec/unt.md) (message end)
-  * [UNE](service-segments-spec/une.md) (group end)
-  * [UNZ](service-segments-spec/unz.md) (file end)
+* [Segments in EDIFACT?](segments/README.md)
+* [Service Segments Specification](segments/service-segments-spec.md)
+  * [UNA](segments/una.md) (separators, delimiters...) 
+  * [UNB](segments/unb.md) (file header)
+  * [UNG](segments/ung.md) (group start)
+  * [UNH](segments/unh.md) (message header)
+  * [UNT](segments/unt.md) (message end)
+  * [UNE](segments/une.md) (group end)
+  * [UNZ](segments/unz.md) (file end)
 
 ## What is EDIFACT?
 
@@ -61,7 +61,7 @@ You can also visualize these lines as something like:
 ## Structure
 
 `EDIFACT` has a hierarchical structure where the **top level is referred to as an interchange**, 
-and **lower levels contain multiple messages which consist of [segments](segments.md)**, which in turn consist 
+and **lower levels contain multiple messages which consist of [segments](segments/README.md)**, which in turn consist 
 of composites. The final iteration is an element which is derived from the United Nations Trade 
 Data Element Directory (UNTDED); these are normalised throughout the `EDIFACT` standard.
 

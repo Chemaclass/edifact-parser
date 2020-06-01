@@ -1,32 +1,12 @@
-[Go back to the list](README.md)
+[Go back to the list](service-segments-spec.md)
 
-# UNZ, Interchange Trailer
+# UNG, Functional Group Header
 
 ### Function
 
-To end and check the completeness of an interchange
+To head, identify and specify a Functional Group
 
 ```
- Ref.   Repr.       Name                         Remarks
-
- 0036   n..6    M   INTERCHANGE CONTROL COUNT The count of the number
-                                              of messages or, if
-                                              used, the number of
-                                              functional groups in
-                                              the interchange.
-                                              One of these counts
-                                              shall appear.
- ___________________________________________________________________
-
- 0020   an..14  M   INTERCHANGE CONTROL        Shall be identical to
-                    REFERENCE                  0020 in UNB
-
-
-
- Segment: UNG, Functional Group Header
-
- Function: To head, identify and specify a Functional Group
-
  Ref.   Repr.       Name                      Remarks
 
  0038   an..6   M   FUNCTIONAL GROUP        Identifies the one
@@ -98,4 +78,3 @@ To end and check the completeness of an interchange
                                               sectional system (if
                                               required)
 ```
-[(source)](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm#structures)

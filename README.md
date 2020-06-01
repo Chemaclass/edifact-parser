@@ -15,9 +15,11 @@ Ok, but... [What is EDIFACT?](/docu/what-is-edifact.md)
 ## Format of an EDIFACT file
 
 * Each line of the file consists of a set of data that belongs to a specific segment of a message.
-* A segment is defined by its name (the first 3chars of the line), following up by the "sub-segment-key". 
-Following the rest of the data that belongs to that segment. See more about segments [here](/docu/segments.md).
+
+* A segment is defined by a tag. Following the rest of the data that belongs to that segment. More about segments [here](/docu/segments/README.md).
+
 * A message is a list of segments. Usually, all segments between the UNH and UNT segments compound a message.
+
 * A transaction is the list of messages that belongs to a file. 
 
 ## Installation as vendor
