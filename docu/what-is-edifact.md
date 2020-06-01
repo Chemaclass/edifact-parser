@@ -2,18 +2,62 @@
 
 ## What is EDIFACT?
 
-The information below will provide a brief introduction to the EDIFACT EDI standard.
+The UN/EDIFACT Syntax Rules were approved in 1987 as the "ISO 9735" by the 
+International Organization for Standardization.
 
-EDIFACT stands for Electronic Data Interchange For Administration, Commerce and Transport. EDIFACT is accepted as 
-the international EDI standard that has been adopted by organisations wishing to trade in a global context. A standard 
-set of syntax rules have been ratified by the United Nations. The EDIFACT standards cover transaction sets (the business
-documents that you wish to transmit), data element directories and syntax rules which cover delimiter characters etc.
+`EDIFACT` stands for "Electronic Data Interchange For Administration, Commerce and Transport". 
 
-An EDIFACT electronic transmission consists of one or more Interchanges. Each Interchange may consist of one or more 
-Messages. These Messages contain segments of data relating to the business transaction. At each level, a series of 
-enveloping data pairs keep track of the exchange structure.
+The `EDIFACT` standard provides:
 
-Example `EDIFACT EDI Purchase Order`:
+* a set of syntax rules to structure data
+* an interactive exchange protocol (I-EDI)
+* standard messages which allow multi-country and multi-industry exchange
+
+The `EDIFACT` standards cover transaction sets (the business documents that you wish to transmit), 
+data element directories and syntax rules which cover delimiter characters etc.
+
+* An `EDIFACT` electronic transmission consists of one or more Interchanges. 
+* Each Interchange may consist of one or more Messages. 
+* These Messages contain segments of data relating to the business transaction. 
+* At each level, a series of enveloping data pairs keep track of the exchange structure.
+
+## Service Segments
+
+All of these `EDIFACT` messages have the same basic structure, consisting of a sequence of segments:
+
+```
+UNA – separators, delimiters and special characters are defined for the interpreting software 
+UNB – file header (with the file end "UNZ" this makes up the envelope, containing basic information)
+UNG – group start
+UNH – message header
+UNT – message end
+UNE – group end
+UNZ – file end
+```
+
+You can also visualize these lines as something like:
+
+```
+ |_Service String Advice              UNA  Optional
+ |____Interchange Header              UNB  Mandatory
+ :    |___Functional Group Header     UNG  Conditional
+ :    :   |___Message Header          UNH  Mandatory
+ :    :   :   |__ User Data Segments          As required
+ :    :   |__ Message Trailer         UNT  Mandatory
+ :    |__ Functional Group Trailer    UNE  Conditional
+ |___ Interchange Trailer             UNZ  Mandatory
+```
+
+## Structure
+
+`EDIFACT` has a hierarchical structure where the **top level is referred to as an interchange**, 
+and **lower levels contain multiple messages which consist of [segments](segments.md)**, which in turn consist 
+of composites. The final iteration is an element which is derived from the United Nations Trade 
+Data Element Directory (UNTDED); these are normalised throughout the `EDIFACT` standard.
+
+### Examples
+
+* An EDIFACT EDI Purchase Order [(source)](https://www.edi-plus.com/resources/message-formats/edifact/)
 
 ```
 UNB+UNOA:1+US::US+50138::THEM+140531:0305+001934++ORDERS'
@@ -35,19 +79,31 @@ UNT+15+1'
 UNZ+1+001934'
 ```
 
-## Service Segments
-
-Are used to keep track of the transmission. The most common set is shown below.
+* Used to answer a flight ticket (FRA-JFK-MIA) availability request [(source)](https://en.wikipedia.org/wiki/EDIFACT)
 
 ```
-UNB - Start of Interchange
-UNG - Start of Group
-UNH - Start of Message
-UNT - End of Message
-UNE - End of Group
-UNZ - End of Interchange
+UNA:+.? '
+UNB+IATB:1+6XPPC:ZZ+LHPPC:ZZ+940101:0950+1'
+UNH+1+PAORES:93:1:IA'
+MSG+1:45'
+IFT+3+XYZCOMPANY AVAILABILITY'
+ERC+A7V:1:AMD'
+IFT+3+NO MORE FLIGHTS'
+ODI'
+TVL+240493:1000::1220+FRA+JFK+DL+400+C'
+PDI++C:3+Y::3+F::1'
+APD+74C:0:::6++++++6X'
+TVL+240493:1740::2030+JFK+MIA+DL+081+C'
+PDI++C:4'
+APD+EM2:0:1630::6+++++++DA'
+UNT+13+1'
+UNZ+1+1'
 ```
 
-### References
+## References
 
-* [Edi-plus](https://www.edi-plus.com/resources/message-formats/edifact/)
+* [EDIFACT | Wikipedia](https://en.wikipedia.org/wiki/EDIFACT)
+* [Message formats | Edi-plus](https://www.edi-plus.com/resources/message-formats/edifact/)
+* [Edifile formats explained | ecosio](https://ecosio.com/en/blog/edi-file-formats-explained/)
+* [Structure of an Edifact file | unece](https://ecosio.com/en/blog/edi-standards-overview-structure-of-an-edifact-file/)
+* [Syntax Rules | unece](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm)
