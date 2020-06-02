@@ -117,7 +117,7 @@ into sections. See annex B.
    |              |          |     |         repeating and nesting
    |              |          |     |         value(s). 
    |              |          |     |
-   |              |          |     |   A SIMPLE DATA ELEMENT contains
+   |              |          |     |       A SIMPLE DATA ELEMENT contains
 --------------   -------   -------------   - A single data element
 |Code|:|Value|   |Value|   |COMP|:|COMP|     value
 --------------   -------   |D/E | |D/E |   A COMPOSITE DATA ELEMENT
