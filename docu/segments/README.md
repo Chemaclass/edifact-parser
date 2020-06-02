@@ -89,7 +89,7 @@ into sections. See annex B.
 .....--------------+--------------------+  - UNZ, Interchange trailer
 .   |                                   |
 -----------------------------------------
-|UNA|UNB|'|    Either   |or only  |UNZ|'| A FUNCTIONAL GROUP contains
+|UNA|UNB|'|    Either   |or only  |UNZ|'|  A FUNCTIONAL GROUP contains
 |   |   | |FUNCTION.GRPS|MESSAGES |   | |  - UNG, Functional group
 -----------------|----------.------------    header
                  |          .              - Messages of the same
@@ -117,17 +117,17 @@ into sections. See annex B.
    |              |          |     |         repeating and nesting
    |              |          |     |         value(s). 
    |              |          |     |
-   |              |          |     |   A SIMPLE DATA ELEMENT contains
+   |              |          |     |       A SIMPLE DATA ELEMENT contains
 --------------   -------   -------------   - A single data element
 |Code|:|Value|   |Value|   |COMP|:|COMP|     value
 --------------   -------   |D/E | |D/E |   A COMPOSITE DATA ELEMENT
                            |    | |    |   contains:
                            --|------|---   - Component data elements
                              |      |
-                         ------- -------  A COMPONENT DATA ELEMENT
-                         |     | |     |  contains:
-                         |Value| |Value|  - A single data element
-                         ------- -------    value
+                         ------- -------   A COMPONENT DATA ELEMENT
+                         |     | |     |   contains:
+                         |Value| |Value|   - A single data element
+                         ------- -------     value
 
   --.--                  --|--
     . means alternative to |
