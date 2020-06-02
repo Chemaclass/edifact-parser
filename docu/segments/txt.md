@@ -2,7 +2,7 @@
 
 # TXT, Text
 
-###Function
+### Function
 
 To give information in addition to that in other segments
 in the service message, as required
