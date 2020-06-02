@@ -89,7 +89,7 @@ into sections. See annex B.
 .....--------------+--------------------+  - UNZ, Interchange trailer
 .   |                                   |
 -----------------------------------------
-|UNA|UNB|'|    Either   |or only  |UNZ|'| A FUNCTIONAL GROUP contains
+|UNA|UNB|'|    Either   |or only  |UNZ|'|  A FUNCTIONAL GROUP contains
 |   |   | |FUNCTION.GRPS|MESSAGES |   | |  - UNG, Functional group
 -----------------|----------.------------    header
                  |          .              - Messages of the same
