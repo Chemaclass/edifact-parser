@@ -135,6 +135,7 @@ into sections. See annex B.
 
 ## References
 
-* [EDIFACT | Wikipedia](https://en.wikipedia.org/wiki/EDIFACT)
+* [Edifact | Wikipedia](https://en.wikipedia.org/wiki/EDIFACT)
 * [Edifact Segment | Ediacademy](https://ediacademy.com/blog/edifact-segment/)
+* [Structure of an Edifact file | ecosio](https://ecosio.com/en/blog/edi-standards-overview-structure-of-an-edifact-file/)
 * [Structures | unece](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm#structures)

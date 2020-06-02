@@ -1,14 +1,14 @@
 # EDIFACT
 
-* [Segments in EDIFACT?](segments/README.md)
-* [Service Segments Specification](segments/service-segments-spec.md)
-  * [UNA](segments/una.md) (separators, delimiters...) 
-  * [UNB](segments/unb.md) (file header)
-  * [UNG](segments/ung.md) (group start)
-  * [UNH](segments/unh.md) (message header)
-  * [UNT](segments/unt.md) (message end)
-  * [UNE](segments/une.md) (group end)
-  * [UNZ](segments/unz.md) (file end)
+* Segments in EDIFACT?
+* Service Segments Specification
+  * UNA (separators, delimiters...) 
+  * UNB (file header)
+  * UNG (group start)
+  * UNH (message header)
+  * UNT (message end)
+  * UNE (group end)
+  * UNZ (file end)
 
 ## What is EDIFACT?
 
