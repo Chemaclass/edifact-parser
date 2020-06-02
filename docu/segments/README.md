@@ -124,10 +124,10 @@ into sections. See annex B.
                            |    | |    |   contains:
                            --|------|---   - Component data elements
                              |      |
-                         ------- -------  A COMPONENT DATA ELEMENT
-                         |     | |     |  contains:
-                         |Value| |Value|  - A single data element
-                         ------- -------    value
+                         ------- -------   A COMPONENT DATA ELEMENT
+                         |     | |     |   contains:
+                         |Value| |Value|   - A single data element
+                         ------- -------     value
 
   --.--                  --|--
     . means alternative to |
