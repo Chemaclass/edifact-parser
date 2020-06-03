@@ -35,7 +35,7 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
                 $this->rawArray = $rawArray;
             }
 
-            public function name(): string
+            public function tag(): string
             {
                 return (string) $this->rawArray[0];
             }

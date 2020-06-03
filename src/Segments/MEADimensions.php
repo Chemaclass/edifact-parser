@@ -16,7 +16,7 @@ final class MEADimensions implements SegmentInterface
         $this->rawValues = $rawValues;
     }
 
-    public function name(): string
+    public function tag(): string
     {
         return self::class;
     }

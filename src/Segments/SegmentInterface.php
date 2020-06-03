@@ -7,7 +7,7 @@ namespace EdifactParser\Segments;
 /** @psalm-immutable */
 interface SegmentInterface
 {
-    public function name(): string;
+    public function tag(): string;
 
     public function subSegmentKey(): string;
 

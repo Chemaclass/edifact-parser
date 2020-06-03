@@ -9,6 +9,7 @@ use EdifactParser\Segments\DTMDateTimePeriod;
 use EdifactParser\Segments\MEADimensions;
 use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\PCIPackageId;
+use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\TransactionMessage;
@@ -80,10 +81,11 @@ function printMessage(TransactionMessage $message): void
     printSegment($message->segmentByName(UNTMessageFooter::class));
 }
 
+/** @var SegmentInterface[] $segments */
 function printSegment(array $segments): void
 {
-    $first  = $segments[array_key_first($segments)];
-    print sprintf("> %s:\n", $first->name());
+    $first = $segments[array_key_first($segments)];
+    print sprintf("> %s:\n", $first->tag());
 
     foreach ($segments as $segment) {
         print sprintf(

@@ -59,8 +59,8 @@ final class TransactionMessage
         $return = [];
 
         foreach ($segments as $s) {
-            $return[$s->name()] ??= [];
-            $return[$s->name()][$s->subSegmentKey()] = $s;
+            $return[$s->tag()] ??= [];
+            $return[$s->tag()][$s->subSegmentKey()] = $s;
         }
 
         return new self($return);
