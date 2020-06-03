@@ -16,7 +16,7 @@ final class UnknownSegmentTest extends TestCase
         $segment = new UnknownSegment($rawValues);
 
         self::assertEquals(UnknownSegment::class, $segment->tag());
-        self::assertEquals(md5(json_encode($rawValues)), $segment->subSegmentKey());
+        self::assertEquals(md5(json_encode($rawValues)), $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 }

@@ -90,7 +90,7 @@ function printSegment(array $segments): void
     foreach ($segments as $segment) {
         print sprintf(
             "    %s |> %s \n",
-            str_pad($segment->subSegmentKey(), 3),
+            str_pad($segment->subId(), 3),
             json_encode($segment->rawValues())
         );
     }

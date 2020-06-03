@@ -19,7 +19,7 @@ final class UnknownSegment implements SegmentInterface
         return self::class;
     }
 
-    public function subSegmentKey(): string
+    public function subId(): string
     {
         $encodedValues = json_encode($this->rawValues);
 

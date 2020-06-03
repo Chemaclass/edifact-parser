@@ -17,7 +17,7 @@ final class UNHMessageHeaderTest extends TestCase
         $segment = new UNHMessageHeader($rawValues);
 
         self::assertEquals(UNHMessageHeader::class, $segment->tag());
-        self::assertEquals('1', $segment->subSegmentKey());
+        self::assertEquals('1', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
@@ -26,6 +26,6 @@ final class UNHMessageHeaderTest extends TestCase
     {
         $segment = new UNHMessageHeader(['UNH']);
         $this->expectException(MissingSubSegmentKey::class);
-        $segment->subSegmentKey();
+        $segment->subId();
     }
 }

@@ -40,7 +40,7 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
                 return (string) $this->rawArray[0];
             }
 
-            public function subSegmentKey(): string
+            public function subId(): string
             {
                 return (string) $this->rawArray[1];
             }

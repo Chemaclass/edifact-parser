@@ -16,7 +16,7 @@ final class MEADimensionsTest extends TestCase
         $segment = new MEADimensions($rawValues);
 
         self::assertEquals(MEADimensions::class, $segment->tag());
-        self::assertEquals('WT', $segment->subSegmentKey());
+        self::assertEquals('WT', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 }

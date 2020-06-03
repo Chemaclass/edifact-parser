@@ -17,7 +17,7 @@ final class DTMDateTimePeriodTest extends TestCase
         $segment = new DTMDateTimePeriod($rawValues);
 
         self::assertEquals(DTMDateTimePeriod::class, $segment->tag());
-        self::assertEquals('10', $segment->subSegmentKey());
+        self::assertEquals('10', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
@@ -26,6 +26,6 @@ final class DTMDateTimePeriodTest extends TestCase
     {
         $segment = new DTMDateTimePeriod(['DTM']);
         $this->expectException(MissingSubSegmentKey::class);
-        $segment->subSegmentKey();
+        $segment->subId();
     }
 }

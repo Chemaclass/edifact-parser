@@ -21,7 +21,7 @@ final class UNHMessageHeader implements SegmentInterface
         return self::class;
     }
 
-    public function subSegmentKey(): string
+    public function subId(): string
     {
         if (!isset($this->rawValues[1][0])) {
             throw new MissingSubSegmentKey('[1][0]', $this->rawValues);

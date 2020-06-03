@@ -60,7 +60,7 @@ final class TransactionMessage
 
         foreach ($segments as $s) {
             $return[$s->tag()] ??= [];
-            $return[$s->tag()][$s->subSegmentKey()] = $s;
+            $return[$s->tag()][$s->subId()] = $s;
         }
 
         return new self($return);

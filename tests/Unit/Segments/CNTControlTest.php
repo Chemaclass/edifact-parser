@@ -17,7 +17,7 @@ final class CNTControlTest extends TestCase
         $segment = new CNTControl($rawValues);
 
         self::assertEquals(CNTControl::class, $segment->tag());
-        self::assertEquals('7', $segment->subSegmentKey());
+        self::assertEquals('7', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
@@ -26,6 +26,6 @@ final class CNTControlTest extends TestCase
     {
         $segment = new CNTControl(['CNT']);
         $this->expectException(MissingSubSegmentKey::class);
-        $segment->subSegmentKey();
+        $segment->subId();
     }
 }

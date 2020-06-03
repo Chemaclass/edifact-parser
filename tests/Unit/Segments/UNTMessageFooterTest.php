@@ -16,7 +16,7 @@ final class UNTMessageFooterTest extends TestCase
         $segment = new UNTMessageFooter($rawValues);
 
         self::assertEquals(UNTMessageFooter::class, $segment->tag());
-        self::assertEquals('19', $segment->subSegmentKey());
+        self::assertEquals('19', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 }
