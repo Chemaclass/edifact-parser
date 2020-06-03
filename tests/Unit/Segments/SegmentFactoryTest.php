@@ -21,7 +21,8 @@ final class SegmentFactoryTest extends TestCase
     /** @test */
     public function segmentValues(): void
     {
-        $factory = new SegmentFactory();
+        $factory = SegmentFactory::withDefaultSegments();
+
         self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
         self::assertInstanceOf(DTMDateTimePeriod::class, $factory->segmentFromArray(['DTM']));
         self::assertInstanceOf(NADNameAddress::class, $factory->segmentFromArray(['NAD']));
@@ -31,5 +32,17 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(BGMBeginningOfMessage::class, $factory->segmentFromArray(['BGM']));
         self::assertInstanceOf(UNTMessageFooter::class, $factory->segmentFromArray(['UNT']));
         self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['UnknownSegment']));
+    }
+
+    public function customSegments(): void
+    {
+        $factory = new SegmentFactory(
+            UNHMessageHeader::class,
+            NONFakeSegment::class,
+        );
+
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
+        self::assertInstanceOf(DTMDateTimePeriod::class, $factory->segmentFromArray(['DTM']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['NON']));
     }
 }

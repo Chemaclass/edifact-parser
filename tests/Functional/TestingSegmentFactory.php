@@ -18,7 +18,7 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
     public function __construct(string $customKey)
     {
         $this->customKey = $customKey;
-        $this->defaultFactory = new SegmentFactory();
+        $this->defaultFactory = SegmentFactory::withDefaultSegments();
     }
 
     public function segmentFromArray(array $rawArray): SegmentInterface
