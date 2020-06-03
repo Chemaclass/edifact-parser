@@ -40,32 +40,15 @@ final class SegmentFactory implements SegmentFactoryInterface
 
     public function segmentFromArray(array $rawArray): SegmentInterface
     {
-//        switch ($rawArray[0]) {
-//            case 'UNH':
-//                return new UNHMessageHeader($rawArray);
-//            case 'DTM':
-//                return new DTMDateTimePeriod($rawArray);
-//            case 'NAD':
-//                return new NADNameAddress($rawArray);
-//            case 'MEA':
-//                return new MEADimensions($rawArray);
-//            case 'CNT':
-//                return new CNTControl($rawArray);
-//            case 'PCI':
-//                return new PCIPackageId($rawArray);
-//            case 'BGM':
-//                return new BGMBeginningOfMessage($rawArray);
-//            case 'UNT':
-//                return new UNTMessageFooter($rawArray);
-//        }
         foreach ($this->segmentClasses as $segmentFullClassName) {
             $segmentClassName = basename(str_replace('\\', '/', $segmentFullClassName));
             $segmentTag = mb_substr($segmentClassName, 0, 3);
 
-            if ($rawArray[0] === $segmentTag
-                && in_array(SegmentInterface::class, class_implements($segmentFullClassName))
-            ) {
-                return new $segmentFullClassName($rawArray);
+            if ($rawArray[0] === $segmentTag && class_exists($segmentFullClassName)) {
+                $newSegment = new $segmentFullClassName($rawArray);
+                if ($newSegment instanceof SegmentInterface) {
+                    return $newSegment;
+                }
             }
         }
 
