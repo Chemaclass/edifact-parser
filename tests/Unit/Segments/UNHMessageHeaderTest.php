@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\Segments;
 
-use EdifactParser\Exception\MissingSubSegmentKey;
+use EdifactParser\Exception\MissingSubId;
 use EdifactParser\Segments\UNHMessageHeader;
 use PHPUnit\Framework\TestCase;
 
@@ -22,10 +22,10 @@ final class UNHMessageHeaderTest extends TestCase
     }
 
     /** @test */
-    public function missingSubSegmentKey(): void
+    public function missingSubId(): void
     {
         $segment = new UNHMessageHeader(['UNH']);
-        $this->expectException(MissingSubSegmentKey::class);
+        $this->expectException(MissingSubId::class);
         $segment->subId();
     }
 }

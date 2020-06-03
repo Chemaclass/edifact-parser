@@ -6,7 +6,7 @@ namespace EdifactParser\Segments;
 
 namespace EdifactParser\Segments;
 
-use EdifactParser\Exception\MissingSubSegmentKey;
+use EdifactParser\Exception\MissingSubId;
 
 /** @psalm-immutable */
 final class CNTControl implements SegmentInterface
@@ -26,7 +26,7 @@ final class CNTControl implements SegmentInterface
     public function subId(): string
     {
         if (!isset($this->rawValues[1][0])) {
-            throw new MissingSubSegmentKey('[1][0]', $this->rawValues);
+            throw new MissingSubId('[1][0]', $this->rawValues);
         }
 
         return (string) $this->rawValues[1][0];

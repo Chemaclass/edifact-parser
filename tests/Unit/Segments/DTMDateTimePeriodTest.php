@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\Segments;
 
-use EdifactParser\Exception\MissingSubSegmentKey;
+use EdifactParser\Exception\MissingSubId;
 use EdifactParser\Segments\DTMDateTimePeriod;
 use PHPUnit\Framework\TestCase;
 
@@ -22,10 +22,10 @@ final class DTMDateTimePeriodTest extends TestCase
     }
 
     /** @test */
-    public function missingSubSegmentKey(): void
+    public function missingSubId(): void
     {
         $segment = new DTMDateTimePeriod(['DTM']);
-        $this->expectException(MissingSubSegmentKey::class);
+        $this->expectException(MissingSubId::class);
         $segment->subId();
     }
 }
