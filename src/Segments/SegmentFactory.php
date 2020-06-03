@@ -16,6 +16,7 @@ final class SegmentFactory implements SegmentFactoryInterface
      */
     private array $segmentClasses;
 
+    /** @psalm-pure */
     public static function withDefaultSegments(string...$segments): self
     {
         $default = [
