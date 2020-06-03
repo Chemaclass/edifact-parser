@@ -10,7 +10,7 @@ EDIFACT stands for `Electronic Data Interchange For Administration, Commerce, an
 This repository contains a parser for any EDIFACT file to extract the values from any segment
 defined in an EDIFACT formatted file. 
 
-Ok, but... [What is EDIFACT?](/docu/what-is-edifact.md)
+Ok, but... [What is EDIFACT?](/docu/README.md)
 
 ## Format of an EDIFACT file
 
