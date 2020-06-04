@@ -24,7 +24,7 @@ final class NADNameAddressTest extends TestCase
             '20713',
             'DE',
         ];
-        $segment = NADNameAddress::createFromArray($rawValues);
+        $segment = new NADNameAddress($rawValues);
 
         self::assertEquals(NADNameAddress::class, $segment->tag());
         self::assertEquals('CZ', $segment->subId());

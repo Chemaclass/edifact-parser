@@ -13,7 +13,7 @@ final class UnknownSegmentTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['UNKNOWN', 'SEGMENT'];
-        $segment = UnknownSegment::createFromArray($rawValues);
+        $segment = new UnknownSegment($rawValues);
 
         self::assertEquals(UnknownSegment::class, $segment->tag());
         self::assertEquals(md5(json_encode($rawValues)), $segment->subId());

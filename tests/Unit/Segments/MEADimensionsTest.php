@@ -13,7 +13,7 @@ final class MEADimensionsTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['MEA', 'WT', 'G', ['KGM', '0.1']];
-        $segment = MEADimensions::createFromArray($rawValues);
+        $segment = new MEADimensions($rawValues);
 
         self::assertEquals(MEADimensions::class, $segment->tag());
         self::assertEquals('WT', $segment->subId());

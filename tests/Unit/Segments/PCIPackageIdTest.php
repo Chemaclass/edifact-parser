@@ -13,7 +13,7 @@ final class PCIPackageIdTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['PCI', '18', '00250559268149700889'];
-        $segment = PCIPackageId::createFromArray($rawValues);
+        $segment = new PCIPackageId($rawValues);
 
         self::assertEquals(PCIPackageId::class, $segment->tag());
         self::assertEquals('18', $segment->subId());

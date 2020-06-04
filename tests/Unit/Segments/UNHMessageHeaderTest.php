@@ -14,7 +14,7 @@ final class UNHMessageHeaderTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']];
-        $segment = UNHMessageHeader::createFromArray($rawValues);
+        $segment = new UNHMessageHeader($rawValues);
 
         self::assertEquals(UNHMessageHeader::class, $segment->tag());
         self::assertEquals('1', $segment->subId());
@@ -24,7 +24,7 @@ final class UNHMessageHeaderTest extends TestCase
     /** @test */
     public function missingSubId(): void
     {
-        $segment = UNHMessageHeader::createFromArray(['UNH']);
+        $segment = new UNHMessageHeader(['UNH']);
         $this->expectException(MissingSubId::class);
         $segment->subId();
     }

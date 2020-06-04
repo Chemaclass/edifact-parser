@@ -13,7 +13,7 @@ final class BGMBeginningOfMessageTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['BGM', '340', '00250559268149700889', '9'];
-        $segment = BGMBeginningOfMessage::createFromArray($rawValues);
+        $segment = new BGMBeginningOfMessage($rawValues);
 
         self::assertEquals(BGMBeginningOfMessage::class, $segment->tag());
         self::assertEquals('340', $segment->subId());

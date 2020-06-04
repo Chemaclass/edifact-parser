@@ -22,10 +22,10 @@ final class TransactionMessageTest extends TestCase
         self::assertEquals([
             new TransactionMessage([
                 UNHMessageHeader::class => [
-                    '1' => UNHMessageHeader::createFromArray(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
+                    '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 ],
                 UNTMessageFooter::class => [
-                    '19' => UNTMessageFooter::createFromArray(['UNT', '19', '1']),
+                    '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
             ]),
         ], $this->transactionMessages($fileContent));
@@ -44,18 +44,18 @@ EDI;
         self::assertEquals([
             new TransactionMessage([
                 UNHMessageHeader::class => [
-                    '1' => UNHMessageHeader::createFromArray(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
+                    '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 ],
                 UNTMessageFooter::class => [
-                    '19' => UNTMessageFooter::createFromArray(['UNT', '19', '1']),
+                    '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
             ]),
             new TransactionMessage([
                 UNHMessageHeader::class => [
-                    '2' => UNHMessageHeader::createFromArray(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
+                    '2' => new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
                 ],
                 UNTMessageFooter::class => [
-                    '19' => UNTMessageFooter::createFromArray(['UNT', '19', '2']),
+                    '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
             ]),
         ], $this->transactionMessages($fileContent));
@@ -75,15 +75,15 @@ EDI;
         self::assertEquals([
             new TransactionMessage([
                 UNHMessageHeader::class => [
-                    '1' => UNHMessageHeader::createFromArray(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
+                    '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 ],
                 UNTMessageFooter::class => [
-                    '19' => UNTMessageFooter::createFromArray(['UNT', '19', '1']),
+                    '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
                 CNTControl::class => [
-                    '7' => CNTControl::createFromArray(['CNT', ['7', '0.1', 'KGM']]),
-                    '11' => CNTControl::createFromArray(['CNT', ['11', '1', 'PCE']]),
-                    '15' => CNTControl::createFromArray(['CNT', ['15', '0.068224', 'MTQ']]),
+                    '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
+                    '11' => new CNTControl(['CNT', ['11', '1', 'PCE']]),
+                    '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 ],
             ]),
         ], $this->transactionMessages($fileContent));

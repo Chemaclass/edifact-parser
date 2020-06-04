@@ -13,7 +13,7 @@ final class UNTMessageFooterTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['UNT', '19', '1'];
-        $segment = UNTMessageFooter::createFromArray($rawValues);
+        $segment = new UNTMessageFooter($rawValues);
 
         self::assertEquals(UNTMessageFooter::class, $segment->tag());
         self::assertEquals('19', $segment->subId());

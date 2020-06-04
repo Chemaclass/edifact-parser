@@ -60,13 +60,14 @@ final class SegmentFactory implements SegmentFactoryInterface
 
         foreach ($this->segmentClassNames as $className) {
             if ($this->isTheRightSegmentTag($tag, $className)) {
-                /** @var SegmentInterface $segment */
-                $segment = $className::createFromArray($rawArray);
+                $segment = new $className($rawArray);
+                Assert::isInstanceOf($segment, SegmentInterface::class);
+
                 return $segment;
             }
         }
 
-        return UnknownSegment::createFromArray($rawArray);
+        return new UnknownSegment($rawArray);
     }
 
     private function isTheRightSegmentTag(string $tag, string $className): bool
@@ -86,6 +87,6 @@ final class SegmentFactory implements SegmentFactoryInterface
     {
         $interfaces = class_implements($className);
 
-        return $interfaces && in_array($interface, $interfaces);
+        return $interfaces && in_array($interface, class_implements($className));
     }
 }

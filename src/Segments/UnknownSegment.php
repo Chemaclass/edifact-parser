@@ -9,13 +9,7 @@ final class UnknownSegment implements SegmentInterface
 {
     private array $rawValues;
 
-    /** @psalm-pure */
-    public static function createFromArray(array $rawValues): self
-    {
-        return new self($rawValues);
-    }
-
-    private function __construct(array $rawValues)
+    public function __construct(array $rawValues)
     {
         $this->rawValues = $rawValues;
     }
