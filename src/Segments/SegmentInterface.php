@@ -7,6 +7,9 @@ namespace EdifactParser\Segments;
 /** @psalm-immutable */
 interface SegmentInterface
 {
+    /** Unifying the creation of the segment by a rawArray argument. */
+    public static function createFromArray(array $rawValues): self;
+
     /** A three-character alphanumeric code that identifies the segment. */
     public function tag(): string;
 

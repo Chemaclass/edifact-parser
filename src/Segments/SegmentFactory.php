@@ -50,8 +50,11 @@ final class SegmentFactory implements SegmentFactoryInterface
             $segmentClassName = basename(str_replace('\\', '/', $segmentFullClassName));
             $segmentTag = mb_substr($segmentClassName, 0, 3);
 
-            if ($rawArray[0] === $segmentTag && class_exists($segmentFullClassName)) {
-                $newSegment = new $segmentFullClassName($rawArray);
+            if ($rawArray[0] === $segmentTag
+                && class_exists($segmentFullClassName)
+                && method_exists($segmentFullClassName, 'createFromArray')
+            ) {
+                $newSegment = $segmentFullClassName::createFromArray($rawArray);
 
                 if ($newSegment instanceof SegmentInterface) {
                     return $newSegment;
@@ -59,6 +62,6 @@ final class SegmentFactory implements SegmentFactoryInterface
             }
         }
 
-        return new UnknownSegment($rawArray);
+        return UnknownSegment::createFromArray($rawArray);
     }
 }

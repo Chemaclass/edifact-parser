@@ -14,7 +14,7 @@ final class CNTControlTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['CNT', ['7', '0.1', 'KGM']];
-        $segment = new CNTControl($rawValues);
+        $segment = CNTControl::createFromArray($rawValues);
 
         self::assertEquals(CNTControl::class, $segment->tag());
         self::assertEquals('7', $segment->subId());
@@ -24,7 +24,7 @@ final class CNTControlTest extends TestCase
     /** @test */
     public function missingSubId(): void
     {
-        $segment = new CNTControl(['CNT']);
+        $segment = CNTControl::createFromArray(['CNT']);
         $this->expectException(MissingSubId::class);
         $segment->subId();
     }

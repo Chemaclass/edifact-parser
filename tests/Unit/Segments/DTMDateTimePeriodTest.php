@@ -14,7 +14,7 @@ final class DTMDateTimePeriodTest extends TestCase
     public function segmentValues(): void
     {
         $rawValues = ['DTM', ['10', '20191002', '102']];
-        $segment = new DTMDateTimePeriod($rawValues);
+        $segment = DTMDateTimePeriod::createFromArray($rawValues);
 
         self::assertEquals(DTMDateTimePeriod::class, $segment->tag());
         self::assertEquals('10', $segment->subId());
@@ -24,7 +24,7 @@ final class DTMDateTimePeriodTest extends TestCase
     /** @test */
     public function missingSubId(): void
     {
-        $segment = new DTMDateTimePeriod(['DTM']);
+        $segment = DTMDateTimePeriod::createFromArray(['DTM']);
         $this->expectException(MissingSubId::class);
         $segment->subId();
     }
