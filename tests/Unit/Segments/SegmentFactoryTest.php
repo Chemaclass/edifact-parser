@@ -31,7 +31,7 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(PCIPackageId::class, $factory->segmentFromArray(['PCI']));
         self::assertInstanceOf(BGMBeginningOfMessage::class, $factory->segmentFromArray(['BGM']));
         self::assertInstanceOf(UNTMessageFooter::class, $factory->segmentFromArray(['UNT']));
-        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['UnknownSegment']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['___']));
     }
 
     /** @test */

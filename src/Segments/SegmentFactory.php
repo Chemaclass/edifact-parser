@@ -9,6 +9,7 @@ use function class_implements;
 use function in_array;
 use function mb_substr;
 use function str_replace;
+use Webmozart\Assert\Assert;
 
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
@@ -23,6 +24,8 @@ final class SegmentFactory implements SegmentFactoryInterface
         BGMBeginningOfMessage::class,
         UNTMessageFooter::class,
     ];
+
+    private const TAG_LENGTH = 3;
 
     /**
      * The list of "segment class names" for every segment that might be created.
@@ -52,21 +55,31 @@ final class SegmentFactory implements SegmentFactoryInterface
 
     public function segmentFromArray(array $rawArray): SegmentInterface
     {
-        foreach ($this->segmentClassNames as $segmentFullClassName) {
-            $segmentClassName = basename(str_replace('\\', '/', $segmentFullClassName));
-            $segmentTag = mb_substr($segmentClassName, 0, 3);
+        $tag = (string) $rawArray[0];
+        Assert::length($tag, self::TAG_LENGTH);
 
-            if ($rawArray[0] === $segmentTag
-                && $this->classImplements($segmentFullClassName, SegmentInterface::class)
-            ) {
+        foreach ($this->segmentClassNames as $className) {
+            if ($this->isTheRightSegmentTag($tag, $className)) {
                 /** @var SegmentInterface $segment */
-                $segment = $segmentFullClassName::createFromArray($rawArray);
-
+                $segment = $className::createFromArray($rawArray);
                 return $segment;
             }
         }
 
         return UnknownSegment::createFromArray($rawArray);
+    }
+
+    private function isTheRightSegmentTag(string $tag, string $className): bool
+    {
+        return $tag === $this->segmentTagFromClass($className)
+            && $this->classImplements($className, SegmentInterface::class);
+    }
+
+    private function segmentTagFromClass(string $className): string
+    {
+        $basename = basename(str_replace('\\', '/', $className));
+
+        return mb_substr($basename, 0, self::TAG_LENGTH);
     }
 
     private function classImplements(string $className, string $interface): bool
