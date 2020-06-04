@@ -14,12 +14,12 @@ final class BGMBeginningOfMessage implements SegmentInterface
         $this->rawValues = $rawValues;
     }
 
-    public function name(): string
+    public function tag(): string
     {
         return self::class;
     }
 
-    public function subSegmentKey(): string
+    public function subId(): string
     {
         return (string) $this->rawValues[1];
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-use EdifactParser\Exception\MissingSubSegmentKey;
+use EdifactParser\Exception\MissingSubId;
 
 /** @psalm-immutable */
 final class UNHMessageHeader implements SegmentInterface
@@ -16,15 +16,15 @@ final class UNHMessageHeader implements SegmentInterface
         $this->rawValues = $rawValues;
     }
 
-    public function name(): string
+    public function tag(): string
     {
         return self::class;
     }
 
-    public function subSegmentKey(): string
+    public function subId(): string
     {
         if (!isset($this->rawValues[1][0])) {
-            throw new MissingSubSegmentKey('[1][0]', $this->rawValues);
+            throw new MissingSubId('[1][0]', $this->rawValues);
         }
 
         return (string) $this->rawValues[1][0];

@@ -1,15 +1,15 @@
-# Segments
+# EDIFACT Segments
 
-## EDIFACT Segment Definition
+## Segment definition
 
 EDIFACT Segment is a collection of logically-related data elements in a fixed, defined sequence. 
 
-### EDIFACT provides a hierarchical structure for messages
+### Hierarchical structure for messages
  
 EDIFACT messages begin with the `Message Header Segment` (UNH) and end with the` Message Trailer Segment` (UNT). 
 These two segments are the first, and innermost, level of the three levels of “electronic envelopes” within EDIFACT.
 
-EDIFACT Segment contains:
+### A Segment contains
 
 * A **three-character alphanumeric** code that identifies the segment. This is called the segment tag.
 * Variable length data elements. These can be either simple or composite.

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\Segments;
 
-use EdifactParser\Exception\MissingSubSegmentKey;
+use EdifactParser\Exception\MissingSubId;
 use EdifactParser\Segments\DTMDateTimePeriod;
 use PHPUnit\Framework\TestCase;
 
@@ -16,16 +16,16 @@ final class DTMDateTimePeriodTest extends TestCase
         $rawValues = ['DTM', ['10', '20191002', '102']];
         $segment = new DTMDateTimePeriod($rawValues);
 
-        self::assertEquals(DTMDateTimePeriod::class, $segment->name());
-        self::assertEquals('10', $segment->subSegmentKey());
+        self::assertEquals(DTMDateTimePeriod::class, $segment->tag());
+        self::assertEquals('10', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
     /** @test */
-    public function missingSubSegmentKey(): void
+    public function missingSubId(): void
     {
         $segment = new DTMDateTimePeriod(['DTM']);
-        $this->expectException(MissingSubSegmentKey::class);
-        $segment->subSegmentKey();
+        $this->expectException(MissingSubId::class);
+        $segment->subId();
     }
 }
