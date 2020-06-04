@@ -14,6 +14,7 @@ use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class SegmentFactoryTest extends TestCase
@@ -45,5 +46,13 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
         self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['DTM']));
         self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['NON']));
+    }
+
+    /** @test */
+    public function exceptionWhenParsingNonValidTag(): void
+    {
+        $factory = SegmentFactory::withSegments();
+        $this->expectException(InvalidArgumentException::class);
+        $factory->segmentFromArray(['TOO_LARGE_TAG']);
     }
 }

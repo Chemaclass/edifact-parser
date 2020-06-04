@@ -30,12 +30,6 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
         return new /** @psalm-immutable */ class($rawArray) implements SegmentInterface {
             private array $rawArray;
 
-            /** @psalm-pure */
-            public static function createFromArray(array $rawValues): self
-            {
-                return new self($rawValues);
-            }
-
             public function __construct(array $rawArray)
             {
                 $this->rawArray = $rawArray;
