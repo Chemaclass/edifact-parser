@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+use function basename;
+use function class_implements;
+use function in_array;
+use function mb_substr;
+use function str_replace;
+
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
 {
@@ -23,7 +29,7 @@ final class SegmentFactory implements SegmentFactoryInterface
      * The "segment class name" must implement the `SegmentInterface` in order to be
      * able to work with the factory, otherwise it will be ignored.
      *
-     * @psalm-var list<string>
+     * @var string[]
      */
     private array $segmentClasses;
 
@@ -51,17 +57,22 @@ final class SegmentFactory implements SegmentFactoryInterface
             $segmentTag = mb_substr($segmentClassName, 0, 3);
 
             if ($rawArray[0] === $segmentTag
-                && class_exists($segmentFullClassName)
-                && method_exists($segmentFullClassName, 'createFromArray')
+                && $this->classImplements($segmentFullClassName, SegmentInterface::class)
             ) {
-                $newSegment = $segmentFullClassName::createFromArray($rawArray);
+                /** @var SegmentInterface $segment */
+                $segment = $segmentFullClassName::createFromArray($rawArray);
 
-                if ($newSegment instanceof SegmentInterface) {
-                    return $newSegment;
-                }
+                return $segment;
             }
         }
 
         return UnknownSegment::createFromArray($rawArray);
+    }
+
+    private function classImplements(string $className, string $interface): bool
+    {
+        $interfaces = class_implements($className);
+
+        return $interfaces && in_array($interface, $interfaces);
     }
 }
