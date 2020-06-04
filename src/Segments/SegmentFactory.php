@@ -13,7 +13,7 @@ use function str_replace;
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
 {
-    public const DEFAULT_SEGMENT_NAMES = [
+    public const DEFAULT_SEGMENT_CLASS_NAMES = [
         UNHMessageHeader::class,
         DTMDateTimePeriod::class,
         NADNameAddress::class,
@@ -31,28 +31,28 @@ final class SegmentFactory implements SegmentFactoryInterface
      *
      * @var string[]
      */
-    private array $segmentClasses;
+    private array $segmentClassNames;
 
     /** @psalm-pure */
-    public static function withSegments(string...$segments): self
+    public static function withSegments(string...$segmentClassNames): self
     {
-        return new self(...$segments);
+        return new self(...$segmentClassNames);
     }
 
     /** @psalm-pure */
     public static function withDefaultSegments(): self
     {
-        return new self(...self::DEFAULT_SEGMENT_NAMES);
+        return new self(...self::DEFAULT_SEGMENT_CLASS_NAMES);
     }
 
-    private function __construct(string...$segmentClasses)
+    private function __construct(string...$segmentClassNames)
     {
-        $this->segmentClasses = $segmentClasses;
+        $this->segmentClassNames = $segmentClassNames;
     }
 
     public function segmentFromArray(array $rawArray): SegmentInterface
     {
-        foreach ($this->segmentClasses as $segmentFullClassName) {
+        foreach ($this->segmentClassNames as $segmentFullClassName) {
             $segmentClassName = basename(str_replace('\\', '/', $segmentFullClassName));
             $segmentTag = mb_substr($segmentClassName, 0, 3);
 
