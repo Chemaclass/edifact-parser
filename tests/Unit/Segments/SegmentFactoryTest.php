@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 final class SegmentFactoryTest extends TestCase
 {
     /** @test */
-    public function segmentValues(): void
+    public function withDefaultSegments(): void
     {
         $factory = SegmentFactory::withDefaultSegments();
 
@@ -34,15 +34,16 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['UnknownSegment']));
     }
 
-    public function customSegments(): void
+    /** @test */
+    public function withSegments(): void
     {
-        $factory = new SegmentFactory(
+        $factory = SegmentFactory::withSegments(
             UNHMessageHeader::class,
             NONFakeSegment::class,
         );
 
         self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
-        self::assertInstanceOf(DTMDateTimePeriod::class, $factory->segmentFromArray(['DTM']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['DTM']));
         self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['NON']));
     }
 }
