@@ -47,6 +47,13 @@ final class SegmentFactoryTest extends TestCase
     }
 
     /** @test */
+    public function exceptionWhenTagTooLarge(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SegmentFactory::withSegments(['TAG_TOO_LARGE' => UNHMessageHeader::class]);
+    }
+
+    /** @test */
     public function exceptionWhenCreatingNonValidTag(): void
     {
         $this->expectException(InvalidArgumentException::class);

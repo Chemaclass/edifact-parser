@@ -12,6 +12,7 @@ use Webmozart\Assert\Assert;
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
 {
+    /** @var array<string,string> */
     public const DEFAULT_SEGMENTS = [
         'UNH' => UNHMessageHeader::class,
         'DTM' => DTMDateTimePeriod::class,
@@ -71,14 +72,14 @@ final class SegmentFactory implements SegmentFactoryInterface
         Assert::length($tag, self::TAG_LENGTH);
         $className = $this->segments[$tag] ?? '';
 
-        if (!empty($className)) {
-            $segment = new $className($rawArray);
-            Assert::isInstanceOf($segment, SegmentInterface::class);
-
-            return $segment;
+        if (empty($className)) {
+            return new UnknownSegment($rawArray);
         }
 
-        return new UnknownSegment($rawArray);
+        $segment = new $className($rawArray);
+        Assert::isInstanceOf($segment, SegmentInterface::class);
+
+        return $segment;
     }
 
     private function classImplements(string $className, string $interface): bool
