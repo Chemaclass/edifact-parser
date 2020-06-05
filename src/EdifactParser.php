@@ -17,7 +17,7 @@ final class EdifactParser
 
     public static function create(?SegmentFactoryInterface $segmentFactory = null): self
     {
-        return new self($segmentFactory ?? new SegmentFactory());
+        return new self($segmentFactory ?? SegmentFactory::withDefaultSegments());
     }
 
     private function __construct(SegmentFactoryInterface $segmentFactory)

@@ -14,14 +14,16 @@ use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 final class SegmentFactoryTest extends TestCase
 {
     /** @test */
-    public function segmentValues(): void
+    public function withDefaultSegments(): void
     {
-        $factory = new SegmentFactory();
+        $factory = SegmentFactory::withDefaultSegments();
+
         self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
         self::assertInstanceOf(DTMDateTimePeriod::class, $factory->segmentFromArray(['DTM']));
         self::assertInstanceOf(NADNameAddress::class, $factory->segmentFromArray(['NAD']));
@@ -30,6 +32,24 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(PCIPackageId::class, $factory->segmentFromArray(['PCI']));
         self::assertInstanceOf(BGMBeginningOfMessage::class, $factory->segmentFromArray(['BGM']));
         self::assertInstanceOf(UNTMessageFooter::class, $factory->segmentFromArray(['UNT']));
-        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['UnknownSegment']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['___']));
+    }
+
+    /** @test */
+    public function withCustomSegments(): void
+    {
+        $factory = SegmentFactory::withSegments([
+            'UNH' => UNHMessageHeader::class,
+        ]);
+
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['DTM']));
+    }
+
+    /** @test */
+    public function exceptionWhenCreatingNonValidTag(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SegmentFactory::withSegments(['NON' => NONFakeSegment::class]);
     }
 }

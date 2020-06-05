@@ -16,7 +16,7 @@ final class SegmentList
     /** @psalm-pure */
     public static function factory(?SegmentFactoryInterface $segmentFactory = null): self
     {
-        return new self($segmentFactory ?? new SegmentFactory());
+        return new self($segmentFactory ?? SegmentFactory::withDefaultSegments());
     }
 
     private function __construct(SegmentFactoryInterface $segmentFactory)

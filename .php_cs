@@ -145,7 +145,7 @@ return PhpCsFixer\Config::create()
             'order' => 'alpha',
         ],
         'phpdoc_add_missing_param_annotation' => true,
-        'phpdoc_align' => true,
+        'phpdoc_align' => false,
         'phpdoc_indent' => true,
         'phpdoc_no_access' => true,
         'phpdoc_no_empty_return' => true,
