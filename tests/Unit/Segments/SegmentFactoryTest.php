@@ -38,10 +38,10 @@ final class SegmentFactoryTest extends TestCase
     /** @test */
     public function withSegments(): void
     {
-        $factory = SegmentFactory::withSegments(
-            UNHMessageHeader::class,
-            NONFakeSegment::class,
-        );
+        $factory = SegmentFactory::withSegments([
+            'UNH' => UNHMessageHeader::class,
+            'NON' => NONFakeSegment::class,
+        ]);
 
         self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
         self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['DTM']));
@@ -51,7 +51,7 @@ final class SegmentFactoryTest extends TestCase
     /** @test */
     public function exceptionWhenParsingNonValidTag(): void
     {
-        $factory = SegmentFactory::withSegments();
+        $factory = SegmentFactory::withSegments(['NON' => NONFakeSegment::class]);
         $this->expectException(InvalidArgumentException::class);
         $factory->segmentFromArray(['TOO_LARGE_TAG']);
     }

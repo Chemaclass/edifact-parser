@@ -4,83 +4,73 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-use function basename;
 use function class_implements;
 use function in_array;
-use function mb_substr;
-use function str_replace;
 use Webmozart\Assert\Assert;
 
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
 {
-    public const DEFAULT_SEGMENT_CLASS_NAMES = [
-        UNHMessageHeader::class,
-        DTMDateTimePeriod::class,
-        NADNameAddress::class,
-        MEADimensions::class,
-        CNTControl::class,
-        PCIPackageId::class,
-        BGMBeginningOfMessage::class,
-        UNTMessageFooter::class,
+    public const DEFAULT_SEGMENTS = [
+        'UNH' => UNHMessageHeader::class,
+        'DTM' => DTMDateTimePeriod::class,
+        'NAD' => NADNameAddress::class,
+        'MEA' => MEADimensions::class,
+        'CNT' => CNTControl::class,
+        'PCI' => PCIPackageId::class,
+        'BGM' => BGMBeginningOfMessage::class,
+        'UNT' => UNTMessageFooter::class,
     ];
 
     private const TAG_LENGTH = 3;
 
     /**
      * The list of "segment class names" for every segment that might be created.
-     * The "segment class name" must implement the `SegmentInterface` in order to be
-     * able to work with the factory, otherwise it will be ignored.
      *
-     * @var string[]
+     * @var array<string,string>
      */
-    private array $segmentClassNames;
+    private array $segments;
 
-    /** @psalm-pure */
-    public static function withSegments(string...$segmentClassNames): self
+    /**
+     * @psalm-pure
+     *
+     * @param array<string,string> $segments
+     * The key: The 'Segment Tag' -> A three-character (alphanumeric) that identifies the segment.
+     * The value: The class that will be created once that 'Segment Tag' is found. It must implement
+     * the `SegmentInterface` in order to be able to work with the factory, otherwise it will be ignored.
+     */
+    public static function withSegments(array $segments): self
     {
-        return new self(...$segmentClassNames);
+        return new self($segments);
     }
 
     /** @psalm-pure */
     public static function withDefaultSegments(): self
     {
-        return new self(...self::DEFAULT_SEGMENT_CLASS_NAMES);
+        return new self(self::DEFAULT_SEGMENTS);
     }
 
-    private function __construct(string...$segmentClassNames)
+    /** @param array<string,string> $segments */
+    private function __construct(array $segments)
     {
-        $this->segmentClassNames = $segmentClassNames;
+        Assert::allLength(array_keys($segments), self::TAG_LENGTH);
+        $this->segments = $segments;
     }
 
     public function segmentFromArray(array $rawArray): SegmentInterface
     {
         $tag = (string) $rawArray[0];
         Assert::length($tag, self::TAG_LENGTH);
+        $className = $this->segments[$tag] ?? '';
 
-        foreach ($this->segmentClassNames as $className) {
-            if ($this->isTheRightSegmentTag($tag, $className)) {
-                $segment = new $className($rawArray);
-                Assert::isInstanceOf($segment, SegmentInterface::class);
+        if (!empty($className) && $this->classImplements($className, SegmentInterface::class)) {
+            $segment = new $className($rawArray);
+            Assert::isInstanceOf($segment, SegmentInterface::class);
 
-                return $segment;
-            }
+            return $segment;
         }
 
         return new UnknownSegment($rawArray);
-    }
-
-    private function isTheRightSegmentTag(string $tag, string $className): bool
-    {
-        return $tag === $this->segmentTagFromClass($className)
-            && $this->classImplements($className, SegmentInterface::class);
-    }
-
-    private function segmentTagFromClass(string $className): string
-    {
-        $basename = basename(str_replace('\\', '/', $className));
-
-        return mb_substr($basename, 0, self::TAG_LENGTH);
     }
 
     private function classImplements(string $className, string $interface): bool
