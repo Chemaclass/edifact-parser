@@ -6,6 +6,7 @@ namespace EdifactParser\Segments;
 
 use function class_implements;
 use function in_array;
+use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 /** @psalm-immutable */
@@ -54,6 +55,13 @@ final class SegmentFactory implements SegmentFactoryInterface
     private function __construct(array $segments)
     {
         Assert::allLength(array_keys($segments), self::TAG_LENGTH);
+
+        array_map(function (string $class): void {
+            if (!$this->classImplements($class, SegmentInterface::class)) {
+                throw new InvalidArgumentException("'{$class}' must implements 'SegmentInterface'");
+            }
+        }, $segments);
+
         $this->segments = $segments;
     }
 
@@ -63,7 +71,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         Assert::length($tag, self::TAG_LENGTH);
         $className = $this->segments[$tag] ?? '';
 
-        if (!empty($className) && $this->classImplements($className, SegmentInterface::class)) {
+        if (!empty($className)) {
             $segment = new $className($rawArray);
             Assert::isInstanceOf($segment, SegmentInterface::class);
 
