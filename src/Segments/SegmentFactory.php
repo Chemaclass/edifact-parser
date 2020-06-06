@@ -55,13 +55,12 @@ final class SegmentFactory implements SegmentFactoryInterface
     /** @param array<string,string> $segments */
     private function __construct(array $segments)
     {
-        Assert::allLength(array_keys($segments), self::TAG_LENGTH);
-
-        array_map(function (string $class): void {
+        foreach ($segments as $tag => $class) {
+            Assert::length($tag, self::TAG_LENGTH);
             if (!$this->classImplements($class, SegmentInterface::class)) {
                 throw new InvalidArgumentException("'{$class}' must implements 'SegmentInterface'");
             }
-        }, $segments);
+        }
 
         $this->segments = $segments;
     }
