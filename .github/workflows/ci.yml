@@ -1,0 +1,47 @@
+# https://help.github.com/en/categories/automating-your-workflow-with-github-actions
+
+on:
+  - pull_request
+  - push
+
+name: CI
+
+jobs:
+  coding-guidelines:
+    name: Coding Guidelines
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+
+      - name: Run friendsofphp/php-cs-fixer
+        run: ./vendor/bin/php-cs-fixer fix --diff-format=udiff --dry-run --show-progress=dots --using-cache=no --verbose
+        
+  type-checker:
+    name: Type Checker
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+
+      - name: Update dependencies with composer
+        run: ./vendor/bin/composer update --no-interaction --no-ansi --no-progress
+
+      - name: Run vimeo/psalm on internal code
+        run: ./vendor/bin/psalm --config=psalm.xml --no-progress --shepherd --show-info=false --stats
