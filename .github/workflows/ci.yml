@@ -7,8 +7,8 @@ on:
 name: CI
 
 jobs:
-  build:
-    name: Style + Tests
+  coding-guidelines:
+    name: Coding Guidelines
 
     runs-on: ubuntu-latest
 
@@ -28,8 +28,44 @@ jobs:
       - name: Run friendsofphp/php-cs-fixer
         run: ./vendor/bin/php-cs-fixer fix --diff-format=udiff --dry-run --show-progress=dots --using-cache=no --verbose
 
+  type-checker:
+    name: Type Checker
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
       - name: Run vimeo/psalm on internal code
         run: ./vendor/bin/psalm --config=psalm.xml --no-progress --shepherd --show-info=false --stats
+
+  tests:
+    name: Tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Run test suite
         run: composer run-script test
