@@ -62,6 +62,7 @@ final class TransactionMessage
      * We add automatically all items to the $groupedSegments array in the loop,
      * one message is made of "UNHMessageHeader" and "UNTMessageFooter" segments.
      * So the minimum messages are two, only one segment is not possible.
+     * @psalm-pure
      */
     private static function groupedSegmentsNotEmpty(array $groupedSegments): bool
     {

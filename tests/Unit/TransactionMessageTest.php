@@ -121,7 +121,7 @@ EDI;
                 UNTMessageFooter::class => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
-            ])
+            ]),
         ], $this->transactionMessages($fileContent));
     }
 
@@ -148,7 +148,7 @@ EDI;
                 UNTMessageFooter::class => [
                     '10' => new UNTMessageFooter(['UNT', '10', '2']),
                 ],
-            ])
+            ]),
         ], $this->transactionMessages($fileContent));
     }
 
