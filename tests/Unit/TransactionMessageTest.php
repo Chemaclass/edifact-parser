@@ -89,6 +89,81 @@ EDI;
         ], $this->transactionMessages($fileContent));
     }
 
+    /** @test */
+    public function oneMessageIsCreatedWhenStartWithUNHAndEndsWithUNT(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+CNT+7:0.1:KGM'
+UNT+19+1'
+IGN+ORE:ME'
+UNH+2+anything'
+UNT+19+2'
+UNZ+2+3'
+EDI;
+        self::assertEquals([
+            new TransactionMessage([
+                UNHMessageHeader::class => [
+                    '1' => new UNHMessageHeader(['UNH', '1', 'anything']),
+                ],
+                CNTControl::class => [
+                    '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
+                ],
+                UNTMessageFooter::class => [
+                    '19' => new UNTMessageFooter(['UNT', '19', '1']),
+                ],
+            ]),
+            new TransactionMessage([
+                UNHMessageHeader::class => [
+                    '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
+                ],
+                UNTMessageFooter::class => [
+                    '19' => new UNTMessageFooter(['UNT', '19', '2']),
+                ],
+            ])
+        ], $this->transactionMessages($fileContent));
+    }
+
+    /** @test */
+    public function previousUNHAreOverriddenIfTheyDoesntHaveUNT(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+UNH+2+anything'
+CNT+5:0.1:KGM'
+UNT+10+2'
+UNH+3+anything'
+UNZ+2+3'
+EDI;
+        self::assertEquals([
+            new TransactionMessage([
+                UNHMessageHeader::class => [
+                    '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
+                ],
+                CNTControl::class => [
+                    '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
+                ],
+                UNTMessageFooter::class => [
+                    '10' => new UNTMessageFooter(['UNT', '10', '2']),
+                ],
+            ])
+        ], $this->transactionMessages($fileContent));
+    }
+
+    /** @test */
+    public function messageNotCreatedIfUNTDoesntHaveUNHOrViceVersa(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNT+10+2'
+UNH+3+anything'
+UNZ+2+3'
+EDI;
+        self::assertEquals([], $this->transactionMessages($fileContent));
+    }
+
     private function transactionMessages(string $fileContent): array
     {
         return TransactionMessage::groupSegmentsByMessage(
