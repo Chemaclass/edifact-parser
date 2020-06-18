@@ -6,6 +6,7 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNTMessageFooter;
 
 /** @psalm-immutable */
 final class TransactionMessage
@@ -14,8 +15,8 @@ final class TransactionMessage
     private array $groupedSegments;
 
     /**
-     * A message starts with the "UNHMessageHeader" segment until another
-     * "UNHMessageHeader" segment appears, then starts another segment and so on.
+     * A transaction message starts with the "UNHMessageHeader" segment and finalizes with
+     * the "UNTMessageFooter" segment, this process is repeated for each pair of segments.
      *
      * @psalm-pure
      * @psalm-return list<TransactionMessage>
@@ -26,17 +27,21 @@ final class TransactionMessage
         $groupedSegments = [];
 
         foreach ($segments as $segment) {
-            if ($segment instanceof UNHMessageHeader && !empty($groupedSegments)) {
-                $messages[] = self::groupSegmentsByName(...$groupedSegments);
+            if ($segment instanceof UNHMessageHeader) {
                 $groupedSegments = [];
             }
+
             $groupedSegments[] = $segment;
+
+            if ($segment instanceof UNTMessageFooter
+                && self::groupedSegmentsNotEmpty($groupedSegments)
+            ) {
+                $messages[] = self::groupSegmentsByName(...$groupedSegments);
+            }
         }
 
-        $messages[] = self::groupSegmentsByName(...$groupedSegments);
-
         return array_values(
-            array_filter($messages, function (self $m) {
+            array_filter($messages, static function (self $m) {
                 return !empty($m->segmentByName(UNHMessageHeader::class));
             })
         );
@@ -51,6 +56,18 @@ final class TransactionMessage
     public function segmentByName(string $name): array
     {
         return $this->groupedSegments[$name] ?? [];
+    }
+
+    /**
+     * We add automatically all items to the $groupedSegments array in the loop,
+     * one message is made of "UNHMessageHeader" and "UNTMessageFooter" segments.
+     * So the minimum messages are two, only one segment is not possible.
+     *
+     * @psalm-pure
+     */
+    private static function groupedSegmentsNotEmpty(array $groupedSegments): bool
+    {
+        return count($groupedSegments) > 1;
     }
 
     /** @psalm-pure */
