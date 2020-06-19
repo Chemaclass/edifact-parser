@@ -32,9 +32,18 @@ Using composer: ```composer require chemaclass/edifact-parser```
 
 1. Clone/Fork the project and `cd` inside the repository
 2. `docker-compose up`
-3. `make bash` or `docker exec -ti -u dev edifact_parser_php bash` 
+3. `docker exec -ti -u dev edifact_parser_php bash` 
 4. `composer install`
 5. `php example.php`
+
+### Composer scripts
+
+```
+composer test      # execute phpunit tests
+composer csfix     # run php-cs-fixer fix
+composer psalm     # display psalm errors
+composer psalm-log # generate a file with psalm suggestions
+```
 
 ## Basic example
 

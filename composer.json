@@ -40,6 +40,9 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit",
+        "csfix": "vendor/bin/php-cs-fixer fix",
+        "psalm": "vendor/bin/psalm",
+        "psalm-log": "vendor/bin/psalm --output-format=text --show-info=true > psalm.log"
     }
 }
