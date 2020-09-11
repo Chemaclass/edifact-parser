@@ -5,4 +5,3 @@ edifact_parser_php:
   hostname: php
   volumes:
     - .:/srv/edifact-parser:delegated
-    - ~/.ssh:/home/dev/.ssh
