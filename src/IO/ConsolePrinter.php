@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace EdifactParser\IO;
 
-use EdifactParser\Segments\BGMBeginningOfMessage;
-use EdifactParser\Segments\CNTControl;
-use EdifactParser\Segments\DTMDateTimePeriod;
-use EdifactParser\Segments\MEADimensions;
-use EdifactParser\Segments\NADNameAddress;
-use EdifactParser\Segments\PCIPackageId;
 use EdifactParser\Segments\SegmentInterface;
-use EdifactParser\Segments\UNHMessageHeader;
-use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\TransactionMessage;
 
 final class ConsolePrinter implements PrinterInterface
 {
-    public function printMessage(TransactionMessage $message): void
+    /** @var string[] */
+    private array $segmentNames;
+
+    public static function createWithHeaders(array $segmentNames): self
     {
-        $this->printSegment($message->segmentByName(UNHMessageHeader::class));
-        $this->printSegment($message->segmentByName(BGMBeginningOfMessage::class));
-        $this->printSegment($message->segmentByName(DTMDateTimePeriod::class));
-        $this->printSegment($message->segmentByName(CNTControl::class));
-        $this->printSegment($message->segmentByName(NADNameAddress::class));
-        $this->printSegment($message->segmentByName(MEADimensions::class));
-        $this->printSegment($message->segmentByName(PCIPackageId::class));
-        $this->printSegment($message->segmentByName(UNTMessageFooter::class));
+        return new self($segmentNames);
     }
 
-    /** @var SegmentInterface[] $segments */
+    private function __construct(array $segmentNames)
+    {
+        $this->segmentNames = $segmentNames;
+    }
+
+    public function printMessage(TransactionMessage $message): void
+    {
+        foreach ($this->segmentNames as $segmentName) {
+            $this->printSegment($message->segmentByName($segmentName));
+        }
+    }
+
+    /** @var SegmentInterface[] */
     private function printSegment(array $segments): void
     {
         $first = $segments[array_key_first($segments)];
