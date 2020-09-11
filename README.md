@@ -42,17 +42,14 @@ Using composer: ```composer require chemaclass/edifact-parser```
 composer test      # execute phpunit tests
 composer csfix     # run php-cs-fixer fix
 composer psalm     # display psalm errors
-composer psalm-log # generate a file with psalm suggestions
 ```
 
 ## Basic example
 
-You can see a full example of usage [here](example.php).
+You can see a full example of usage [here](example/index.php).
 
 ```php
 <?php declare(strict_types=1);
-
-require dirname(__DIR__) . '/vendor/autoload.php';
 
 use EdifactParser\EdifactParser;
 
