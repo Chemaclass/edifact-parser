@@ -59,6 +59,12 @@ final class TransactionMessage
         return $this->groupedSegments[$tag] ?? [];
     }
 
+    /** @return ?SegmentInterface */
+    public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
+    {
+        return $this->groupedSegments[$tag][$subId] ?? null;
+    }
+
     /**
      * We add automatically all items to the $groupedSegments array in the loop,
      * one message is made of "UNHMessageHeader" and "UNTMessageFooter" segments.

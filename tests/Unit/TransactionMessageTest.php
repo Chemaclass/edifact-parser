@@ -164,6 +164,49 @@ EDI;
         self::assertEquals([], $this->transactionMessages($fileContent));
     }
 
+    /** @test */
+    public function segmentsByTag(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+CNT+5:0.1:KGM'
+UNT+10+2'
+UNZ+2+3'
+EDI;
+        $messages = $this->transactionMessages($fileContent);
+        /** @var TransactionMessage $firstMessage */
+        $firstMessage = reset($messages);
+
+        self::assertEquals([
+            '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
+        ], $firstMessage->segmentsByTag(CNTControl::class));
+
+        self::assertEmpty($firstMessage->segmentsByTag('unknown'));
+    }
+
+    /** @test */
+    public function segmentByTagAndSubId(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+CNT+5:0.1:KGM'
+UNT+10+2'
+UNZ+2+3'
+EDI;
+        $messages = $this->transactionMessages($fileContent);
+        /** @var TransactionMessage $firstMessage */
+        $firstMessage = reset($messages);
+
+        self::assertEquals(
+            new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
+            $firstMessage->segmentByTagAndSubId(CNTControl::class, '5')
+        );
+
+        self::assertNull($firstMessage->segmentByTagAndSubId(CNTControl::class, 'unknown'));
+    }
+
     private function transactionMessages(string $fileContent): array
     {
         return TransactionMessage::groupSegmentsByMessage(
