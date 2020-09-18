@@ -13,6 +13,7 @@ $messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 $firstMessage = reset($messages);
 
 /** @var SegmentInterface $cnNadSegment */
-$cnNadSegment = $firstMessage->segmentsByTag(NADNameAddress::class)['CN'];
+$cnNadSegment = $firstMessage->segmentByTagAndSubId(NADNameAddress::class, 'CN');
 $personName = $cnNadSegment->rawValues()[4];
 assert('Person Name' === $personName);
+echo $personName . PHP_EOL;

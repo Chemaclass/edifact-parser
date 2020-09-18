@@ -57,19 +57,19 @@ EDI;
         $message = $transactionResult[0];
 
         /** @var UNHMessageHeader $unh */
-        $unh = $message->segmentsByTag(UNHMessageHeader::class)['1'];
+        $unh = $message->segmentByTagAndSubId(UNHMessageHeader::class, '1');
         self::assertEquals(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']], $unh->rawValues());
 
         /** @var CNTControl $cnt7 */
-        $cnt7 = $message->segmentsByTag(CNTControl::class)['7'];
+        $cnt7 = $message->segmentByTagAndSubId(CNTControl::class, '7');
         self::assertEquals(['CNT', ['7', '0.1', 'KGM']], $cnt7->rawValues());
 
         /** @var CNTControl $cnt11 */
-        $cnt11 = $message->segmentsByTag(CNTControl::class)['11'];
+        $cnt11 = $message->segmentByTagAndSubId(CNTControl::class, '11');
         self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
 
         /** @var UNTMessageFooter $unt */
-        $unt = $message->segmentsByTag(UNTMessageFooter::class)['19'];
+        $unt = $message->segmentByTagAndSubId(UNTMessageFooter::class, '19');
         self::assertEquals(['UNT', '19', '1'], $unt->rawValues());
     }
 
@@ -90,11 +90,11 @@ EDI;
         $message = $transactionResult[0];
 
         /** @var SegmentInterface $custom */
-        $custom = $message->segmentsByTag('CUSTOM')['anyKey'];
+        $custom = $message->segmentByTagAndSubId('CUSTOM', 'anyKey');
         self::assertEquals(['CUSTOM', 'anyKey', ['whatever', 'value', '9']], $custom->rawValues());
 
         /** @var CNTControl $cnt11 */
-        $cnt11 = $message->segmentsByTag(CNTControl::class)['11'];
+        $cnt11 = $message->segmentByTagAndSubId(CNTControl::class, '11');
         self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
     }
 }

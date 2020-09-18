@@ -53,7 +53,7 @@ final class TransactionMessage
         $this->groupedSegments = $groupedSegments;
     }
 
-    /** @return array<string, SegmentInterface>|array */
+    /** @return array|array<string, SegmentInterface> */
     public function segmentsByTag(string $tag): array
     {
         return $this->groupedSegments[$tag] ?? [];
