@@ -6,7 +6,6 @@ namespace EdifactParser;
 
 use EDI\Parser;
 use EdifactParser\Exception\InvalidFile;
-
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 
@@ -15,12 +14,12 @@ final class EdifactParser
 {
     private SegmentFactoryInterface $segmentFactory;
 
-    public static function create(?SegmentFactoryInterface $segmentFactory = null): self
+    public static function createWithDefaultSegments(): self
     {
-        return new self($segmentFactory ?? SegmentFactory::withDefaultSegments());
+        return new self(SegmentFactory::withDefaultSegments());
     }
 
-    private function __construct(SegmentFactoryInterface $segmentFactory)
+    public function __construct(SegmentFactoryInterface $segmentFactory)
     {
         $this->segmentFactory = $segmentFactory;
     }
@@ -30,7 +29,7 @@ final class EdifactParser
     {
     }
 
-    /** @psalm-return list<TransactionMessage> */
+    /** @return TransactionMessage[] */
     public function parse(string $fileContent): array
     {
         $parser = new Parser($fileContent);
@@ -40,7 +39,8 @@ final class EdifactParser
             throw InvalidFile::withErrors($errors);
         }
 
-        $segments = SegmentList::factory($this->segmentFactory)->fromRaw($parser->get());
+        $segmentList = SegmentList::factory($this->segmentFactory);
+        $segments = $segmentList->fromRaw($parser->get());
 
         return TransactionMessage::groupSegmentsByMessage(...$segments);
     }

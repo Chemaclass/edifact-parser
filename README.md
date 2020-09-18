@@ -46,12 +46,13 @@ composer psalm     # display psalm errors
 
 ## Basic example
 
-You can see a full example of usage [here](example/index.php).
+You can see a full example of usage [here](example/extracting-data.php).
 
 ```php
 <?php declare(strict_types=1);
 
 use EdifactParser\EdifactParser;
+use EdifactParser\Segments\NADNameAddress;
 
 $fileContent = <<<EDI
 UNA:+.? '
@@ -65,7 +66,9 @@ UNT+18+1'
 UNZ+2+8'
 EDI;
 
-/** @psalm-var list<TransactionMessage> $messages */
-$messages = EdifactParser::create()->parse($fileContent);
+$messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$firstMessage = reset($messages);
+$cnNadSegment = $firstMessage->segmentsByName(NADNameAddress::class)['CN'];
+$personName = $cnNadSegment->rawValues()[4]; // 'Person Name'
 ```
 

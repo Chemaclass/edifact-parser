@@ -34,7 +34,7 @@ final class TransactionMessage
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter
-                && self::groupedSegmentsNotEmpty($groupedSegments)
+                && self::isGroupedSegmentsNotEmpty($groupedSegments)
             ) {
                 $messages[] = self::groupSegmentsByName(...$groupedSegments);
             }
@@ -42,7 +42,7 @@ final class TransactionMessage
 
         return array_values(
             array_filter($messages, static function (self $m) {
-                return !empty($m->segmentByName(UNHMessageHeader::class));
+                return !empty($m->segmentsByName(UNHMessageHeader::class));
             })
         );
     }
@@ -53,7 +53,8 @@ final class TransactionMessage
         $this->groupedSegments = $groupedSegments;
     }
 
-    public function segmentByName(string $name): array
+    /** @return array<string,SegmentInterface> */
+    public function segmentsByName(string $name): array
     {
         return $this->groupedSegments[$name] ?? [];
     }
@@ -65,7 +66,7 @@ final class TransactionMessage
      *
      * @psalm-pure
      */
-    private static function groupedSegmentsNotEmpty(array $groupedSegments): bool
+    private static function isGroupedSegmentsNotEmpty(array $groupedSegments): bool
     {
         return count($groupedSegments) > 1;
     }

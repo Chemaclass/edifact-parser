@@ -16,7 +16,7 @@ use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 
 $fileContent = file_get_contents(__DIR__ . '/edifact-sample.edi');
-$messages = EdifactParser::create()->parse($fileContent);
+$messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 
 $printer = ConsolePrinter::createWithHeaders([
     UNHMessageHeader::class,
