@@ -25,7 +25,7 @@ final class ConsolePrinter implements PrinterInterface
     public function printMessage(TransactionMessage $message): void
     {
         foreach ($this->segmentNames as $segmentName) {
-            $this->printSegment($message->segmentsByName($segmentName));
+            $this->printSegment($message->segmentsByTag($segmentName));
         }
     }
 

@@ -68,7 +68,7 @@ EDI;
 
 $messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 $firstMessage = reset($messages);
-$cnNadSegment = $firstMessage->segmentsByName(NADNameAddress::class)['CN'];
+$cnNadSegment = $firstMessage->segmentsByTag(NADNameAddress::class)['CN'];
 $personName = $cnNadSegment->rawValues()[4]; // 'Person Name'
 ```
 

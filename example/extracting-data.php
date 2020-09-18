@@ -13,6 +13,6 @@ $messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 $firstMessage = reset($messages);
 
 /** @var SegmentInterface $cnNadSegment */
-$cnNadSegment = $firstMessage->segmentsByName(NADNameAddress::class)['CN'];
+$cnNadSegment = $firstMessage->segmentsByTag(NADNameAddress::class)['CN'];
 $personName = $cnNadSegment->rawValues()[4];
 assert('Person Name' === $personName);

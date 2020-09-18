@@ -42,7 +42,7 @@ final class TransactionMessage
 
         return array_values(
             array_filter($messages, static function (self $m) {
-                return !empty($m->segmentsByName(UNHMessageHeader::class));
+                return !empty($m->segmentsByTag(UNHMessageHeader::class));
             })
         );
     }
@@ -53,10 +53,10 @@ final class TransactionMessage
         $this->groupedSegments = $groupedSegments;
     }
 
-    /** @return array<string,SegmentInterface> */
-    public function segmentsByName(string $name): array
+    /** @return array<string, SegmentInterface>|array */
+    public function segmentsByTag(string $tag): array
     {
-        return $this->groupedSegments[$name] ?? [];
+        return $this->groupedSegments[$tag] ?? [];
     }
 
     /**
