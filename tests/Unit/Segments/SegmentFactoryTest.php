@@ -24,15 +24,15 @@ final class SegmentFactoryTest extends TestCase
     {
         $factory = SegmentFactory::withDefaultSegments();
 
-        self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
-        self::assertInstanceOf(DTMDateTimePeriod::class, $factory->segmentFromArray(['DTM']));
-        self::assertInstanceOf(NADNameAddress::class, $factory->segmentFromArray(['NAD']));
-        self::assertInstanceOf(MEADimensions::class, $factory->segmentFromArray(['MEA']));
-        self::assertInstanceOf(CNTControl::class, $factory->segmentFromArray(['CNT']));
-        self::assertInstanceOf(PCIPackageId::class, $factory->segmentFromArray(['PCI']));
-        self::assertInstanceOf(BGMBeginningOfMessage::class, $factory->segmentFromArray(['BGM']));
-        self::assertInstanceOf(UNTMessageFooter::class, $factory->segmentFromArray(['UNT']));
-        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['___']));
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->createSegmentFromArray(['UNH']));
+        self::assertInstanceOf(DTMDateTimePeriod::class, $factory->createSegmentFromArray(['DTM']));
+        self::assertInstanceOf(NADNameAddress::class, $factory->createSegmentFromArray(['NAD']));
+        self::assertInstanceOf(MEADimensions::class, $factory->createSegmentFromArray(['MEA']));
+        self::assertInstanceOf(CNTControl::class, $factory->createSegmentFromArray(['CNT']));
+        self::assertInstanceOf(PCIPackageId::class, $factory->createSegmentFromArray(['PCI']));
+        self::assertInstanceOf(BGMBeginningOfMessage::class, $factory->createSegmentFromArray(['BGM']));
+        self::assertInstanceOf(UNTMessageFooter::class, $factory->createSegmentFromArray(['UNT']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['___']));
     }
 
     /** @test */
@@ -42,8 +42,8 @@ final class SegmentFactoryTest extends TestCase
             'UNH' => UNHMessageHeader::class,
         ]);
 
-        self::assertInstanceOf(UNHMessageHeader::class, $factory->segmentFromArray(['UNH']));
-        self::assertInstanceOf(UnknownSegment::class, $factory->segmentFromArray(['DTM']));
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->createSegmentFromArray(['UNH']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['DTM']));
     }
 
     /** @test */

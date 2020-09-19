@@ -21,10 +21,10 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
         $this->defaultFactory = SegmentFactory::withDefaultSegments();
     }
 
-    public function segmentFromArray(array $rawArray): SegmentInterface
+    public function createSegmentFromArray(array $rawArray): SegmentInterface
     {
         if ($this->customKey !== $rawArray[0]) {
-            return $this->defaultFactory->segmentFromArray($rawArray);
+            return $this->defaultFactory->createSegmentFromArray($rawArray);
         }
 
         return new /** @psalm-immutable */ class($rawArray) implements SegmentInterface {

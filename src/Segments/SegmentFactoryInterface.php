@@ -7,5 +7,5 @@ namespace EdifactParser\Segments;
 /** @psalm-immutable */
 interface SegmentFactoryInterface
 {
-    public function segmentFromArray(array $rawArray): SegmentInterface;
+    public function createSegmentFromArray(array $rawArray): SegmentInterface;
 }

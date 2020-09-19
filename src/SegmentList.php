@@ -28,7 +28,7 @@ final class SegmentList
     public function fromRaw(array $rawArrays): array
     {
         return array_map(
-            fn (array $raw) => $this->segmentFactory->segmentFromArray($raw),
+            fn (array $raw) => $this->segmentFactory->createSegmentFromArray($raw),
             $rawArrays
         );
     }

@@ -66,7 +66,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         $this->segments = $segments;
     }
 
-    public function segmentFromArray(array $rawArray): SegmentInterface
+    public function createSegmentFromArray(array $rawArray): SegmentInterface
     {
         $tag = (string) $rawArray[0];
         Assert::length($tag, self::TAG_LENGTH);
