@@ -67,5 +67,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Run test suite
-        run: composer run-script test
+      - name: Run the unit test suite
+        run: vendor/bin/phpunit --testsuite unit
+
+      - name: Run the functional test suite
+        run: vendor/bin/phpunit --testsuite functional
