@@ -33,18 +33,12 @@ final class TransactionMessage
 
             $groupedSegments[] = $segment;
 
-            if ($segment instanceof UNTMessageFooter
-                && self::isGroupedSegmentsNotEmpty($groupedSegments)
-            ) {
-                $messages[] = self::groupSegmentsByName(...$groupedSegments);
+            if ($segment instanceof UNTMessageFooter) {
+                $messages[] = static::groupSegmentsByName(...$groupedSegments);
             }
         }
 
-        return array_values(
-            array_filter($messages, static function (self $m) {
-                return !empty($m->segmentsByTag(UNHMessageHeader::class));
-            })
-        );
+        return static::hasUnhSegment(...$messages);
     }
 
     /** @param array<string, array<string,SegmentInterface>> $groupedSegments */
@@ -66,15 +60,16 @@ final class TransactionMessage
     }
 
     /**
-     * We add automatically all items to the $groupedSegments array in the loop,
-     * one message is made of "UNHMessageHeader" and "UNTMessageFooter" segments.
-     * So the minimum messages are two, only one segment is not possible.
-     *
      * @psalm-pure
+     * @psalm-return list<TransactionMessage>
      */
-    private static function isGroupedSegmentsNotEmpty(array $groupedSegments): bool
+    private static function hasUnhSegment(self...$messages): array
     {
-        return count($groupedSegments) > 1;
+        return array_values(
+            array_filter($messages, static function (self $m) {
+                return !empty($m->segmentsByTag(UNHMessageHeader::class));
+            })
+        );
     }
 
     /** @psalm-pure */

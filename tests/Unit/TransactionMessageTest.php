@@ -157,8 +157,11 @@ EDI;
     {
         $fileContent = <<<EDI
 UNA:+.? '
+CNT+1000:0.1:KGM'
 UNT+10+2'
+CNT+2000:0.2:KGM'
 UNH+3+anything'
+CNT+3000:0.3:KGM'
 UNZ+2+3'
 EDI;
         self::assertEquals([], $this->transactionMessages($fileContent));
