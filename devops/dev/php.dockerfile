@@ -7,6 +7,5 @@ RUN pecl install -o -f xdebug \
     && docker-php-ext-enable xdebug
 RUN curl https://getcomposer.org/download/1.10.13/composer.phar > /usr/local/bin/composer
 RUN chmod 755 /usr/local/bin/composer
-ENV XDEBUG_CONFIG="idekey=anything-works-here"
 RUN useradd -m dev
 WORKDIR /srv/edifact-parser

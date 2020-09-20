@@ -26,27 +26,40 @@ Ok, but... [What is EDIFACT?](/docu/README.md)
 
 Using composer: ```composer require chemaclass/edifact-parser```
 
-## Development and contribution
+## Development
 
-### Your first try!
+### Requirements
 
-1. Clone/Fork the project and `cd` inside the repository
-2. `docker-compose up`
-3. `docker exec -ti -u dev edifact_parser_php bash` 
-4. `composer install`
-5. `php example.php`
+Optimally using [docker](./devops/dev/php.dockerfile) you will have everything you need for the development.
+
+### Setup
+
+Clone/Fork the project and go inside the repository.
+There you can use docker-compose to create and run the docker image.
+Go inside the container and run composer install to install all dependencies.
+You can easily check is working running the example code.
+
+```bash
+docker-compose up
+docker exec -ti -u dev edifact_parser_php bash 
+composer install
+php example/extracting-data.php
+php example/printing-segments.php
+```
 
 ### Composer scripts
 
-```
+```bash
 composer test      # execute phpunit tests
 composer csfix     # run php-cs-fixer fix
 composer psalm     # display psalm errors
 ```
 
-## Basic example
+## Basic examples
 
-You can see a full example of usage [here](example/extracting-data.php).
+You can see a full example of [printing segments](example/printing-segments.php).
+
+You can see a full example of [extracting data](example/extracting-data.php).
 
 ```php
 <?php declare(strict_types=1);
