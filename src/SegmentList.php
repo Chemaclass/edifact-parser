@@ -14,12 +14,12 @@ final class SegmentList
     private SegmentFactoryInterface $segmentFactory;
 
     /** @psalm-pure */
-    public static function factory(?SegmentFactoryInterface $segmentFactory = null): self
+    public static function withDefaultFactory(): self
     {
-        return new self($segmentFactory ?? SegmentFactory::withDefaultSegments());
+        return new self(SegmentFactory::withDefaultSegments());
     }
 
-    private function __construct(SegmentFactoryInterface $segmentFactory)
+    public function __construct(SegmentFactoryInterface $segmentFactory)
     {
         $this->segmentFactory = $segmentFactory;
     }

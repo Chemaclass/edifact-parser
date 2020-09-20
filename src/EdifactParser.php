@@ -39,7 +39,7 @@ final class EdifactParser
             throw InvalidFile::withErrors($errors);
         }
 
-        $segmentList = SegmentList::factory($this->segmentFactory);
+        $segmentList = new SegmentList($this->segmentFactory);
         $segments = $segmentList->fromRaw($parser->get());
 
         return TransactionMessage::groupSegmentsByMessage(...$segments);

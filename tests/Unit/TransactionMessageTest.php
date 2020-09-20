@@ -209,8 +209,9 @@ EDI;
 
     private function transactionMessages(string $fileContent): array
     {
-        return TransactionMessage::groupSegmentsByMessage(
-            ...SegmentList::factory()->fromRaw((new Parser($fileContent))->get())
-        );
+        $segments = SegmentList::withDefaultFactory()
+            ->fromRaw((new Parser($fileContent))->get());
+
+        return TransactionMessage::groupSegmentsByMessage(...$segments);
     }
 }
