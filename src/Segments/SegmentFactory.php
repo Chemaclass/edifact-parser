@@ -25,6 +25,11 @@ final class SegmentFactory implements SegmentFactoryInterface
         'UNT' => UNTMessageFooter::class,
         'RFF' => RFFReference::class,
         'CUX' => CUXCurrencyDetails::class,
+        'LIN' => LINLineItem::class,
+        'QTY' => QTYQuantity::class,
+        'PRI' => PRIPrice::class,
+        'PIA' => PIAAdditionalProductId::class,
+        'UNS' => UNSSectionControl::class,
     ];
 
     private const TAG_LENGTH = 3;
