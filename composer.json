@@ -20,14 +20,14 @@
     "prefer-stable": true,
     "require": {
         "ext-json": "*",
-        "php": "^7.4",
-        "sabas/edifact": "^0.5"
+        "php": ">=8.0",
+        "sabas/edifact": "^0.6"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.16",
-        "phpunit/phpunit": "^8.5",
-        "symfony/var-dumper": "^5.0",
-        "vimeo/psalm": "^3.11"
+        "friendsofphp/php-cs-fixer": "^2.19",
+        "phpunit/phpunit": "^9.5",
+        "symfony/var-dumper": "^5.4",
+        "vimeo/psalm": "^3.18"
     },
     "autoload": {
         "psr-4": {
@@ -44,5 +44,10 @@
         "csfix": "vendor/bin/php-cs-fixer fix",
         "psalm": "vendor/bin/psalm",
         "psalm-log": "vendor/bin/psalm --output-format=text --show-info=true > psalm.log"
+    },
+    "config": {
+        "allow-plugins": {
+            "ocramius/package-versions": true
+        }
     }
 }
