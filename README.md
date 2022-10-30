@@ -22,41 +22,20 @@ Ok, but... [What is EDIFACT?](/docu/README.md)
 
 * A transaction is the list of messages that belongs to a file. 
 
-## Installation as vendor
-
-Using composer: ```composer require chemaclass/edifact-parser```
-
-## Development
-
-### Requirements
-
-You need PHP >=8.0 and composer to install the dependencies.
-
-Alternatively, you can use [docker](./devops/dev/php.dockerfile)
-
-#### Setup
-
-Clone/Fork the project and go inside the repository.
-There you can use docker-compose to create and run the docker image.
-Go inside the container and run composer install to install all dependencies.
-You can easily check is working running the example code.
+### Installation
 
 ```bash
-docker-compose up
-docker exec -ti -u dev edifact_parser_php bash 
-composer install
-php example/extracting-data.php
-php example/printing-segments.php
+composer require chemaclass/edifact-parser
 ```
 
-### Composer scripts
+### Contribute
 
-```bash
-composer csfix     # fix the style using php-cs-fixer
-composer test-all  # execute phpunit tests
-```
+You are more than welcome to contribute reporting
+[issues](https://github.com/gacela-project/gacela/issues),
+sharing [ideas](https://github.com/gacela-project/gacela/discussions),
+or [contributing](.github/CONTRIBUTING.md) with your Pull Requests.
 
-## Basic examples
+### Basic examples
 
 You can see a full example of [printing segments](example/printing-segments.php).
 
