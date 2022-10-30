@@ -16,7 +16,7 @@ final class BGMBeginningOfMessage implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'BGM';
     }
 
     public function subId(): string

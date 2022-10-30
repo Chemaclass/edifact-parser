@@ -68,7 +68,7 @@ final class TransactionMessage
     {
         return array_values(
             array_filter($messages, static function (self $m) {
-                return !empty($m->segmentsByTag(UNHMessageHeader::class));
+                return !empty($m->segmentsByTag('UNH'));
             })
         );
     }

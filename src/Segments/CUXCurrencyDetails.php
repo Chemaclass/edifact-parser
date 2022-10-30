@@ -13,7 +13,7 @@ class CUXCurrencyDetails implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'CUX';
     }
 
     public function subId(): string

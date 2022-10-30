@@ -23,10 +23,10 @@ final class TransactionMessageTest extends TestCase
 
         self::assertEquals([
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
             ]),
@@ -47,18 +47,18 @@ UNT+19+2'
 EDI;
         self::assertEquals([
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
             ]),
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
             ]),
@@ -80,13 +80,13 @@ UNT+19+1'
 EDI;
         self::assertEquals([
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '1' => new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-                CNTControl::class => [
+                'CNT' => [
                     '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
                     '11' => new CNTControl(['CNT', ['11', '1', 'PCE']]),
                     '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
@@ -112,21 +112,21 @@ UNZ+2+3'
 EDI;
         self::assertEquals([
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '1' => new UNHMessageHeader(['UNH', '1', 'anything']),
                 ],
-                CNTControl::class => [
+                'CNT' => [
                     '7' => new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
             ]),
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
             ]),
@@ -149,13 +149,13 @@ UNZ+2+3'
 EDI;
         self::assertEquals([
             new TransactionMessage([
-                UNHMessageHeader::class => [
+                'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
                 ],
-                CNTControl::class => [
+                'CNT' => [
                     '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
                 ],
-                UNTMessageFooter::class => [
+                'UNT' => [
                     '10' => new UNTMessageFooter(['UNT', '10', '2']),
                 ],
             ]),
@@ -197,7 +197,7 @@ EDI;
 
         self::assertEquals([
             '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
-        ], $firstMessage->segmentsByTag(CNTControl::class));
+        ], $firstMessage->segmentsByTag('CNT'));
 
         self::assertEmpty($firstMessage->segmentsByTag('unknown'));
     }
@@ -220,10 +220,10 @@ EDI;
 
         self::assertEquals(
             new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
-            $firstMessage->segmentByTagAndSubId(CNTControl::class, '5')
+            $firstMessage->segmentByTagAndSubId('CNT', '5')
         );
 
-        self::assertNull($firstMessage->segmentByTagAndSubId(CNTControl::class, 'unknown'));
+        self::assertNull($firstMessage->segmentByTagAndSubId('CNT', 'unknown'));
     }
 
     private function transactionMessages(string $fileContent): array

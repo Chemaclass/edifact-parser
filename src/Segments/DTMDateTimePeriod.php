@@ -18,7 +18,7 @@ final class DTMDateTimePeriod implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'DTM';
     }
 
     public function subId(): string

@@ -18,7 +18,7 @@ final class NADNameAddress implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'NAD';
     }
 
     public function subId(): string

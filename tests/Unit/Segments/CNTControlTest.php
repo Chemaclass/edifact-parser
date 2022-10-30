@@ -18,7 +18,7 @@ final class CNTControlTest extends TestCase
         $rawValues = ['CNT', ['7', '0.1', 'KGM']];
         $segment = new CNTControl($rawValues);
 
-        self::assertEquals(CNTControl::class, $segment->tag());
+        self::assertEquals('CNT', $segment->tag());
         self::assertEquals('7', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }

@@ -20,7 +20,7 @@ final class CNTControl implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'CNT';
     }
 
     public function subId(): string

@@ -17,7 +17,7 @@ class CUXCurrencyDetailsTest extends TestCase
         $rawValues = ['CUX', ['5', 'GBP', '9']];
         $segment = new CUXCurrencyDetails($rawValues);
 
-        self::assertEquals(CUXCurrencyDetails::class, $segment->tag());
+        self::assertEquals('CUX', $segment->tag());
         self::assertEquals('5', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
