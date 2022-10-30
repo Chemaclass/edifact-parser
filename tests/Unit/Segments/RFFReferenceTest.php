@@ -9,8 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class RFFReferenceTest extends TestCase
 {
-    /** @test */
-    public function segmentValues() {
+    /**
+     * @test
+     */
+    public function segment_values(): void
+    {
         $rawValues = ['RFF', ['ADE', '123413287423784']];
         $segment = new RFFReference($rawValues);
 
