@@ -30,9 +30,11 @@ Using composer: ```composer require chemaclass/edifact-parser```
 
 ### Requirements
 
-Optimally using [docker](./devops/dev/php.dockerfile) you will have everything you need for the development.
+You need PHP >=8.0 and composer to install the dependencies.
 
-### Setup
+Alternatively, you can use [docker](./devops/dev/php.dockerfile)
+
+#### Setup
 
 Clone/Fork the project and go inside the repository.
 There you can use docker-compose to create and run the docker image.
@@ -50,9 +52,8 @@ php example/printing-segments.php
 ### Composer scripts
 
 ```bash
-composer test      # execute phpunit tests
-composer csfix     # run php-cs-fixer fix
-composer psalm     # display psalm errors
+composer csfix     # fix the style using php-cs-fixer
+composer test-all  # execute phpunit tests
 ```
 
 ## Basic examples
