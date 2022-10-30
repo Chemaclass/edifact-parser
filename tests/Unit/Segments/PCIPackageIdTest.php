@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class PCIPackageIdTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['PCI', '18', '00250559268149700889'];
         $segment = new PCIPackageId($rawValues);

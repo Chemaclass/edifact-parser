@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class BGMBeginningOfMessageTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['BGM', '340', '00250559268149700889', '9'];
         $segment = new BGMBeginningOfMessage($rawValues);

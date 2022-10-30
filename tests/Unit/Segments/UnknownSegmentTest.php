@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class UnknownSegmentTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['UNKNOWN', 'SEGMENT'];
         $segment = new UnknownSegment($rawValues);

@@ -14,8 +14,10 @@ use PHPUnit\Framework\TestCase;
 
 final class EdifactParserTest extends TestCase
 {
-    /** @test */
-    public function invalidFileDueToANonPrintableChar(): void
+    /**
+     * @test
+     */
+    public function invalid_file_due_to_a_non_printable_char(): void
     {
         $fileContent = <<<EDI
 \xE2\x80\xAF
@@ -24,8 +26,10 @@ EDI;
         EdifactParser::createWithDefaultSegments()->parse($fileContent);
     }
 
-    /** @test */
-    public function parseMoreThanOneMessage(): void
+    /**
+     * @test
+     */
+    public function parse_more_than_one_message(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -41,8 +45,10 @@ EDI;
         self::assertCount(3, $transactionResult);
     }
 
-    /** @test */
-    public function extractValuesFromMessage(): void
+    /**
+     * @test
+     */
+    public function extract_values_from_message(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -73,8 +79,10 @@ EDI;
         self::assertEquals(['UNT', '19', '1'], $unt->rawValues());
     }
 
-    /** @test */
-    public function useACustomSegmentFactory(): void
+    /**
+     * @test
+     */
+    public function use_a_custom_segment_factory(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '

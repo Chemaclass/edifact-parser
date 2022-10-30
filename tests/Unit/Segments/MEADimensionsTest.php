@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class MEADimensionsTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['MEA', 'WT', 'G', ['KGM', '0.1']];
         $segment = new MEADimensions($rawValues);

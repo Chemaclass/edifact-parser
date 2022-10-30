@@ -15,13 +15,20 @@ final class TransactionMessage
     private array $groupedSegments;
 
     /**
+     * @param array<string, array<string,SegmentInterface>> $groupedSegments
+     */
+    public function __construct(array $groupedSegments)
+    {
+        $this->groupedSegments = $groupedSegments;
+    }
+
+    /**
      * A transaction message starts with the "UNHMessageHeader" segment and finalizes with
      * the "UNTMessageFooter" segment, this process is repeated for each pair of segments.
      *
-     * @psalm-pure
-     * @psalm-return list<TransactionMessage>
+     * @return list<TransactionMessage>
      */
-    public static function groupSegmentsByMessage(SegmentInterface...$segments): array
+    public static function groupSegmentsByMessage(SegmentInterface ...$segments): array
     {
         $messages = [];
         $groupedSegments = [];
@@ -34,36 +41,30 @@ final class TransactionMessage
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter) {
-                $messages[] = static::groupSegmentsByName(...$groupedSegments);
+                $messages[] = self::groupSegmentsByName(...$groupedSegments);
             }
         }
 
-        return static::hasUnhSegment(...$messages);
+        return self::hasUnhSegment(...$messages);
     }
 
-    /** @param array<string, array<string,SegmentInterface>> $groupedSegments */
-    public function __construct(array $groupedSegments)
-    {
-        $this->groupedSegments = $groupedSegments;
-    }
-
-    /** @return array|array<string, SegmentInterface> */
+    /**
+     * @return array<string,SegmentInterface>
+     */
     public function segmentsByTag(string $tag): array
     {
         return $this->groupedSegments[$tag] ?? [];
     }
 
-    /** @return ?SegmentInterface */
     public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
     {
         return $this->groupedSegments[$tag][$subId] ?? null;
     }
 
     /**
-     * @psalm-pure
-     * @psalm-return list<TransactionMessage>
+     * @return list<TransactionMessage>
      */
-    private static function hasUnhSegment(self...$messages): array
+    private static function hasUnhSegment(self ...$messages): array
     {
         return array_values(
             array_filter($messages, static function (self $m) {
@@ -72,8 +73,7 @@ final class TransactionMessage
         );
     }
 
-    /** @psalm-pure */
-    private static function groupSegmentsByName(SegmentInterface...$segments): self
+    private static function groupSegmentsByName(SegmentInterface ...$segments): self
     {
         $return = [];
 

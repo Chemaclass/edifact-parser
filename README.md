@@ -3,7 +3,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Chemaclass/EdifactParser/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Chemaclass/EdifactParser/?branch=master)
 [![Type Coverage](https://shepherd.dev/github/Chemaclass/EdifactParser/coverage.svg)](https://shepherd.dev/github/chemaclass/EdifactParser)
 [![CI](https://github.com/Chemaclass/EdifactParser/workflows/CI/badge.svg?branch=master)](https://github.com/Chemaclass/EdifactParser/actions)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-8892BF.svg?style=flat-square)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg?style=flat-square)](https://php.net/)
 
 EDIFACT stands for `Electronic Data Interchange For Administration, Commerce, and Transport`. 
 
@@ -22,40 +22,20 @@ Ok, but... [What is EDIFACT?](/docu/README.md)
 
 * A transaction is the list of messages that belongs to a file. 
 
-## Installation as vendor
-
-Using composer: ```composer require chemaclass/edifact-parser```
-
-## Development
-
-### Requirements
-
-Optimally using [docker](./devops/dev/php.dockerfile) you will have everything you need for the development.
-
-### Setup
-
-Clone/Fork the project and go inside the repository.
-There you can use docker-compose to create and run the docker image.
-Go inside the container and run composer install to install all dependencies.
-You can easily check is working running the example code.
+### Installation
 
 ```bash
-docker-compose up
-docker exec -ti -u dev edifact_parser_php bash 
-composer install
-php example/extracting-data.php
-php example/printing-segments.php
+composer require chemaclass/edifact-parser
 ```
 
-### Composer scripts
+### Contribute
 
-```bash
-composer test      # execute phpunit tests
-composer csfix     # run php-cs-fixer fix
-composer psalm     # display psalm errors
-```
+You are more than welcome to contribute reporting
+[issues](https://github.com/gacela-project/gacela/issues),
+sharing [ideas](https://github.com/gacela-project/gacela/discussions),
+or [contributing](.github/CONTRIBUTING.md) with your Pull Requests.
 
-## Basic examples
+### Basic examples
 
 You can see a full example of [printing segments](example/printing-segments.php).
 

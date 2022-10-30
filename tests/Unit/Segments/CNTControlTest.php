@@ -10,8 +10,10 @@ use PHPUnit\Framework\TestCase;
 
 final class CNTControlTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['CNT', ['7', '0.1', 'KGM']];
         $segment = new CNTControl($rawValues);
@@ -21,8 +23,10 @@ final class CNTControlTest extends TestCase
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
-    /** @test */
-    public function missingSubId(): void
+    /**
+     * @test
+     */
+    public function missing_sub_id(): void
     {
         $segment = new CNTControl(['CNT']);
         $this->expectException(MissingSubId::class);

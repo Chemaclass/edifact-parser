@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class UNTMessageFooterTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['UNT', '19', '1'];
         $segment = new UNTMessageFooter($rawValues);

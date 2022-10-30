@@ -34,7 +34,7 @@ jobs:
         run: composer install --no-interaction --no-ansi --no-progress
 
       - name: Run friendsofphp/php-cs-fixer
-        run: ./vendor/bin/php-cs-fixer fix --diff-format=udiff --dry-run --show-progress=dots --using-cache=no --verbose
+        run: ./vendor/bin/php-cs-fixer fix --allow-risky=yes --dry-run --show-progress=dots --using-cache=no --verbose
 
   type-checker:
     name: Type Checker
@@ -63,7 +63,10 @@ jobs:
         run: composer install --no-interaction --no-ansi --no-progress
 
       - name: Run vimeo/psalm on internal code
-        run: ./vendor/bin/psalm --config=psalm.xml --no-progress --shepherd --show-info=false --stats
+        run: ./vendor/bin/psalm --config=psalm.xml --no-progress --shepherd --show-info=false --stats --output-format=github
+
+      - name: Run phpstan on internal code
+        run: ./vendor/bin/phpstan analyze -c phpstan.neon src
 
   tests:
     name: Tests

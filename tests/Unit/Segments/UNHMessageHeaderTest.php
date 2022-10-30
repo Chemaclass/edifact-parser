@@ -10,8 +10,10 @@ use PHPUnit\Framework\TestCase;
 
 final class UNHMessageHeaderTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = ['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']];
         $segment = new UNHMessageHeader($rawValues);
@@ -21,8 +23,10 @@ final class UNHMessageHeaderTest extends TestCase
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
-    /** @test */
-    public function missingSubId(): void
+    /**
+     * @test
+     */
+    public function missing_sub_id(): void
     {
         $segment = new UNHMessageHeader(['UNH']);
         $this->expectException(MissingSubId::class);

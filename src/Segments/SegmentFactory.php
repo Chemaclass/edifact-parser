@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-use function class_implements;
-use function in_array;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
+
+use function class_implements;
+use function in_array;
 
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
@@ -35,6 +36,22 @@ final class SegmentFactory implements SegmentFactoryInterface
     private array $segments;
 
     /**
+     * @param array<string,string> $segments
+     */
+    private function __construct(array $segments)
+    {
+        foreach ($segments as $tag => $class) {
+            Assert::length($tag, self::TAG_LENGTH);
+
+            if (!$this->classImplements($class, SegmentInterface::class)) {
+                throw new InvalidArgumentException("'{$class}' must implements 'SegmentInterface'");
+            }
+        }
+
+        $this->segments = $segments;
+    }
+
+    /**
      * @psalm-pure
      *
      * @param array<string,string> $segments
@@ -47,24 +64,12 @@ final class SegmentFactory implements SegmentFactoryInterface
         return new self($segments);
     }
 
-    /** @psalm-pure */
+    /**
+     * @psalm-pure
+     */
     public static function withDefaultSegments(): self
     {
         return new self(self::DEFAULT_SEGMENTS);
-    }
-
-    /** @param array<string,string> $segments */
-    private function __construct(array $segments)
-    {
-        foreach ($segments as $tag => $class) {
-            Assert::length($tag, self::TAG_LENGTH);
-
-            if (!$this->classImplements($class, SegmentInterface::class)) {
-                throw new InvalidArgumentException("'{$class}' must implements 'SegmentInterface'");
-            }
-        }
-
-        $this->segments = $segments;
     }
 
     public function createSegmentFromArray(array $rawArray): SegmentInterface

@@ -24,10 +24,11 @@
         "sabas/edifact": "^0.6"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.19",
+        "friendsofphp/php-cs-fixer": "^3.12",
         "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.8",
         "symfony/var-dumper": "^5.4",
-        "vimeo/psalm": "^3.18"
+        "vimeo/psalm": "^4.29"
     },
     "autoload": {
         "psr-4": {
@@ -40,14 +41,29 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
-        "csfix": "vendor/bin/php-cs-fixer fix",
-        "psalm": "vendor/bin/psalm",
-        "psalm-log": "vendor/bin/psalm --output-format=text --show-info=true > psalm.log"
+        "test-all": [
+            "@quality",
+            "@phpunit"
+        ],
+        "quality": [
+            "@csrun",
+            "@psalm",
+            "@phpstan"
+        ],
+        "phpunit": [
+            "@test-unit",
+            "@test-functional"
+        ],
+        "test-unit": "./vendor/bin/phpunit --testsuite=unit",
+        "test-functional": "./vendor/bin/phpunit --testsuite=functional",
+        "psalm": "./vendor/bin/psalm",
+        "phpstan": "./vendor/bin/phpstan analyze",
+        "csfix": "./vendor/bin/php-cs-fixer fix",
+        "csrun": "./vendor/bin/php-cs-fixer fix --dry-run"
     },
     "config": {
-        "allow-plugins": {
-            "ocramius/package-versions": true
+        "platform": {
+            "php": "8.0"
         }
     }
 }

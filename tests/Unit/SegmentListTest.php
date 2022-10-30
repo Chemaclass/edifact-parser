@@ -12,8 +12,10 @@ use PHPUnit\Framework\TestCase;
 
 final class SegmentListTest extends TestCase
 {
-    /** @test */
-    public function listWithOneSegment(): void
+    /**
+     * @test
+     */
+    public function list_with_one_segment(): void
     {
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'";
 
@@ -22,8 +24,10 @@ final class SegmentListTest extends TestCase
         ], $this->segmentsFromFileContent($fileContent));
     }
 
-    /** @test */
-    public function listWithMultipleSegments(): void
+    /**
+     * @test
+     */
+    public function list_with_multiple_segments(): void
     {
         $fileContent = "UNH+1+IFTMIN:S:1A:UN:P1'\nUNH+2+IFTMIN:R:2A:UN:P2'\nCNT+7:0.1:KGM'";
 
