@@ -9,27 +9,30 @@ use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 
-/** @psalm-immutable */
 final class EdifactParser
 {
     private SegmentFactoryInterface $segmentFactory;
-
-    public static function createWithDefaultSegments(): self
-    {
-        return new self(SegmentFactory::withDefaultSegments());
-    }
 
     public function __construct(SegmentFactoryInterface $segmentFactory)
     {
         $this->segmentFactory = $segmentFactory;
     }
 
-    /** @codeCoverageIgnore */
+    /**
+     * @codeCoverageIgnore
+     */
     private function __clone()
     {
     }
 
-    /** @return TransactionMessage[] */
+    public static function createWithDefaultSegments(): self
+    {
+        return new self(SegmentFactory::withDefaultSegments());
+    }
+
+    /**
+     * @return list<TransactionMessage>
+     */
     public function parse(string $fileContent): array
     {
         $parser = new Parser($fileContent);

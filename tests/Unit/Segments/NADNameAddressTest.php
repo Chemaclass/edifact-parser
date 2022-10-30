@@ -9,8 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class NADNameAddressTest extends TestCase
 {
-    /** @test */
-    public function segmentValues(): void
+    /**
+     * @test
+     */
+    public function segment_values(): void
     {
         $rawValues = [
             'NAD',

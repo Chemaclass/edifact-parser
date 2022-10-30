@@ -14,8 +14,10 @@ use PHPUnit\Framework\TestCase;
 
 final class TransactionMessageTest extends TestCase
 {
-    /** @test */
-    public function segmentsInOneMessage(): void
+    /**
+     * @test
+     */
+    public function segments_in_one_message(): void
     {
         $fileContent = "UNH+1+IFTMIN:S:93A:UN:PN001'\nUNT+19+1'";
 
@@ -31,8 +33,10 @@ final class TransactionMessageTest extends TestCase
         ], $this->transactionMessages($fileContent));
     }
 
-    /** @test */
-    public function segmentsInTwoMessages(): void
+    /**
+     * @test
+     */
+    public function segments_in_two_messages(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -61,8 +65,10 @@ EDI;
         ], $this->transactionMessages($fileContent));
     }
 
-    /** @test */
-    public function oneMessageWithMultipleSegmentsWithTheSameName(): void
+    /**
+     * @test
+     */
+    public function one_message_with_multiple_segments_with_the_same_name(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -89,8 +95,10 @@ EDI;
         ], $this->transactionMessages($fileContent));
     }
 
-    /** @test */
-    public function oneMessageIsCreatedWhenStartWithUNHAndEndsWithUNT(): void
+    /**
+     * @test
+     */
+    public function one_message_is_created_when_start_with_unh_and_ends_with_unt(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -125,8 +133,10 @@ EDI;
         ], $this->transactionMessages($fileContent));
     }
 
-    /** @test */
-    public function previousUNHAreOverriddenIfTheyDoesntHaveUNT(): void
+    /**
+     * @test
+     */
+    public function previous_unh_are_overridden_if_they_doesnt_have_unt(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -152,8 +162,10 @@ EDI;
         ], $this->transactionMessages($fileContent));
     }
 
-    /** @test */
-    public function messageNotCreatedIfUNTDoesntHaveUNHOrViceVersa(): void
+    /**
+     * @test
+     */
+    public function message_not_created_if_unt_doesnt_have_unh_or_vice_versa(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -167,8 +179,10 @@ EDI;
         self::assertEquals([], $this->transactionMessages($fileContent));
     }
 
-    /** @test */
-    public function segmentsByTag(): void
+    /**
+     * @test
+     */
+    public function segments_by_tag(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -188,8 +202,10 @@ EDI;
         self::assertEmpty($firstMessage->segmentsByTag('unknown'));
     }
 
-    /** @test */
-    public function segmentByTagAndSubId(): void
+    /**
+     * @test
+     */
+    public function segment_by_tag_and_sub_id(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '

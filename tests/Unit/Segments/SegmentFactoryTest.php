@@ -19,8 +19,10 @@ use PHPUnit\Framework\TestCase;
 
 final class SegmentFactoryTest extends TestCase
 {
-    /** @test */
-    public function withDefaultSegments(): void
+    /**
+     * @test
+     */
+    public function with_default_segments(): void
     {
         $factory = SegmentFactory::withDefaultSegments();
 
@@ -35,8 +37,10 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['___']));
     }
 
-    /** @test */
-    public function withCustomSegments(): void
+    /**
+     * @test
+     */
+    public function with_custom_segments(): void
     {
         $factory = SegmentFactory::withSegments([
             'UNH' => UNHMessageHeader::class,
@@ -46,15 +50,19 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['DTM']));
     }
 
-    /** @test */
-    public function exceptionWhenTagTooLarge(): void
+    /**
+     * @test
+     */
+    public function exception_when_tag_too_large(): void
     {
         $this->expectException(InvalidArgumentException::class);
         SegmentFactory::withSegments(['TAG_TOO_LARGE' => UNHMessageHeader::class]);
     }
 
-    /** @test */
-    public function exceptionWhenCreatingNonValidTag(): void
+    /**
+     * @test
+     */
+    public function exception_when_creating_non_valid_tag(): void
     {
         $this->expectException(InvalidArgumentException::class);
         SegmentFactory::withSegments(['NON' => NONFakeSegment::class]);
