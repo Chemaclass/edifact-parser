@@ -13,12 +13,14 @@ class RFFReference implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'RFF';
     }
+
     public function subId(): string
     {
         return $this->rawValues[1][0];
     }
+
     public function rawValues(): array
     {
         return $this->rawValues;

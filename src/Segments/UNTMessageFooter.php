@@ -16,7 +16,7 @@ final class UNTMessageFooter implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'UNT';
     }
 
     public function subId(): string

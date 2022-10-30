@@ -24,6 +24,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         'BGM' => BGMBeginningOfMessage::class,
         'UNT' => UNTMessageFooter::class,
         'RFF' => RFFReference::class,
+        'CUX' => CUXCurrencyDetails::class,
     ];
 
     private const TAG_LENGTH = 3;

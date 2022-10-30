@@ -16,7 +16,7 @@ final class UnknownSegment implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'Unknown';
     }
 
     public function subId(): string

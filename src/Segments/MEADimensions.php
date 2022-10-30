@@ -18,7 +18,7 @@ final class MEADimensions implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'MEA';
     }
 
     public function subId(): string

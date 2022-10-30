@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-namespace EdifactParser\Segments;
-
 /** @psalm-immutable */
-final class NADNameAddress implements SegmentInterface
+class CUXCurrencyDetails implements SegmentInterface
 {
-    private array $rawValues;
-
-    public function __construct(array $rawValues)
+    public function __construct(private array $rawValues)
     {
-        $this->rawValues = $rawValues;
     }
 
     public function tag(): string
     {
-        return 'NAD';
+        return 'CUX';
     }
 
     public function subId(): string
     {
-        return (string) $this->rawValues[1];
+        return $this->rawValues[1][0];
     }
 
     public function rawValues(): array

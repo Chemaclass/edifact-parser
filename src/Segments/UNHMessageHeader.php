@@ -18,7 +18,7 @@ final class UNHMessageHeader implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'UNH';
     }
 
     public function subId(): string

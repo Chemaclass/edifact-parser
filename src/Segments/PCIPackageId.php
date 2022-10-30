@@ -16,7 +16,7 @@ final class PCIPackageId implements SegmentInterface
 
     public function tag(): string
     {
-        return self::class;
+        return 'PCI';
     }
 
     public function subId(): string

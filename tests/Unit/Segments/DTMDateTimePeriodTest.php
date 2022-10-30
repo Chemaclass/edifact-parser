@@ -18,7 +18,7 @@ final class DTMDateTimePeriodTest extends TestCase
         $rawValues = ['DTM', ['10', '20191002', '102']];
         $segment = new DTMDateTimePeriod($rawValues);
 
-        self::assertEquals(DTMDateTimePeriod::class, $segment->tag());
+        self::assertEquals('DTM', $segment->tag());
         self::assertEquals('10', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
