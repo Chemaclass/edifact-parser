@@ -22,6 +22,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         'PCI' => PCIPackageId::class,
         'BGM' => BGMBeginningOfMessage::class,
         'UNT' => UNTMessageFooter::class,
+        'RFF' => RFFReference::class,
     ];
 
     private const TAG_LENGTH = 3;
