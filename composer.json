@@ -20,7 +20,7 @@
     "prefer-stable": true,
     "require": {
         "ext-json": "*",
-        "php": "^7.4",
+        "php": ">=8.0",
         "sabas/edifact": "^0.5"
     },
     "require-dev": {
@@ -44,5 +44,10 @@
         "csfix": "vendor/bin/php-cs-fixer fix",
         "psalm": "vendor/bin/psalm",
         "psalm-log": "vendor/bin/psalm --output-format=text --show-info=true > psalm.log"
+    },
+    "config": {
+        "allow-plugins": {
+            "ocramius/package-versions": true
+        }
     }
 }
