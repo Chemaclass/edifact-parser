@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
@@ -15,7 +16,7 @@ final class TransactionMessage
     private array $groupedSegments;
 
     /**
-     * @param array<string, array<string,SegmentInterface>> $groupedSegments
+     * @param  array<string, array<string,SegmentInterface>>  $groupedSegments
      */
     public function __construct(array $groupedSegments)
     {
@@ -75,13 +76,12 @@ final class TransactionMessage
 
     private static function groupSegmentsByName(SegmentInterface ...$segments): self
     {
-        $return = [];
+        $builder = new MessageDataBuilder();
 
-        foreach ($segments as $s) {
-            $return[$s->tag()] ??= [];
-            $return[$s->tag()][$s->subId()] = $s;
+        foreach ($segments as $segment) {
+            $builder->addSegment($segment);
         }
 
-        return new self($return);
+        return new self($builder->build());
     }
 }
