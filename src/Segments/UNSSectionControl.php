@@ -29,8 +29,8 @@ class UNSSectionControl implements SegmentInterface
         return $this->rawValues;
     }
 
-    public function getIdentifier(): SectionControlIdentifier
+    public function indicatesEndOfDetailsSection(): bool
     {
-        return SectionControlIdentifier::from($this->rawValues[1]);
+        return $this->rawValues[1] == 'S';
     }
 }

@@ -21,4 +21,13 @@ class UNSSectionControlTest extends TestCase
         self::assertEquals('D', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function indicates_end_of_details_section(): void
+    {
+        self::assertFalse((new UNSSectionControl(['UNS', 'D']))->indicatesEndOfDetailsSection());
+        self::assertTrue((new UNSSectionControl(['UNS', 'S']))->indicatesEndOfDetailsSection());
+    }
 }

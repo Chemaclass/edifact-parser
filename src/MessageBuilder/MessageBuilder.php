@@ -62,6 +62,6 @@ class MessageBuilder extends SimpleMessageBuilder
     private function atEndOfDetailsSection(SegmentInterface $segment): bool
     {
         return $segment instanceof UNSSectionControl &&
-            $segment->getIdentifier()->indicatesEndOfDetailsSection();
+            $segment->indicatesEndOfDetailsSection();
     }
 }
