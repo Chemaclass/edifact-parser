@@ -11,8 +11,8 @@ use EdifactParser\Segments\UNSSectionControl;
 class MessageBuilder
 {
     private array $data;
-    private array $lineItemData;
-    private bool $isProcessingLineItems = false;
+    private ?SimpleMessageBuilder $lineItemsBuilder = null;
+    private string|null $lineItemId = null;
 
     public function addSegment(SegmentInterface $segment): self
     {
@@ -22,7 +22,7 @@ class MessageBuilder
             $this->processLineItem($segment);
         }
 
-        if ($this->isProcessingLineItems) {
+        if ($this->lineItemsBuilder) {
             $this->saveLineItemData($segment);
         } else {
             $this->saveSegment($segment);
@@ -38,14 +38,23 @@ class MessageBuilder
 
     public function processLineItem(SegmentInterface $segment): void
     {
-        $this->isProcessingLineItems = true;
-        $this->lineItemData[$segment->subId()] = [];
+        $this->saveLineItemsIfPresent();
+        $this->lineItemsBuilder = new SimpleMessageBuilder();
+        $this->lineItemId = $segment->subId();
     }
 
     public function endProcessingOfLineItems(): void
     {
-        $this->isProcessingLineItems = false;
-        $this->saveLineItemDataIfPresent();
+        $this->saveLineItemsIfPresent();
+        $this->lineItemsBuilder = null;
+    }
+
+    public function saveLineItemsIfPresent(): void
+    {
+        if ($this->lineItemsBuilder) {
+            $segments = $this->lineItemsBuilder->build();
+            $this->data['LIN'][$this->lineItemId] = $segments;
+        }
     }
 
     private function saveSegment(SegmentInterface $segment): void
@@ -56,22 +65,12 @@ class MessageBuilder
 
     private function saveLineItemData(SegmentInterface $segment): void
     {
-        if (!empty($this->lineItemData)) {
-            $lastKey = array_key_last($this->lineItemData);
-            $this->lineItemData[$lastKey][] = $segment;
-        }
+        $this->lineItemsBuilder?->addSegment($segment);
     }
 
     private function indicatesEndOfDetailsSection(SegmentInterface $segment): bool
     {
         return $segment instanceof UNSSectionControl &&
             $segment->getIdentifier()->indicatesEndOfDetailsSection();
-    }
-
-    private function saveLineItemDataIfPresent(): void
-    {
-        if (!empty($this->lineItemData)) {
-            $this->data['LIN'] = $this->lineItemData;
-        }
     }
 }

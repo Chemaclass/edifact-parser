@@ -34,7 +34,7 @@ class MessageBuilderTest extends TestCase
         $this->lineSegment = new LINLineItem(['LIN', '1']);
         $this->quantitySegment = new QTYQuantity(['QTY', ['21', '5']]);
         $this->otherLineSegment = new LINLineItem(['LIN', '2']);
-        $this->otherQuantitySegment = new QTYQuantity(['QTY', ['21', '8']]);
+        $this->otherQuantitySegment = new QTYQuantity(['QTY', ['23', '8']]);
         $this->separatorBetweenDetailsAndSummarySegment = new UNSSectionControl(['UNS', 'S']);
     }
 
@@ -100,12 +100,40 @@ class MessageBuilderTest extends TestCase
             ],
             'LIN' => [
                 '1' => [
-                    $this->lineSegment,
-                    $this->quantitySegment,
+                    'LIN' => ['1' => $this->lineSegment],
+                    'QTY' => ['21' => $this->quantitySegment],
                 ],
                 '2' => [
-                    $this->otherLineSegment,
-                    $this->otherQuantitySegment,
+                    'LIN' => ['2' => $this->otherLineSegment],
+                    'QTY' => ['23' => $this->otherQuantitySegment],
+                ],
+            ],
+            'UNS' => [
+                'S' => $this->separatorBetweenDetailsAndSummarySegment,
+            ],
+        ], $builder->build());
+    }
+
+    /**
+     * @test
+     */
+    public function groups_segments_within_line_items(): void
+    {
+        $builder = new MessageBuilder();
+
+        $builder->addSegment($this->lineSegment);
+        $builder->addSegment($this->quantitySegment);
+        $builder->addSegment($this->otherQuantitySegment);
+        $builder->addSegment($this->separatorBetweenDetailsAndSummarySegment);
+
+        self::assertEquals([
+            'LIN' => [
+                '1' => [
+                    'LIN' => ['1' => $this->lineSegment],
+                    'QTY' => [
+                        '21' => $this->quantitySegment,
+                        '23' => $this->otherQuantitySegment,
+                    ],
                 ],
             ],
             'UNS' => [
