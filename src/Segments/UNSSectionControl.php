@@ -31,6 +31,6 @@ class UNSSectionControl implements SegmentInterface
 
     public function indicatesEndOfDetailsSection(): bool
     {
-        return $this->rawValues[1] == 'S';
+        return $this->rawValues[1] == SectionControlIdentifier::BetweenMessageDetailsAndSummary;
     }
 }
