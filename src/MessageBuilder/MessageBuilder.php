@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser;
+namespace EdifactParser\MessageBuilder;
 
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\SegmentInterface;

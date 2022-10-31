@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\Tests\Unit;
+namespace EdifactParser\Tests\Unit\MessageBuilder;
 
-use EdifactParser\MessageBuilder;
+use EdifactParser\MessageBuilder\MessageBuilder;
 use EdifactParser\Segments\DTMDateTimePeriod;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\QTYQuantity;

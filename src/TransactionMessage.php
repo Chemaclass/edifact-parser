@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use EdifactParser\MessageBuilder\MessageBuilder;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
