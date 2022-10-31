@@ -24,10 +24,8 @@ class MessageBuilderTest extends TestCase
     private SegmentInterface $otherQuantitySegment;
     private SegmentInterface $separatorBetweenDetailsAndSummarySegment;
 
-    public function __construct(?string $name = null, array $data = [], int|string $dataName = '')
+    protected function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
-
         $this->referenceSegment = new RFFReference(['RFF', ['ADE', '123433']]);
         $this->dateTimeSegment = new DTMDateTimePeriod(['DTM', ['10', '20191002', '102']]);
         $this->otherDateTimeSegment = new DTMDateTimePeriod(['DTM', ['15', '2022310', '102']]);
