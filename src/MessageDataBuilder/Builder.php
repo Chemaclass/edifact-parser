@@ -46,7 +46,7 @@ class Builder extends SimpleBuilder
         }
     }
 
-    public function atStartOfDetailsSection(SegmentInterface $segment): bool
+    private function atStartOfDetailsSection(SegmentInterface $segment): bool
     {
         return $segment instanceof LINLineItem
             && !($this->currentBuilder instanceof DetailsSectionBuilder);
