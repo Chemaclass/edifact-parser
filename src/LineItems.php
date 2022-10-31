@@ -6,12 +6,12 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
-class LineItems extends SectionalMessageBuilder
+class LineItems implements MessageBuilderInterface
 {
     private array $builders;
     private SimpleMessageBuilder $currentBuilder;
 
-    public function addSegment(SegmentInterface $segment): void
+    public function addSegment(SegmentInterface $segment): self
     {
         if ($segment->tag() == 'LIN') {
             $this->currentBuilder = new SimpleMessageBuilder();
@@ -19,6 +19,8 @@ class LineItems extends SectionalMessageBuilder
         }
 
         $this->currentBuilder->addSegment($segment);
+
+        return $this;
     }
 
     public function build(): array

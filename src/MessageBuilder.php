@@ -11,11 +11,11 @@ use EdifactParser\Segments\UNSSectionControl;
 class MessageBuilder extends SimpleMessageBuilder
 {
     private array $builders = [];
-    private SectionalMessageBuilder $currentBuilder;
+    private MessageBuilderInterface $currentBuilder;
 
     public function __construct()
     {
-        $this->setCurrentBuilder(new Normal());
+        $this->setCurrentBuilder(new SimpleMessageBuilder());
     }
 
     public function addSegment(SegmentInterface $segment): self
@@ -41,16 +41,16 @@ class MessageBuilder extends SimpleMessageBuilder
         if ($this->isAtStartOfDetailsSection($segment)) {
             $this->setCurrentBuilder(new LineItems());
         } elseif ($this->atEndOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new Normal());
+            $this->setCurrentBuilder(new SimpleMessageBuilder());
         }
     }
 
     public function isAtStartOfDetailsSection(SegmentInterface $segment): bool
     {
-        return $segment instanceof LINLineItem && $this->currentBuilder instanceof Normal;
+        return $segment instanceof LINLineItem && !($this->currentBuilder instanceof LineItems);
     }
 
-    private function setCurrentBuilder(SectionalMessageBuilder $builder): void
+    private function setCurrentBuilder(MessageBuilderInterface $builder): void
     {
         $this->currentBuilder = $builder;
         $this->builders[] = $builder;

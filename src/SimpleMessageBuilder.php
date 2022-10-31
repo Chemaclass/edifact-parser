@@ -6,7 +6,7 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
-class SimpleMessageBuilder
+class SimpleMessageBuilder implements MessageBuilderInterface
 {
     protected array $data = [];
 
