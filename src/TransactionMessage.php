@@ -50,6 +50,14 @@ final class TransactionMessage
     }
 
     /**
+     * @return array<string, array<string,SegmentInterface>>
+     */
+    public function allSegments(): array
+    {
+        return $this->groupedSegments;
+    }
+
+    /**
      * @return array<string,SegmentInterface>
      */
     public function segmentsByTag(string $tag): array

@@ -182,6 +182,35 @@ EDI;
     /**
      * @test
      */
+    public function all_segments(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+CNT+5:0.1:KGM'
+UNT+10+2'
+UNZ+2+3'
+EDI;
+        $messages = $this->transactionMessages($fileContent);
+        /** @var TransactionMessage $firstMessage */
+        $firstMessage = reset($messages);
+
+        self::assertEquals([
+            'UNH' => [
+                '1' => new UNHMessageHeader(['UNH', '1', 'anything']),
+            ],
+            'CNT' => [
+                '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
+            ],
+            'UNT' => [
+                '10' => new UNTMessageFooter(['UNT', '10', '2']),
+            ],
+        ], $firstMessage->allSegments());
+    }
+
+    /**
+     * @test
+     */
     public function segments_by_tag(): void
     {
         $fileContent = <<<EDI
