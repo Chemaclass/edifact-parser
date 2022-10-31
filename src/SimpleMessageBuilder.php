@@ -8,7 +8,7 @@ use EdifactParser\Segments\SegmentInterface;
 
 class SimpleMessageBuilder
 {
-    protected array $data;
+    protected array $data = [];
 
     public function addSegment(SegmentInterface $segment): self
     {

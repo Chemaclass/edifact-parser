@@ -10,61 +10,53 @@ use EdifactParser\Segments\UNSSectionControl;
 
 class MessageBuilder extends SimpleMessageBuilder
 {
-    private ?SimpleMessageBuilder $lineItemsBuilder = null;
-    private string|null $lineItemId = null;
+    private array $builders = [];
+    private SectionalMessageBuilder $currentBuilder;
+
+    public function __construct()
+    {
+        $this->setCurrentBuilder(new Normal());
+    }
 
     public function addSegment(SegmentInterface $segment): self
     {
-        $this->updateStateOfLineProcessing($segment);
-        $this->_addSegment($segment);
+        $this->updateState($segment);
+        $this->currentBuilder->addSegment($segment);
         return $this;
     }
 
-    public function processLineItem(SegmentInterface $segment): void
+    public function build(): array
     {
-        $this->saveLineItemsIfPresent();
-        $this->lineItemsBuilder = new SimpleMessageBuilder();
-        $this->lineItemId = $segment->subId();
+        $data = [];
+
+        foreach ($this->builders as $builder) {
+            $data = array_merge($data, $builder->build());
+        }
+
+        return $data;
     }
 
-    public function endProcessingOfLineItems(): void
+    public function updateState(SegmentInterface $segment): void
     {
-        $this->saveLineItemsIfPresent();
-        $this->lineItemsBuilder = null;
-    }
-
-    public function saveLineItemsIfPresent(): void
-    {
-        if ($this->lineItemsBuilder) {
-            $segments = $this->lineItemsBuilder->build();
-            $this->data['LIN'][$this->lineItemId] = $segments;
+        if ($this->isAtStartOfDetailsSection($segment)) {
+            $this->setCurrentBuilder(new LineItems());
+        } elseif ($this->atEndOfDetailsSection($segment)) {
+            $this->setCurrentBuilder(new Normal());
         }
     }
 
-    public function updateStateOfLineProcessing(SegmentInterface $segment): void
+    public function isAtStartOfDetailsSection(SegmentInterface $segment): bool
     {
-        if ($this->indicatesEndOfDetailsSection($segment)) {
-            $this->endProcessingOfLineItems();
-        } elseif ($segment instanceof LINLineItem) {
-            $this->processLineItem($segment);
-        }
+        return $segment instanceof LINLineItem && $this->currentBuilder instanceof Normal;
     }
 
-    public function _addSegment(SegmentInterface $segment): void
+    private function setCurrentBuilder(SectionalMessageBuilder $builder): void
     {
-        if ($this->lineItemsBuilder) {
-            $this->saveLineItemData($segment);
-        } else {
-            parent::addSegment($segment);
-        }
+        $this->currentBuilder = $builder;
+        $this->builders[] = $builder;
     }
 
-    private function saveLineItemData(SegmentInterface $segment): void
-    {
-        $this->lineItemsBuilder?->addSegment($segment);
-    }
-
-    private function indicatesEndOfDetailsSection(SegmentInterface $segment): bool
+    private function atEndOfDetailsSection(SegmentInterface $segment): bool
     {
         return $segment instanceof UNSSectionControl &&
             $segment->getIdentifier()->indicatesEndOfDetailsSection();
