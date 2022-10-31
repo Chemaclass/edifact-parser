@@ -6,7 +6,7 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
-class LineItems implements MessageBuilderInterface
+class LineItemsMessageBuilder implements MessageBuilderInterface
 {
     private array $builders;
     private SimpleMessageBuilder $currentBuilder;
