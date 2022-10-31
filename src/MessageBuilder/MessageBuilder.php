@@ -38,16 +38,19 @@ class MessageBuilder extends SimpleMessageBuilder
 
     public function updateState(SegmentInterface $segment): void
     {
-        if ($this->isAtStartOfDetailsSection($segment)) {
+        if ($this->atStartOfDetailsSection($segment)) {
             $this->setCurrentBuilder(new LineItemsMessageBuilder());
-        } elseif ($this->atEndOfDetailsSection($segment)) {
+        }
+
+        if ($this->atEndOfDetailsSection($segment)) {
             $this->setCurrentBuilder(new SimpleMessageBuilder());
         }
     }
 
-    public function isAtStartOfDetailsSection(SegmentInterface $segment): bool
+    public function atStartOfDetailsSection(SegmentInterface $segment): bool
     {
-        return $segment instanceof LINLineItem && !($this->currentBuilder instanceof LineItemsMessageBuilder);
+        return $segment instanceof LINLineItem
+            && !($this->currentBuilder instanceof LineItemsMessageBuilder);
     }
 
     private function setCurrentBuilder(MessageBuilderInterface $builder): void
