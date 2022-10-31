@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\MessageBuilder;
+namespace EdifactParser\MessageDataBuilder;
 
 use EdifactParser\Segments\SegmentInterface;
 
-class SimpleMessageBuilder implements MessageBuilderInterface
+class SimpleBuilder implements BuilderInterface
 {
     protected array $data = [];
 

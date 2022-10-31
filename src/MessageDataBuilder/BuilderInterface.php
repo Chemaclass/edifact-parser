@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\MessageBuilder;
+namespace EdifactParser\MessageDataBuilder;
 
 use EdifactParser\Segments\SegmentInterface;
 
-interface MessageBuilderInterface
+interface BuilderInterface
 {
     public function addSegment(SegmentInterface $segment): self;
 

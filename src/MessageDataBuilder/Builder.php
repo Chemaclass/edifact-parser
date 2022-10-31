@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace EdifactParser\MessageBuilder;
+namespace EdifactParser\MessageDataBuilder;
 
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNSSectionControl;
 
-class MessageBuilder extends SimpleMessageBuilder
+class Builder extends SimpleBuilder
 {
     private array $builders = [];
-    private MessageBuilderInterface $currentBuilder;
+    private BuilderInterface $currentBuilder;
 
     public function __construct()
     {
-        $this->setCurrentBuilder(new SimpleMessageBuilder());
+        $this->setCurrentBuilder(new SimpleBuilder());
     }
 
     public function addSegment(SegmentInterface $segment): self
@@ -39,21 +39,21 @@ class MessageBuilder extends SimpleMessageBuilder
     public function updateState(SegmentInterface $segment): void
     {
         if ($this->atStartOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new LineItemsMessageBuilder());
+            $this->setCurrentBuilder(new DetailsSectionBuilder());
         }
 
         if ($this->atEndOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new SimpleMessageBuilder());
+            $this->setCurrentBuilder(new SimpleBuilder());
         }
     }
 
     public function atStartOfDetailsSection(SegmentInterface $segment): bool
     {
         return $segment instanceof LINLineItem
-            && !($this->currentBuilder instanceof LineItemsMessageBuilder);
+            && !($this->currentBuilder instanceof DetailsSectionBuilder);
     }
 
-    private function setCurrentBuilder(MessageBuilderInterface $builder): void
+    private function setCurrentBuilder(BuilderInterface $builder): void
     {
         $this->currentBuilder = $builder;
         $this->builders[] = $builder;

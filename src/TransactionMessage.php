@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
-use EdifactParser\MessageBuilder\MessageBuilder;
+use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
@@ -76,7 +76,7 @@ final class TransactionMessage
 
     private static function groupSegmentsByName(SegmentInterface ...$segments): self
     {
-        $builder = new MessageBuilder();
+        $builder = new MessageDataBuilder();
 
         foreach ($segments as $segment) {
             $builder->addSegment($segment);

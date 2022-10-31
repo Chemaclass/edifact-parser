@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\MessageBuilder;
 
-use EdifactParser\MessageBuilder\MessageBuilder;
+use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\DTMDateTimePeriod;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\QTYQuantity;
@@ -43,7 +43,7 @@ class MessageBuilderTest extends TestCase
      */
     public function adds_segments(): void
     {
-        $builder = new MessageBuilder();
+        $builder = new MessageDataBuilder();
 
         $builder->addSegment($this->referenceSegment);
         $builder->addSegment($this->dateTimeSegment);
@@ -63,7 +63,7 @@ class MessageBuilderTest extends TestCase
      */
     public function groups_segments(): void
     {
-        $builder = new MessageBuilder();
+        $builder = new MessageDataBuilder();
 
         $builder->addSegment($this->dateTimeSegment);
         $builder->addSegment($this->referenceSegment);
@@ -85,7 +85,7 @@ class MessageBuilderTest extends TestCase
      */
     public function groups_line_items(): void
     {
-        $builder = new MessageBuilder();
+        $builder = new MessageDataBuilder();
 
         $builder->addSegment($this->dateTimeSegment);
         $builder->addSegment($this->lineSegment);
@@ -119,7 +119,7 @@ class MessageBuilderTest extends TestCase
      */
     public function groups_segments_within_line_items(): void
     {
-        $builder = new MessageBuilder();
+        $builder = new MessageDataBuilder();
 
         $builder->addSegment($this->lineSegment);
         $builder->addSegment($this->quantitySegment);
