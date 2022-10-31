@@ -54,7 +54,7 @@ class Builder extends SimpleBuilder
 
     private function atEndOfDetailsSection(SegmentInterface $segment): bool
     {
-        return $segment instanceof UNSSectionControl &&
-            $segment->indicatesEndOfDetailsSection();
+        return $segment instanceof UNSSectionControl
+            && $segment->indicatesEndOfDetailsSection();
     }
 }
