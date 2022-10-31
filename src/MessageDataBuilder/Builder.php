@@ -10,8 +10,7 @@ use EdifactParser\Segments\UNSSectionControl;
 
 class Builder extends SimpleBuilder
 {
-    private array $builders = [];
-    private BuilderInterface $currentBuilder;
+    use MultipleBuilderWrapper;
 
     public function __construct()
     {
@@ -51,12 +50,6 @@ class Builder extends SimpleBuilder
     {
         return $segment instanceof LINLineItem
             && !($this->currentBuilder instanceof DetailsSectionBuilder);
-    }
-
-    private function setCurrentBuilder(BuilderInterface $builder): void
-    {
-        $this->currentBuilder = $builder;
-        $this->builders[] = $builder;
     }
 
     private function atEndOfDetailsSection(SegmentInterface $segment): bool

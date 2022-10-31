@@ -8,14 +8,12 @@ use EdifactParser\Segments\SegmentInterface;
 
 class DetailsSectionBuilder implements BuilderInterface
 {
-    private array $builders;
-    private SimpleBuilder $currentBuilder;
+    use MultipleBuilderWrapper;
 
     public function addSegment(SegmentInterface $segment): self
     {
         if ($segment->tag() == 'LIN') {
-            $this->currentBuilder = new SimpleBuilder();
-            $this->builders[$segment->subId()] = $this->currentBuilder;
+            $this->setCurrentBuilder(new SimpleBuilder(), $segment->subId());
         }
 
         $this->currentBuilder->addSegment($segment);
