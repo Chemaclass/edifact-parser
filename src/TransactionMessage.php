@@ -14,9 +14,12 @@ final class TransactionMessage
 {
     /**
      * @param  array<string, array<string,SegmentInterface>>  $groupedSegments
+     * @param  array<string, array<string, array<string, SegmentInterface>>>  $lineItems
      */
-    public function __construct(private array $groupedSegments, private array $lineItems = [])
-    {
+    public function __construct(
+        private array $groupedSegments,
+        private array $lineItems = [],
+    ) {
     }
 
     /**
