@@ -7,6 +7,8 @@ namespace EdifactParser\Tests\Unit;
 use EDI\Parser;
 use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\LINLineItem;
+use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\TransactionMessage;
@@ -253,6 +255,39 @@ EDI;
         );
 
         self::assertNull($firstMessage->segmentByTagAndSubId('CNT', 'unknown'));
+    }
+
+    /**
+     * @test
+     */
+    public function line_items(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+LIN+1'
+QTY+25:5'
+LIN+2'
+QTY+23:10'
+UNS+S'
+CNT+5:0.1:KGM'
+UNT+10+2'
+UNZ+2+3'
+EDI;
+
+        $messages = $this->transactionMessages($fileContent);
+        $firstMessage = reset($messages);
+
+        self::assertEquals([
+            '1' => [
+                'LIN' => ['1' => new LINLineItem(['LIN', 1])],
+                'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
+            ],
+            '2' => [
+                'LIN' => ['2' => new LINLineItem(['LIN', 2])],
+                'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
+            ],
+        ], $firstMessage->lineItems());
     }
 
     private function transactionMessages(string $fileContent): array

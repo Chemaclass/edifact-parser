@@ -26,7 +26,7 @@ class DetailsSectionBuilder implements BuilderInterface
         $data = [];
 
         foreach ($this->builders as $key => $builder) {
-            $data['LIN'][$key] = $builder->build();
+            $data[$key] = $builder->build();
         }
 
         return $data;

@@ -12,15 +12,11 @@ use EdifactParser\Segments\UNTMessageFooter;
 /** @psalm-immutable */
 final class TransactionMessage
 {
-    /** @var array<string, array<string,SegmentInterface>> */
-    private array $groupedSegments;
-
     /**
      * @param  array<string, array<string,SegmentInterface>>  $groupedSegments
      */
-    public function __construct(array $groupedSegments)
+    public function __construct(private array $groupedSegments, private array $lineItems = [])
     {
-        $this->groupedSegments = $groupedSegments;
     }
 
     /**
@@ -57,6 +53,11 @@ final class TransactionMessage
         return $this->groupedSegments;
     }
 
+    public function lineItems(): array
+    {
+        return $this->lineItems;
+    }
+
     /**
      * @return array<string,SegmentInterface>
      */
@@ -90,6 +91,6 @@ final class TransactionMessage
             $builder->addSegment($segment);
         }
 
-        return new self($builder->build());
+        return new self($builder->buildSegments(), $builder->buildLineItems());
     }
 }
