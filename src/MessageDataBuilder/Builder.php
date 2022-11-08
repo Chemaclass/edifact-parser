@@ -8,7 +8,7 @@ use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNSSectionControl;
 
-class Builder extends SimpleBuilder
+class Builder
 {
     use MultipleBuilderWrapper;
 
@@ -24,17 +24,6 @@ class Builder extends SimpleBuilder
         return $this;
     }
 
-    public function build(): array
-    {
-        $data = [];
-
-        foreach ($this->builders as $builder) {
-            $data = array_merge($data, $builder->build());
-        }
-
-        return $data;
-    }
-
     public function updateState(SegmentInterface $segment): void
     {
         if ($this->atStartOfDetailsSection($segment)) {
@@ -44,6 +33,34 @@ class Builder extends SimpleBuilder
         if ($this->atEndOfDetailsSection($segment)) {
             $this->setCurrentBuilder(new SimpleBuilder());
         }
+    }
+
+    public function buildSegments(): array
+    {
+        return $this->buildWhereBuilderIs(SimpleBuilder::class);
+    }
+
+    public function buildLineItems(): array
+    {
+        return $this->buildWhereBuilderIs(DetailsSectionBuilder::class);
+    }
+
+    /**
+     * @param class-string<BuilderInterface> $type
+     */
+    private function buildWhereBuilderIs(string $type): array
+    {
+        $data = [];
+
+        foreach ($this->builders as $builder) {
+            if (!is_a($builder, $type, true)) {
+                continue;
+            }
+
+            $data += $builder->build();
+        }
+
+        return $data;
     }
 
     private function atStartOfDetailsSection(SegmentInterface $segment): bool

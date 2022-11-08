@@ -53,7 +53,7 @@ class MessageBuilderTest extends TestCase
             'DTM' => [
                 '10' => $this->dateTimeSegment,
             ],
-        ], $builder->build());
+        ], $builder->buildSegments());
     }
 
     /**
@@ -75,13 +75,13 @@ class MessageBuilderTest extends TestCase
                 '10' => $this->dateTimeSegment,
                 '15' => $this->otherDateTimeSegment,
             ],
-        ], $builder->build());
+        ], $builder->buildSegments());
     }
 
     /**
      * @test
      */
-    public function groups_line_items(): void
+    public function build_line_items(): void
     {
         $builder = new MessageDataBuilder();
 
@@ -96,20 +96,22 @@ class MessageBuilderTest extends TestCase
             'DTM' => [
                 '10' => $this->dateTimeSegment,
             ],
-            'LIN' => [
-                '1' => [
-                    'LIN' => ['1' => $this->lineSegment],
-                    'QTY' => ['21' => $this->quantitySegment],
-                ],
-                '2' => [
-                    'LIN' => ['2' => $this->otherLineSegment],
-                    'QTY' => ['23' => $this->otherQuantitySegment],
-                ],
-            ],
+
             'UNS' => [
                 'S' => $this->separatorBetweenDetailsAndSummarySegment,
             ],
-        ], $builder->build());
+        ], $builder->buildSegments());
+
+        self::assertEquals([
+            '1' => [
+                'LIN' => ['1' => $this->lineSegment],
+                'QTY' => ['21' => $this->quantitySegment],
+            ],
+            '2' => [
+                'LIN' => ['2' => $this->otherLineSegment],
+                'QTY' => ['23' => $this->otherQuantitySegment],
+            ],
+        ], $builder->buildLineItems());
     }
 
     /**
@@ -125,18 +127,19 @@ class MessageBuilderTest extends TestCase
         $builder->addSegment($this->separatorBetweenDetailsAndSummarySegment);
 
         self::assertEquals([
-            'LIN' => [
-                '1' => [
-                    'LIN' => ['1' => $this->lineSegment],
-                    'QTY' => [
-                        '21' => $this->quantitySegment,
-                        '23' => $this->otherQuantitySegment,
-                    ],
-                ],
-            ],
             'UNS' => [
                 'S' => $this->separatorBetweenDetailsAndSummarySegment,
             ],
-        ], $builder->build());
+        ], $builder->buildSegments());
+
+        self::assertEquals([
+            '1' => [
+                'LIN' => ['1' => $this->lineSegment],
+                'QTY' => [
+                    '21' => $this->quantitySegment,
+                    '23' => $this->otherQuantitySegment,
+                ],
+            ],
+        ], $builder->buildLineItems());
     }
 }
