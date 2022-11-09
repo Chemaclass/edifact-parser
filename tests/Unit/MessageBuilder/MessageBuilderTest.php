@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\MessageBuilder;
 
+use EdifactParser\LineItem;
 use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\DTMDateTimePeriod;
 use EdifactParser\Segments\LINLineItem;
@@ -103,14 +104,14 @@ class MessageBuilderTest extends TestCase
         ], $builder->buildSegments());
 
         self::assertEquals([
-            '1' => [
+            '1' => new LineItem([
                 'LIN' => ['1' => $this->lineSegment],
                 'QTY' => ['21' => $this->quantitySegment],
-            ],
-            '2' => [
+            ]),
+            '2' => new LineItem([
                 'LIN' => ['2' => $this->otherLineSegment],
                 'QTY' => ['23' => $this->otherQuantitySegment],
-            ],
+            ]),
         ], $builder->buildLineItems());
     }
 
@@ -133,13 +134,13 @@ class MessageBuilderTest extends TestCase
         ], $builder->buildSegments());
 
         self::assertEquals([
-            '1' => [
+            '1' => new LineItem([
                 'LIN' => ['1' => $this->lineSegment],
                 'QTY' => [
                     '21' => $this->quantitySegment,
                     '23' => $this->otherQuantitySegment,
                 ],
-            ],
+            ]),
         ], $builder->buildLineItems());
     }
 }

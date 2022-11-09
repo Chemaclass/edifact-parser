@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
+use EdifactParser\LineItem;
 use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\LINLineItem;
@@ -279,14 +280,14 @@ EDI;
         $firstMessage = reset($messages);
 
         self::assertEquals([
-            '1' => [
+            '1' => new LineItem([
                 'LIN' => ['1' => new LINLineItem(['LIN', 1])],
                 'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
-            ],
-            '2' => [
+            ]),
+            '2' => new LineItem([
                 'LIN' => ['2' => new LINLineItem(['LIN', 2])],
                 'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
-            ],
+            ]),
         ], $firstMessage->lineItems());
     }
 
