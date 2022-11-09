@@ -6,7 +6,7 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
-class LineItem
+final class LineItem
 {
     use HasRetrievableSegments;
 
