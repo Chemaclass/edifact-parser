@@ -296,6 +296,7 @@ EDI;
 
         self::assertEquals($firstLineItem, $firstMessage->lineItemById(1));
         self::assertEquals($secondLineItem, $firstMessage->lineItemById(2));
+        self::assertNull($firstMessage->lineItemById(3));
     }
 
     private function transactionMessages(string $fileContent): array
