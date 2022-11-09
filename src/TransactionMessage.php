@@ -12,9 +12,11 @@ use EdifactParser\Segments\UNTMessageFooter;
 /** @psalm-immutable */
 final class TransactionMessage
 {
+    use HasRetrievableSegments;
+
     /**
-     * @param  array<string, array<string,SegmentInterface>>  $groupedSegments
-     * @param  array<string, array<string, array<string, SegmentInterface>>>  $lineItems
+     * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
+     * @param  array<string, LineItem>  $lineItems
      */
     public function __construct(
         private array $groupedSegments,
@@ -49,29 +51,24 @@ final class TransactionMessage
     }
 
     /**
-     * @return array<string, array<string,SegmentInterface>>
+     * @return array<string, LineItem>
      */
-    public function allSegments(): array
-    {
-        return $this->groupedSegments;
-    }
-
     public function lineItems(): array
     {
         return $this->lineItems;
     }
 
-    /**
-     * @return array<string,SegmentInterface>
-     */
-    public function segmentsByTag(string $tag): array
+    public function lineItemById(string|int $lineItemId): ?LineItem
     {
-        return $this->groupedSegments[$tag] ?? [];
+        return $this->lineItems[(string) $lineItemId] ?? null;
     }
 
-    public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
+    /**
+     * @return array<string, array<string,SegmentInterface>>
+     */
+    public function allSegments(): array
     {
-        return $this->groupedSegments[$tag][$subId] ?? null;
+        return $this->groupedSegments;
     }
 
     /**

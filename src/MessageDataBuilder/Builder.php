@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\MessageDataBuilder;
 
+use EdifactParser\LineItem;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNSSectionControl;
@@ -40,9 +41,15 @@ class Builder
         return $this->buildWhereBuilderIs(SimpleBuilder::class);
     }
 
+    /**
+     * @returns array<LineItem>
+     */
     public function buildLineItems(): array
     {
-        return $this->buildWhereBuilderIs(DetailsSectionBuilder::class);
+        return array_map(
+            static fn ($data) => new LineItem($data),
+            $this->buildWhereBuilderIs(DetailsSectionBuilder::class),
+        );
     }
 
     /**

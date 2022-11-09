@@ -147,7 +147,7 @@ EDI;
         $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
         $message = $transactionResult[0];
 
-        self::assertNotNull($message->lineItems()[1]['UNK']['first']);
-        self::assertNotNull($message->lineItems()[2]['UNK']['first']);
+        self::assertNotNull($message->lineItemById(1)?->segmentByTagAndSubId('UNK', 'first'));
+        self::assertNotNull($message->lineItemById(2)?->segmentByTagAndSubId('UNK', 'first'));
     }
 }

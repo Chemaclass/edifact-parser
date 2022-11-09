@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
+use EdifactParser\LineItem;
 use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\LINLineItem;
@@ -278,16 +279,24 @@ EDI;
         $messages = $this->transactionMessages($fileContent);
         $firstMessage = reset($messages);
 
+        $firstLineItem = new LineItem([
+            'LIN' => ['1' => new LINLineItem(['LIN', 1])],
+            'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
+        ]);
+
+        $secondLineItem = new LineItem([
+            'LIN' => ['2' => new LINLineItem(['LIN', 2])],
+            'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
+        ]);
+
         self::assertEquals([
-            '1' => [
-                'LIN' => ['1' => new LINLineItem(['LIN', 1])],
-                'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
-            ],
-            '2' => [
-                'LIN' => ['2' => new LINLineItem(['LIN', 2])],
-                'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
-            ],
+            '1' => $firstLineItem,
+            '2' => $secondLineItem,
         ], $firstMessage->lineItems());
+
+        self::assertEquals($firstLineItem, $firstMessage->lineItemById(1));
+        self::assertEquals($secondLineItem, $firstMessage->lineItemById(2));
+        self::assertNull($firstMessage->lineItemById(3));
     }
 
     private function transactionMessages(string $fileContent): array
