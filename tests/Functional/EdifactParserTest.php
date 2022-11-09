@@ -105,4 +105,49 @@ EDI;
         $cnt11 = $message->segmentByTagAndSubId('CNT', '11');
         self::assertEquals(['CNT', ['11', '1', 'PCE']], $cnt11->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function handles_unknown_segments(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+IFTMIN:S:93A:UN:PN001'
+UNK+first+23'
+UNK+second+52'
+CNT+11:1:PCE'
+UNT+19+1'
+UNZ+1+3'
+EDI;
+        $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+        $message = $transactionResult[0];
+
+        self::assertNotNull($message->segmentByTagAndSubId('UNK', 'first'));
+        self::assertNotNull($message->segmentByTagAndSubId('UNK', 'second'));
+    }
+
+    /**
+     * @test
+     */
+    public function handles_unknown_segments_in_line_items(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+IFTMIN:S:93A:UN:PN001'
+LIN+1'
+UNK+first+23'
+LIN+2'
+UNK+first+13'
+UNS+S'
+CNT+11:1:PCE'
+UNT+19+1'
+UNZ+1+3'
+EDI;
+        $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+        $message = $transactionResult[0];
+
+        self::assertNotNull($message->lineItems()[1]['UNK']['first']);
+        self::assertNotNull($message->lineItems()[2]['UNK']['first']);
+    }
 }
