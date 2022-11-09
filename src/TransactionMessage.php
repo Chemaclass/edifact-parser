@@ -58,9 +58,9 @@ final class TransactionMessage
         return $this->lineItems;
     }
 
-    public function lineItemById(string $lineItemId): LineItem
+    public function lineItemById(string|int $lineItemId): LineItem
     {
-        return $this->lineItems[$lineItemId];
+        return $this->lineItems[(string) $lineItemId];
     }
 
     /**
