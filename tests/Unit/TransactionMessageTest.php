@@ -279,16 +279,23 @@ EDI;
         $messages = $this->transactionMessages($fileContent);
         $firstMessage = reset($messages);
 
+        $firstLineItem = new LineItem([
+            'LIN' => ['1' => new LINLineItem(['LIN', 1])],
+            'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
+        ]);
+
+        $secondLineItem = new LineItem([
+            'LIN' => ['2' => new LINLineItem(['LIN', 2])],
+            'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
+        ]);
+
         self::assertEquals([
-            '1' => new LineItem([
-                'LIN' => ['1' => new LINLineItem(['LIN', 1])],
-                'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
-            ]),
-            '2' => new LineItem([
-                'LIN' => ['2' => new LINLineItem(['LIN', 2])],
-                'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
-            ]),
+            '1' => $firstLineItem,
+            '2' => $secondLineItem,
         ], $firstMessage->lineItems());
+
+        self::assertEquals($firstLineItem, $firstMessage->lineItemById(1));
+        self::assertEquals($secondLineItem, $firstMessage->lineItemById(2));
     }
 
     private function transactionMessages(string $fileContent): array
