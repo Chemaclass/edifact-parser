@@ -11,6 +11,7 @@ $fileContent = file_get_contents(__DIR__ . '/edifact-sample.edi');
 $messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 
 $printer = ConsolePrinter::createWithHeaders([
+    'UNB',
     'UNH',
     'BGM',
     'DTM',

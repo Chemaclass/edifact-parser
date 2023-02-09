@@ -11,6 +11,7 @@ use EdifactParser\Segments\MEADimensions;
 use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\PCIPackageId;
 use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
@@ -27,6 +28,7 @@ final class SegmentFactoryTest extends TestCase
         $factory = SegmentFactory::withDefaultSegments();
 
         self::assertInstanceOf(UNHMessageHeader::class, $factory->createSegmentFromArray(['UNH']));
+        self::assertInstanceOf(UNBInterchangeHeader::class, $factory->createSegmentFromArray(['UNB']));
         self::assertInstanceOf(DTMDateTimePeriod::class, $factory->createSegmentFromArray(['DTM']));
         self::assertInstanceOf(NADNameAddress::class, $factory->createSegmentFromArray(['NAD']));
         self::assertInstanceOf(MEADimensions::class, $factory->createSegmentFromArray(['MEA']));
