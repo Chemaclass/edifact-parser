@@ -15,8 +15,8 @@ final class TransactionMessage
     use HasRetrievableSegments;
 
     /**
-     * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
-     * @param  array<string, LineItem>  $lineItems
+     * @param array<string, array<string, SegmentInterface>> $groupedSegments
+     * @param array<string, LineItem> $lineItems
      */
     public function __construct(
         private array $groupedSegments,
@@ -34,6 +34,7 @@ final class TransactionMessage
     {
         $messages = [];
         $groupedSegments = [];
+        $unb = array_filter($segments, static fn (SegmentInterface $s) => $s->tag() === 'UNB');
 
         foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
@@ -43,7 +44,11 @@ final class TransactionMessage
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter) {
-                $messages[] = self::groupSegmentsByName(...$groupedSegments);
+                if (!empty($unb)) {
+                    $messages[] = self::groupSegmentsByName(...array_merge($unb, $groupedSegments));
+                } else {
+                    $messages[] = self::groupSegmentsByName(...$groupedSegments);
+                }
             }
         }
 
@@ -60,7 +65,7 @@ final class TransactionMessage
 
     public function lineItemById(string|int $lineItemId): ?LineItem
     {
-        return $this->lineItems[(string) $lineItemId] ?? null;
+        return $this->lineItems[(string)$lineItemId] ?? null;
     }
 
     /**
