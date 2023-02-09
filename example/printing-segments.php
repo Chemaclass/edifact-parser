@@ -6,27 +6,19 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use EdifactParser\EdifactParser;
 use EdifactParser\IO\ConsolePrinter;
-use EdifactParser\Segments\BGMBeginningOfMessage;
-use EdifactParser\Segments\CNTControl;
-use EdifactParser\Segments\DTMDateTimePeriod;
-use EdifactParser\Segments\MEADimensions;
-use EdifactParser\Segments\NADNameAddress;
-use EdifactParser\Segments\PCIPackageId;
-use EdifactParser\Segments\UNHMessageHeader;
-use EdifactParser\Segments\UNTMessageFooter;
 
 $fileContent = file_get_contents(__DIR__ . '/edifact-sample.edi');
 $messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 
 $printer = ConsolePrinter::createWithHeaders([
-    UNHMessageHeader::class,
-    BGMBeginningOfMessage::class,
-    DTMDateTimePeriod::class,
-    CNTControl::class,
-    NADNameAddress::class,
-    MEADimensions::class,
-    PCIPackageId::class,
-    UNTMessageFooter::class,
+    'UNH',
+    'BGM',
+    'DTM',
+    'CNT',
+    'NAD',
+    'MEA',
+    'PCI',
+    'UNT',
 ]);
 
 foreach ($messages as $i => $message) {
