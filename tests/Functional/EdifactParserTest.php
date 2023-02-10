@@ -33,6 +33,7 @@ EDI;
     {
         $fileContent = <<<EDI
 UNA:+.? '
+UNB+UNOC:1+2:3'
 UNH+1+IFTMIN:S:93A:UN:PN001'
 UNT+19+1'
 UNH+2+IFTMIN:S:94A:UN:PN002'
@@ -41,8 +42,10 @@ UNH+3+IFTMIN:S:94A:UN:PN003'
 UNT+19+3'
 UNZ+3+4'
 EDI;
-        $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
-        self::assertCount(3, $transactionResult);
+        $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+
+        self::assertCount(2, $parserResult->globalSegments());
+        self::assertCount(3, $parserResult->transactionMessages());
     }
 
     /**
@@ -58,9 +61,9 @@ CNT+11:1:PCE'
 UNT+19+1'
 UNZ+1+3'
 EDI;
-        $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
-        self::assertCount(1, $transactionResult);
-        $message = $transactionResult[0];
+        $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+        self::assertCount(1, $parserResult->transactionMessages());
+        $message = $parserResult->transactionMessages()[0];
 
         /** @var UNHMessageHeader $unh */
         $unh = $message->segmentByTagAndSubId('UNH', '1');
@@ -93,9 +96,9 @@ UNT+19+1'
 UNZ+1+3'
 EDI;
         $parser = new EdifactParser(new TestingSegmentFactory('CUSTOM'));
-        $transactionResult = $parser->parse($fileContent);
-        self::assertCount(1, $transactionResult);
-        $message = $transactionResult[0];
+        $parserResult = $parser->parse($fileContent);
+        self::assertCount(1, $parserResult->transactionMessages());
+        $message = $parserResult->transactionMessages()[0];
 
         /** @var SegmentInterface $custom */
         $custom = $message->segmentByTagAndSubId('CUSTOM', 'anyKey');
@@ -120,8 +123,8 @@ CNT+11:1:PCE'
 UNT+19+1'
 UNZ+1+3'
 EDI;
-        $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
-        $message = $transactionResult[0];
+        $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+        $message = $parserResult->transactionMessages()[0];
 
         self::assertNotNull($message->segmentByTagAndSubId('UNK', 'first'));
         self::assertNotNull($message->segmentByTagAndSubId('UNK', 'second'));
@@ -144,8 +147,8 @@ CNT+11:1:PCE'
 UNT+19+1'
 UNZ+1+3'
 EDI;
-        $transactionResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
-        $message = $transactionResult[0];
+        $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+        $message = $parserResult->transactionMessages()[0];
 
         self::assertNotNull($message->lineItemById(1)?->segmentByTagAndSubId('UNK', 'first'));
         self::assertNotNull($message->lineItemById(2)?->segmentByTagAndSubId('UNK', 'first'));
