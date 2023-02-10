@@ -16,6 +16,7 @@ final class SegmentFactory implements SegmentFactoryInterface
     /** @var array<string,string> */
     public const DEFAULT_SEGMENTS = [
         'UNH' => UNHMessageHeader::class,
+        'UNB' => UNBInterchangeHeader::class,
         'DTM' => DTMDateTimePeriod::class,
         'NAD' => NADNameAddress::class,
         'MEA' => MEADimensions::class,

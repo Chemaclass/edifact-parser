@@ -10,6 +10,7 @@ use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\QTYQuantity;
+use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\TransactionMessage;
@@ -180,6 +181,62 @@ CNT+3000:0.3:KGM'
 UNZ+2+3'
 EDI;
         self::assertEquals([], $this->transactionMessages($fileContent));
+    }
+
+    /**
+     * @test If there is UNB, it will be present in all messages
+     */
+    public function message_with_unb(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNB+UNOC:0+1:2+3:4+5+Anything here+6'
+
+UNH+1+anything'
+CNT+5:0.1:KGM'
+UNT+10+2'
+
+UNH+2+anything'
+CNT+6:0.1:KGM'
+UNT+11+2'
+
+UNZ+2+3'
+EDI;
+        $messages = $this->transactionMessages($fileContent);
+
+        $unb = new UNBInterchangeHeader(
+            ['UNB', ['UNOC', '0'], ['1', '2'], ['3', '4'], '5', 'Anything here', '6']
+        );
+
+        self::assertEquals([
+            'UNB' => [
+                'UNOC' => $unb,
+            ],
+            'UNH' => [
+                '1' => new UNHMessageHeader(['UNH', '1', 'anything']),
+            ],
+            'CNT' => [
+                '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
+            ],
+            'UNT' => [
+                '10' => new UNTMessageFooter(['UNT', '10', '2']),
+            ],
+        ], $messages[0]->allSegments());
+
+        self::assertEquals([
+            'UNB' => [
+                'UNOC' => $unb,
+            ],
+            'UNH' => [
+                '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
+            ],
+            'CNT' => [
+                '6' => new CNTControl(['CNT', ['6', '0.1', 'KGM']]),
+            ],
+            'UNT' => [
+                '11' => new UNTMessageFooter(['UNT', '11', '2']),
+            ],
+        ], $messages[1]->allSegments());
     }
 
     /**
