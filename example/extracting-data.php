@@ -8,8 +8,8 @@ use EdifactParser\EdifactParser;
 use EdifactParser\Segments\SegmentInterface;
 
 $fileContent = file_get_contents(__DIR__ . '/edifact-sample.edi');
-$messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
-$firstMessage = reset($messages);
+$parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$firstMessage = $parserResult->transactionMessages()[0];
 
 /** @var SegmentInterface $cnNadSegment */
 $cnNadSegment = $firstMessage->segmentByTagAndSubId('NAD', 'CN');

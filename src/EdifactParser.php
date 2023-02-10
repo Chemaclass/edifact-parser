@@ -30,10 +30,7 @@ final class EdifactParser
         return new self(SegmentFactory::withDefaultSegments());
     }
 
-    /**
-     * @return list<TransactionMessage>
-     */
-    public function parse(string $fileContent): array
+    public function parse(string $fileContent): ParserResult
     {
         $parser = new Parser($fileContent);
         $errors = $parser->errors();

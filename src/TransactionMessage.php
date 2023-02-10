@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use Countable;
 use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 
+use function count;
+use function in_array;
+
 /** @psalm-immutable */
-final class TransactionMessage
+final class TransactionMessage implements Countable
 {
     use HasRetrievableSegments;
 
@@ -27,14 +31,11 @@ final class TransactionMessage
     /**
      * A transaction message starts with the "UNHMessageHeader" segment and finalizes with
      * the "UNTMessageFooter" segment, this process is repeated for each pair of segments.
-     *
-     * @return list<TransactionMessage>
      */
-    public static function groupSegmentsByMessage(SegmentInterface ...$segments): array
+    public static function groupSegmentsByMessage(SegmentInterface ...$segments): ParserResult
     {
         $messages = [];
         $groupedSegments = [];
-        $unb = array_filter($segments, static fn (SegmentInterface $s) => $s->tag() === 'UNB');
 
         foreach ($segments as $segment) {
             if ($segment instanceof UNHMessageHeader) {
@@ -44,15 +45,14 @@ final class TransactionMessage
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter) {
-                if (!empty($unb)) {
-                    $messages[] = self::groupSegmentsByName(...array_merge($unb, $groupedSegments));
-                } else {
-                    $messages[] = self::groupSegmentsByName(...$groupedSegments);
-                }
+                $messages[] = self::groupSegmentsByName(...$groupedSegments);
             }
         }
 
-        return self::hasUnhSegment(...$messages);
+        return new ParserResult(
+            self::filterGlobalSegments($segments),
+            self::hasUnhSegment(...$messages)
+        );
     }
 
     /**
@@ -74,6 +74,24 @@ final class TransactionMessage
     public function allSegments(): array
     {
         return $this->groupedSegments;
+    }
+
+    public function count(): int
+    {
+        return count($this->groupedSegments);
+    }
+
+    /**
+     * @return TransactionMessage
+     */
+    private static function filterGlobalSegments(array $segments): self
+    {
+        $globalMessages = array_filter(
+            $segments,
+            static fn (SegmentInterface $s) => in_array($s->tag(), ['UNA', 'UNB', 'UNZ'])
+        );
+
+        return self::groupSegmentsByName(...$globalMessages);
     }
 
     /**
