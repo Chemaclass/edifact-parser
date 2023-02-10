@@ -47,6 +47,8 @@ You can see a full example of [extracting data](example/extracting-data.php).
 use EdifactParser\EdifactParser;
 use EdifactParser\Segments\NADNameAddress;
 
+require dirname(__DIR__) . '/vendor/autoload.php';
+
 $fileContent = <<<EDI
 UNA:+.? '
 UNB+UNOC:3+9457386:30+73130012:30+19101:118+8+MPM 2.19+1424'
