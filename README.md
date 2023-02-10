@@ -47,11 +47,25 @@ You can see a full example of [extracting data](example/extracting-data.php).
 use EdifactParser\EdifactParser;
 use EdifactParser\Segments\NADNameAddress;
 
+$fileContent = <<<EDI
+UNA:+.? '
+UNB+UNOC:3+9457386:30+73130012:30+19101:118+8+MPM 2.19+1424'
+
+UNH+1+IFTMIN:S:93A:UN:PN001'
+TDT+20'
+NAD+CZ+0410106314:160:Z12++Company Centre+c/o Carrier AB+City1++12345+DE'
+NAD+CN+++Person Name+Street Nr 2+City2++12345+DE'
+UNT+18+1'
+
+UNZ+2+8'
+EDI;
+
 $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 $firstMessage = $parserResult->transactionMessages()[0];
 
 $cnNadSegment = $firstMessage->segmentByTagAndSubId('NAD', 'CN');
 $personName = $cnNadSegment->rawValues()[4];
-dump($personName); // 'Person Name'
+
+var_dump($personName); // 'Person Name'
 ```
 
