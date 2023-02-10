@@ -8,7 +8,7 @@ use EdifactParser\EdifactParser;
 use EdifactParser\IO\ConsolePrinter;
 
 $fileContent = file_get_contents(__DIR__ . '/edifact-sample.edi');
-$messages = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 
 $printer = ConsolePrinter::createWithHeaders([
     'UNB',
@@ -22,8 +22,17 @@ $printer = ConsolePrinter::createWithHeaders([
     'UNT',
 ]);
 
-foreach ($messages as $i => $message) {
-    print "Message number: {$i}\n";
+
+print "##################\n";
+print "# Global segments:\n";
+print "##################\n";
+$printer->printMessage($parserResult->globalSegments());
+print PHP_EOL;
+
+foreach ($parserResult->transactionMessages() as $i => $message) {
+    print "###################\n";
+    print "# Message number: {$i}\n";
+    print "###################\n";
     $printer->printMessage($message);
     print PHP_EOL;
 }
