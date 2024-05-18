@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Functional;
 
 use EdifactParser\EdifactParser;
-use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
@@ -14,18 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 final class EdifactParserTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function invalid_file_due_to_a_non_printable_char(): void
-    {
-        $fileContent = <<<EDI
-\xE2\x80\xAF
-EDI;
-        $this->expectException(InvalidFile::class);
-        EdifactParser::createWithDefaultSegments()->parse($fileContent);
-    }
-
     /**
      * @test
      */

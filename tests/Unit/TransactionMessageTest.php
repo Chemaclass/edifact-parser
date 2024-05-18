@@ -349,8 +349,10 @@ EDI;
 
     private function parse(string $fileContent): ParserResult
     {
+        $parser = (new Parser())->loadString($fileContent);
+
         $segments = SegmentList::withDefaultFactory()
-            ->fromRaw((new Parser($fileContent))->get());
+            ->fromRaw($parser->get());
 
         return TransactionMessage::groupSegmentsByMessage(...$segments);
     }

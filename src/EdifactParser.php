@@ -32,7 +32,7 @@ final class EdifactParser
 
     public function parse(string $fileContent): ParserResult
     {
-        $parser = new Parser($fileContent);
+        $parser = (new Parser())->loadString($fileContent);
         $errors = $parser->errors();
 
         if ($errors) {
