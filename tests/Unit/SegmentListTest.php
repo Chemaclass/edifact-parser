@@ -40,7 +40,9 @@ final class SegmentListTest extends TestCase
 
     private function segmentsFromFileContent(string $fileContent): array
     {
+        $parser = (new Parser())->loadString($fileContent);
+
         return SegmentList::withDefaultFactory()
-            ->fromRaw((new Parser($fileContent))->get());
+            ->fromRaw($parser->get());
     }
 }
