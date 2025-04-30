@@ -26,7 +26,7 @@ This package provides a robust and extensible **PHP parser** to read, interpret,
 
 ## 💾 Installation
 
-Install via [Composer](https://getcomposer.org/):
+Install via [Composer](https://packagist.org/packages/chemaclass/edifact-parser):
 
 ```bash
 composer require chemaclass/edifact-parser
