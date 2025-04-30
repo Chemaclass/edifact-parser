@@ -17,12 +17,12 @@ final class SegmentFactory implements SegmentFactoryInterface
     public const DEFAULT_SEGMENTS = [
         'UNH' => UNHMessageHeader::class,
         'UNB' => UNBInterchangeHeader::class,
+        'BGM' => BGMBeginningOfMessage::class,
         'DTM' => DTMDateTimePeriod::class,
         'NAD' => NADNameAddress::class,
         'MEA' => MEADimensions::class,
         'CNT' => CNTControl::class,
         'PCI' => PCIPackageId::class,
-        'BGM' => BGMBeginningOfMessage::class,
         'UNT' => UNTMessageFooter::class,
         'RFF' => RFFReference::class,
         'CUX' => CUXCurrencyDetails::class,
@@ -59,21 +59,17 @@ final class SegmentFactory implements SegmentFactoryInterface
     }
 
     /**
-     * @psalm-pure
-     *
-     * @param array<string,string> $segments
      * The key: The 'Segment Tag' -> A three-character (alphanumeric) that identifies the segment.
      * The value: The class that will be created once that 'Segment Tag' is found. It must implement
      * the `SegmentInterface` in order to be able to work with the factory, otherwise it will be ignored.
+     *
+     * @param array<string,string> $segments
      */
     public static function withSegments(array $segments): self
     {
         return new self($segments);
     }
 
-    /**
-     * @psalm-pure
-     */
     public static function withDefaultSegments(): self
     {
         return new self(self::DEFAULT_SEGMENTS);
