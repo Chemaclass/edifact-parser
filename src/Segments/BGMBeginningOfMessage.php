@@ -24,6 +24,20 @@ final class BGMBeginningOfMessage implements SegmentInterface
         return (string) $this->rawValues[1];
     }
 
+    /**
+     * @return list<string>
+     */
+    public function parsedSubId(): array
+    {
+        $value = $this->rawValues[1];
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        return explode(':', (string) $value);
+    }
+
     public function rawValues(): array
     {
         return $this->rawValues;
