@@ -11,9 +11,4 @@ final class LINLineItem extends AbstractSegment
     {
         return 'LIN';
     }
-
-    public function subId(): string
-    {
-        return $this->rawValues[1];
-    }
 }

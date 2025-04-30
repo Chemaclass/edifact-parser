@@ -13,9 +13,4 @@ final class NADNameAddress extends AbstractSegment
     {
         return 'NAD';
     }
-
-    public function subId(): string
-    {
-        return (string) $this->rawValues[1];
-    }
 }

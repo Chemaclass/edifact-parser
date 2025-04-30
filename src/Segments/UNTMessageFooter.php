@@ -11,9 +11,4 @@ final class UNTMessageFooter extends AbstractSegment
     {
         return 'UNT';
     }
-
-    public function subId(): string
-    {
-        return (string) $this->rawValues[1];
-    }
 }

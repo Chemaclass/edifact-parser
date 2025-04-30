@@ -4,7 +4,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
          backupGlobals="false"
          colors="true"
-         testdox="true"
+         testdox="false"
          convertErrorsToExceptions="true">
     <coverage>
         <include>

@@ -13,9 +13,4 @@ final class MEADimensions extends AbstractSegment
     {
         return 'MEA';
     }
-
-    public function subId(): string
-    {
-        return (string) $this->rawValues[1];
-    }
 }
