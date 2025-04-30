@@ -8,6 +8,8 @@ use EdifactParser\Segments\NullSegment;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\TransactionMessage;
 
+use function sprintf;
+
 final class ConsolePrinter implements PrinterInterface
 {
     /** @var list<string> */
