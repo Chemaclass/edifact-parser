@@ -1,4 +1,4 @@
-# Contributing to Gacela
+# Contributing to EdifactParser
 
 ## Welcome!
 
@@ -57,12 +57,12 @@ $ ./vendor/bin/php-cs-fixer fix
 
 Please understand that we will not accept a pull request when its changes violate this project's coding guidelines.
 
-## Running Gacela's test suite
+## Running EdifactParser's test suite
 
 Once you've installed all composer dependencies, you can simply test all suites running the following composer script:
 
 ```bash
-$ composer test-all
+$ composer test
 ```
 
 You can see more composer scripts inside the `/composer.json` file.
