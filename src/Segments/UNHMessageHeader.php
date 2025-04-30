@@ -7,15 +7,8 @@ namespace EdifactParser\Segments;
 use EdifactParser\Exception\MissingSubId;
 
 /** @psalm-immutable */
-final class UNHMessageHeader implements SegmentInterface
+final class UNHMessageHeader extends AbstractSegment
 {
-    private array $rawValues;
-
-    public function __construct(array $rawValues)
-    {
-        $this->rawValues = $rawValues;
-    }
-
     public function tag(): string
     {
         return 'UNH';
@@ -28,10 +21,5 @@ final class UNHMessageHeader implements SegmentInterface
         }
 
         return (string) $this->rawValues[1][0];
-    }
-
-    public function rawValues(): array
-    {
-        return $this->rawValues;
     }
 }

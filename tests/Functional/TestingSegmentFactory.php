@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Functional;
 
+use EdifactParser\Segments\AbstractSegment;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
 use EdifactParser\Segments\SegmentInterface;
@@ -27,27 +28,10 @@ final class TestingSegmentFactory implements SegmentFactoryInterface
             return $this->defaultFactory->createSegmentFromArray($rawArray);
         }
 
-        return new /** @psalm-immutable */ class($rawArray) implements SegmentInterface {
-            private array $rawArray;
-
-            public function __construct(array $rawArray)
-            {
-                $this->rawArray = $rawArray;
-            }
-
+        return new /** @psalm-immutable */ class($rawArray) extends AbstractSegment {
             public function tag(): string
             {
-                return (string) $this->rawArray[0];
-            }
-
-            public function subId(): string
-            {
-                return (string) $this->rawArray[1];
-            }
-
-            public function rawValues(): array
-            {
-                return $this->rawArray;
+                return (string) $this->rawValues[0];
             }
         };
     }

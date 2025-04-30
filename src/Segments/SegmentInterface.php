@@ -18,6 +18,13 @@ interface SegmentInterface
     public function subId(): string;
 
     /**
+     * Returns the sub-identifier split into components, typically by ':' if composite.
+     *
+     * @return list<string>
+     */
+    public function parsedSubId(): array;
+
+    /**
      * Variable length data elements. These can be either simple or composite.
      */
     public function rawValues(): array;

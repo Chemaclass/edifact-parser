@@ -9,15 +9,8 @@ namespace EdifactParser\Segments;
 use EdifactParser\Exception\MissingSubId;
 
 /** @psalm-immutable */
-final class CNTControl implements SegmentInterface
+final class CNTControl extends AbstractSegment
 {
-    private array $rawValues;
-
-    public function __construct(array $rawValues)
-    {
-        $this->rawValues = $rawValues;
-    }
-
     public function tag(): string
     {
         return 'CNT';
@@ -30,10 +23,5 @@ final class CNTControl implements SegmentInterface
         }
 
         return (string) $this->rawValues[1][0];
-    }
-
-    public function rawValues(): array
-    {
-        return $this->rawValues;
     }
 }
