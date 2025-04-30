@@ -7,15 +7,8 @@ namespace EdifactParser\Segments;
 use function is_string;
 
 /** @psalm-immutable */
-final class UnknownSegment implements SegmentInterface
+final class UnknownSegment extends AbstractSegment
 {
-    private array $rawValues;
-
-    public function __construct(array $rawValues)
-    {
-        $this->rawValues = $rawValues;
-    }
-
     public function tag(): string
     {
         return $this->rawValues[0];
@@ -32,11 +25,6 @@ final class UnknownSegment implements SegmentInterface
         }
 
         return $this->hashContentsWithMD5();
-    }
-
-    public function rawValues(): array
-    {
-        return $this->rawValues;
     }
 
     private function hashContentsWithMD5(): string

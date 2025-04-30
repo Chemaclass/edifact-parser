@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class BGMBeginningOfMessageTest extends TestCase
 {
-    public function test_segment_values_with_single_subId(): void
+    public function test_segment_values_with_single_sub_id(): void
     {
         $rawValues = ['BGM', '340', '00250559268149700889', '9'];
         $segment = new BGMBeginningOfMessage($rawValues);
@@ -19,7 +19,7 @@ final class BGMBeginningOfMessageTest extends TestCase
         self::assertEquals($rawValues, $segment->rawValues());
     }
 
-    public function test_segment_values_with_parsedSubId(): void
+    public function test_segment_values_with_parsed_sub_id(): void
     {
         $rawValues = ['BGM', '220::9:ZBEN', '00250559268149700889', '9'];
         $segment = new BGMBeginningOfMessage($rawValues);

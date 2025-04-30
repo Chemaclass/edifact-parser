@@ -7,15 +7,8 @@ namespace EdifactParser\Segments;
 namespace EdifactParser\Segments;
 
 /** @psalm-immutable */
-final class NADNameAddress implements SegmentInterface
+final class NADNameAddress extends AbstractSegment
 {
-    private array $rawValues;
-
-    public function __construct(array $rawValues)
-    {
-        $this->rawValues = $rawValues;
-    }
-
     public function tag(): string
     {
         return 'NAD';
@@ -24,10 +17,5 @@ final class NADNameAddress implements SegmentInterface
     public function subId(): string
     {
         return (string) $this->rawValues[1];
-    }
-
-    public function rawValues(): array
-    {
-        return $this->rawValues;
     }
 }

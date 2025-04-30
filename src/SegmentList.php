@@ -23,6 +23,8 @@ final class SegmentList
     }
 
     /**
+     * @param  array<mixed>  $rawArrays
+     *
      * @return list<SegmentInterface>
      */
     public function fromRaw(array $rawArrays): array
