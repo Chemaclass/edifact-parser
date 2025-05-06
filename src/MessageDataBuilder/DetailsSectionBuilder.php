@@ -6,7 +6,7 @@ namespace EdifactParser\MessageDataBuilder;
 
 use EdifactParser\Segments\SegmentInterface;
 
-class DetailsSectionBuilder implements BuilderInterface
+final class DetailsSectionBuilder implements BuilderInterface
 {
     use MultipleBuilderWrapper;
 

@@ -11,7 +11,7 @@ use EdifactParser\Segments\UNSSectionControl;
 
 use function in_array;
 
-class Builder
+final class Builder
 {
     use MultipleBuilderWrapper;
 
