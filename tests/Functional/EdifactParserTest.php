@@ -7,11 +7,9 @@ namespace EdifactParser\Tests\Functional;
 use EdifactParser\EdifactParser;
 use EdifactParser\LineItem;
 use EdifactParser\Segments\CNTControl;
-use EdifactParser\Segments\LINLineItem;
-use EdifactParser\Segments\PRIPrice;
-use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNSSectionControl;
 use EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
 
@@ -170,13 +168,16 @@ EDI;
         self::assertCount(1, $parserResult->transactionMessages());
 
         $message = $parserResult->transactionMessages()[0];
-        self::assertCount(2, $message->lineItems());
+        self::assertSame([1, 2, 'UNS', 'UNT'], array_keys($message->lineItems()));
 
         $unsLine = $message->lineItemById('UNS');
         self::assertEquals(new LineItem([
-            'LIN' => ['1' => new LINLineItem(['LIN', '1'])],
-            'QTY' => ['21' => new QTYQuantity(['QTY', ['23', '8']])],
-            'PRI' => ['AAA' => new PRIPrice(['PRI', '5.00'])],
+            'UNS' => [
+                'S\'' => new UNSSectionControl(['UNS', 'S\'']),
+            ],
+            'CNT' => [
+                '2' => new CNTControl(['CNT', ['2', '2\'']]),
+            ],
         ]), $unsLine);
     }
 }
