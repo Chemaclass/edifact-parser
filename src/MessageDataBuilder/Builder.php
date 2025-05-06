@@ -9,9 +9,13 @@ use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNSSectionControl;
 
+use function in_array;
+
 class Builder
 {
     use MultipleBuilderWrapper;
+
+    private const SUMMARY_TAGS = ['UNS', 'CNT', 'UNT'];
 
     public function __construct()
     {
@@ -21,6 +25,13 @@ class Builder
     public function addSegment(SegmentInterface $segment): self
     {
         $this->updateState($segment);
+
+        // Always add summary segments to the main builder
+        if (in_array($segment->tag(), self::SUMMARY_TAGS)) {
+            $this->builders[0]->addSegment($segment);
+            return $this;
+        }
+
         $this->currentBuilder->addSegment($segment);
         return $this;
     }

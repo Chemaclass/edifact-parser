@@ -10,17 +10,18 @@ class DetailsSectionBuilder implements BuilderInterface
 {
     use MultipleBuilderWrapper;
 
-    private const BEGINNING_TAGS = ['LIN'];
-    private const ENDING_TAGS = ['UNS', 'UNT'];
+    private const LINE_ITEM_TAG = 'LIN';
 
     public function addSegment(SegmentInterface $segment): self
     {
-        if (in_array($segment->tag(), self::BEGINNING_TAGS)) {
+        // Only handle LIN and its related segments
+        if ($segment->tag() === self::LINE_ITEM_TAG) {
             $this->setCurrentBuilder(new SimpleBuilder(), $segment->subId());
-        } elseif (in_array($segment->tag(), self::ENDING_TAGS)) {
-            $this->setCurrentBuilder(new SimpleBuilder(), $segment->tag());
+            $this->currentBuilder->addSegment($segment);
+        } elseif ($this->currentBuilder !== null) {
+            // Add other segments only if we're inside a line item
+            $this->currentBuilder->addSegment($segment);
         }
-        $this->currentBuilder->addSegment($segment);
 
         return $this;
     }
@@ -28,11 +29,9 @@ class DetailsSectionBuilder implements BuilderInterface
     public function build(): array
     {
         $data = [];
-
         foreach ($this->builders as $key => $builder) {
             $data[$key] = $builder->build();
         }
-
         return $data;
     }
 }

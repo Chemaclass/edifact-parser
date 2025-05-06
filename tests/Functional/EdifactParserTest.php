@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Functional;
 
 use EdifactParser\EdifactParser;
-use EdifactParser\LineItem;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
@@ -143,7 +142,7 @@ EDI;
         self::assertNotNull($message->lineItemById(2)?->segmentByTagAndSubId('UNK', 'first'));
     }
 
-    public function test_handles_lin_segments(): void
+    public function test_handles_uns_cnt_outside_lin_segments(): void
     {
         $fileContent = <<<EDI
 UNA:+.?'
@@ -168,16 +167,9 @@ EDI;
         self::assertCount(1, $parserResult->transactionMessages());
 
         $message = $parserResult->transactionMessages()[0];
-        self::assertSame([1, 2, 'UNS', 'UNT'], array_keys($message->lineItems()));
+        self::assertCount(2, $message->lineItems());
 
-        $unsLine = $message->lineItemById('UNS');
-        self::assertEquals(new LineItem([
-            'UNS' => [
-                'S\'' => new UNSSectionControl(['UNS', 'S\'']),
-            ],
-            'CNT' => [
-                '2' => new CNTControl(['CNT', ['2', '2\'']]),
-            ],
-        ]), $unsLine);
+        self::assertEquals(['S\'' => new UNSSectionControl(['UNS', 'S\''])], $message->allSegments()['UNS']);
+        self::assertEquals(['2' => new CNTControl(['CNT', ['2', '2\'']])], $message->allSegments()['CNT']);
     }
 }
