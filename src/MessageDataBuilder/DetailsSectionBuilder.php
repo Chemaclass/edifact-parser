@@ -14,15 +14,11 @@ class DetailsSectionBuilder implements BuilderInterface
 
     public function addSegment(SegmentInterface $segment): self
     {
-        // Only handle LIN and its related segments
         if ($segment->tag() === self::LINE_ITEM_TAG) {
             $this->setCurrentBuilder(new SimpleBuilder(), $segment->subId());
-            $this->currentBuilder->addSegment($segment);
-        } elseif ($this->currentBuilder !== null) {
-            // Add other segments only if we're inside a line item
-            $this->currentBuilder->addSegment($segment);
         }
 
+        $this->currentBuilder->addSegment($segment);
         return $this;
     }
 
