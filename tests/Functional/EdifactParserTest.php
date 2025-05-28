@@ -8,6 +8,7 @@ use EdifactParser\EdifactParser;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNSSectionControl;
 use EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
 
@@ -139,5 +140,36 @@ EDI;
 
         self::assertNotNull($message->lineItemById(1)?->segmentByTagAndSubId('UNK', 'first'));
         self::assertNotNull($message->lineItemById(2)?->segmentByTagAndSubId('UNK', 'first'));
+    }
+
+    public function test_handles_uns_cnt_outside_lin_segments(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.?'
+UNB+UNOC:3+1234567890123+9876543210987+250506:1300+ORDER001'
+UNH+1+ORDERS:D:96A:UN:EAN008'
+BGM+220+PO123456+9'
+DTM+137:20250506:102'
+NAD+BY+5412345000013::9'
+NAD+SU+4012345000094::9'
+LIN+1++5901234123457:EN'
+QTY+21:10'
+PRI+AAA:5.00'
+LIN+2++5901234123458:EN'
+QTY+21:20'
+PRI+AAA:4.50'
+UNS+S'
+CNT+2:2'
+UNT+13+1'
+UNZ+1+ORDER001'
+EDI;
+        $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+        self::assertCount(1, $parserResult->transactionMessages());
+
+        $message = $parserResult->transactionMessages()[0];
+        self::assertCount(2, $message->lineItems());
+
+        self::assertEquals(['S\'' => new UNSSectionControl(['UNS', 'S\''])], $message->allSegments()['UNS']);
+        self::assertEquals(['2' => new CNTControl(['CNT', ['2', '2\'']])], $message->allSegments()['CNT']);
     }
 }

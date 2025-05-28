@@ -19,8 +19,8 @@ final class TransactionMessage implements Countable
     use HasRetrievableSegments;
 
     /**
-     * @param array<string, array<string, SegmentInterface>> $groupedSegments
-     * @param array<string, LineItem> $lineItems
+     * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
+     * @param  array<string, LineItem>  $lineItems
      */
     public function __construct(
         private array $groupedSegments,
@@ -65,7 +65,7 @@ final class TransactionMessage implements Countable
 
     public function lineItemById(string|int $lineItemId): ?LineItem
     {
-        return $this->lineItems[(string)$lineItemId] ?? null;
+        return $this->lineItems[(string) $lineItemId] ?? null;
     }
 
     /**
