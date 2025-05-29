@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-namespace EdifactParser\Segments;
-
 use EdifactParser\Exception\MissingSubId;
 
 /** @psalm-immutable */
