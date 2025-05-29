@@ -8,7 +8,6 @@ use EdifactParser\EdifactParser;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
-use EdifactParser\Segments\UNSSectionControl;
 use EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
 
