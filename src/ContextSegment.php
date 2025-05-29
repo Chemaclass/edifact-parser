@@ -30,7 +30,7 @@ final class ContextSegment
         return $this->children;
     }
 
-    public function addChild(ContextSegment|SegmentInterface $child): void
+    public function addChild(self|SegmentInterface $child): void
     {
         $this->children[] = $child;
     }

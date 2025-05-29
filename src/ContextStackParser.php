@@ -6,6 +6,8 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
+use function in_array;
+
 final class ContextStackParser
 {
     /** @var list<string> */

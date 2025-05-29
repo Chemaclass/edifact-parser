@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit;
 
-use EdifactParser\ContextStackParser;
 use EdifactParser\ContextSegment;
+use EdifactParser\ContextStackParser;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\QTYQuantity;
-use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\Segments\UnknownSegment;
+use EdifactParser\Segments\UNTMessageFooter;
 use PHPUnit\Framework\TestCase;
 
 final class ContextStackParserTest extends TestCase
 {
-    /** @test */
+    /**
+     * @test
+     */
     public function groups_segments_by_context(): void
     {
         $nad = new NADNameAddress(['NAD', 'CN']);
