@@ -100,9 +100,7 @@ final class TransactionMessage implements Countable
     private static function hasUnhSegment(self ...$messages): array
     {
         return array_values(
-            array_filter($messages, static function (self $m) {
-                return !empty($m->segmentsByTag('UNH'));
-            })
+            array_filter($messages, static fn (self $m) => !empty($m->segmentsByTag('UNH')))
         );
     }
 

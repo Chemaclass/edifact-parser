@@ -12,13 +12,10 @@ use EdifactParser\Segments\SegmentInterface;
 /** @psalm-immutable */
 final class TestingSegmentFactory implements SegmentFactoryInterface
 {
-    private string $customKey;
-
     private SegmentFactory $defaultFactory;
 
-    public function __construct(string $customKey)
+    public function __construct(private string $customKey)
     {
-        $this->customKey = $customKey;
         $this->defaultFactory = SegmentFactory::withDefaultSegments();
     }
 

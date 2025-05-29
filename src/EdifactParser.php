@@ -11,11 +11,8 @@ use EdifactParser\Segments\SegmentFactoryInterface;
 
 final class EdifactParser
 {
-    private SegmentFactoryInterface $segmentFactory;
-
-    public function __construct(SegmentFactoryInterface $segmentFactory)
+    public function __construct(private SegmentFactoryInterface $segmentFactory)
     {
-        $this->segmentFactory = $segmentFactory;
     }
 
     /**

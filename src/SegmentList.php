@@ -10,11 +10,8 @@ use EdifactParser\Segments\SegmentInterface;
 
 final class SegmentList
 {
-    private SegmentFactoryInterface $segmentFactory;
-
-    public function __construct(SegmentFactoryInterface $segmentFactory)
+    public function __construct(private SegmentFactoryInterface $segmentFactory)
     {
-        $this->segmentFactory = $segmentFactory;
     }
 
     public static function withDefaultFactory(): self

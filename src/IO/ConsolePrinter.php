@@ -12,12 +12,10 @@ use function sprintf;
 
 final class ConsolePrinter implements PrinterInterface
 {
-    /** @var list<string> */
-    private array $segmentNames;
-
-    private function __construct(array $segmentNames)
-    {
-        $this->segmentNames = $segmentNames;
+    private function __construct(
+        /** @var list<string> */
+        private array $segmentNames
+    ) {
     }
 
     public static function createWithHeaders(array $segmentNames): self

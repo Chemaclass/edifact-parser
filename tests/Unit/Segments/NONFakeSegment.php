@@ -11,10 +11,7 @@ namespace EdifactParser\Tests\Unit\Segments;
  */
 final class NONFakeSegment
 {
-    public array $rawValues;
-
-    private function __construct(array $rawValues)
+    private function __construct(public array $rawValues)
     {
-        $this->rawValues = $rawValues;
     }
 }
