@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace EdifactParser;
 
 use Countable;
+use EdifactParser\ContextSegment;
+use EdifactParser\ContextStackParser;
 use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
@@ -21,10 +23,12 @@ final class TransactionMessage implements Countable
     /**
      * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
      * @param  array<string, LineItem>  $lineItems
+     * @param  list<ContextSegment>  $contextSegments
      */
     public function __construct(
         private array $groupedSegments,
         private array $lineItems = [],
+        private array $contextSegments = [],
     ) {
     }
 
@@ -61,6 +65,14 @@ final class TransactionMessage implements Countable
     public function lineItems(): array
     {
         return $this->lineItems;
+    }
+
+    /**
+     * @return list<ContextSegment>
+     */
+    public function contextSegments(): array
+    {
+        return $this->contextSegments;
     }
 
     public function lineItemById(string|int $lineItemId): ?LineItem
@@ -107,11 +119,18 @@ final class TransactionMessage implements Countable
     private static function groupSegmentsByName(SegmentInterface ...$segments): self
     {
         $builder = new MessageDataBuilder();
+        $contextParser = new ContextStackParser();
 
         foreach ($segments as $segment) {
             $builder->addSegment($segment);
         }
 
-        return new self($builder->buildSegments(), $builder->buildLineItems());
+        $contexts = $contextParser->parse(...$segments);
+
+        return new self(
+            $builder->buildSegments(),
+            $builder->buildLineItems(),
+            $contexts,
+        );
     }
 }
