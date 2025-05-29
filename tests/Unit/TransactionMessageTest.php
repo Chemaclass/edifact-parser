@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
+use EdifactParser\ContextSegment;
 use EdifactParser\LineItem;
 use EdifactParser\ParserResult;
 use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\LINLineItem;
+use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
@@ -35,7 +37,7 @@ final class TransactionMessageTest extends TestCase
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-            ]),
+            ], [], []),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -59,7 +61,7 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-            ]),
+            ], [], []),
             new TransactionMessage([
                 'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
@@ -67,7 +69,7 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
-            ]),
+            ], [], []),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -97,7 +99,7 @@ EDI;
                     '11' => new CNTControl(['CNT', ['11', '1', 'PCE']]),
                     '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 ],
-            ]),
+            ], [], []),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -127,7 +129,7 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-            ]),
+            ], [], []),
             new TransactionMessage([
                 'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
@@ -135,7 +137,7 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
-            ]),
+            ], [], []),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -164,7 +166,7 @@ EDI;
                 'UNT' => [
                     '10' => new UNTMessageFooter(['UNT', '10', '2']),
                 ],
-            ]),
+            ], [], []),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -215,7 +217,7 @@ EDI;
             'UNZ' => [
                 '2' => new UnknownSegment(['UNZ', '2', '3']),
             ],
-        ]), $parerResult->globalSegments());
+        ], [], []), $parerResult->globalSegments());
 
         self::assertEquals([
             'UNH' => [
@@ -345,6 +347,35 @@ EDI;
         self::assertEquals($firstLineItem, $firstMessage->lineItemById(1));
         self::assertEquals($secondLineItem, $firstMessage->lineItemById(2));
         self::assertNull($firstMessage->lineItemById(3));
+    }
+
+    public function test_context_segments(): void
+    {
+        $fileContent = <<<EDI
+UNA:+.? '
+UNH+1+anything'
+NAD+CN'
+COM+123:TE'
+LIN+1'
+QTY+21:5'
+UNT+19+1'
+EDI;
+
+        $messages = $this->parse($fileContent)->transactionMessages();
+        $firstMessage = reset($messages);
+
+        $expected = [
+            new ContextSegment(
+                new NADNameAddress(['NAD', 'CN']),
+                [new UnknownSegment(['COM', ['123', 'TE']])],
+            ),
+            new ContextSegment(
+                new LINLineItem(['LIN', '1']),
+                [new QTYQuantity(['QTY', ['21', '5']])],
+            ),
+        ];
+
+        self::assertEquals($expected, $firstMessage->contextSegments());
     }
 
     private function parse(string $fileContent): ParserResult
