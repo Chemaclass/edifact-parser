@@ -15,7 +15,12 @@ final class Builder
 {
     use MultipleBuilderWrapper;
 
-    private const SUMMARY_TAGS = ['UNS', 'CNT', 'UNT'];
+    /**
+     * Tags that indicate the end of a line item section.
+     * After one of these tags is found all following segments are
+     * considered part of the summary until another LIN tag appears.
+     */
+    private const BREAK_LINEITEM_TAGS = ['UNS', 'CNT', 'UNT'];
 
     public function __construct()
     {
@@ -25,12 +30,6 @@ final class Builder
     public function addSegment(SegmentInterface $segment): self
     {
         $this->updateState($segment);
-
-        // Always add summary segments to the main builder
-        if (in_array($segment->tag(), self::SUMMARY_TAGS)) {
-            $this->builders[0]->addSegment($segment);
-            return $this;
-        }
 
         $this->currentBuilder->addSegment($segment);
         return $this;
@@ -89,7 +88,18 @@ final class Builder
 
     private function atEndOfDetailsSection(SegmentInterface $segment): bool
     {
-        return $segment instanceof UNSSectionControl
-            && $segment->indicatesEndOfDetailsSection();
+        if (!($this->currentBuilder instanceof DetailsSectionBuilder)) {
+            return false;
+        }
+
+        if (in_array($segment->tag(), self::BREAK_LINEITEM_TAGS, true)) {
+            if ($segment instanceof UNSSectionControl) {
+                return $segment->indicatesEndOfDetailsSection();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
