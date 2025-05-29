@@ -22,6 +22,16 @@ final class ContextSegment
         return $this->segment;
     }
 
+    public function tag(): string
+    {
+        return $this->segment->tag();
+    }
+
+    public function subId(): string
+    {
+        return $this->segment->subId();
+    }
+
     /**
      * @return list<ContextSegment|SegmentInterface>
      */

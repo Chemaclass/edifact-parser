@@ -60,6 +60,7 @@ $personName = $nadSegment->rawValues()[4]; // 'Person Name'
 
 - [example/printing-segments.php](example/printing-segments.php) — Print all parsed segments line by line.
 - [example/extracting-data.php](example/extracting-data.php) — Extract values from specific segments.
+- [example/context-segments.php](example/context-segments.php) — Traverse hierarchical context segments.
 
 ## 🤝 Contributing
 
