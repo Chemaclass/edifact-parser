@@ -9,6 +9,8 @@ use Webmozart\Assert\Assert;
 
 use function class_implements;
 use function in_array;
+use function is_string;
+use function strlen;
 
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
@@ -43,18 +45,16 @@ final class SegmentFactory implements SegmentFactoryInterface
     private array $segments;
 
     /**
-     * @param array<string,string> $segments
+     * @param  array<string, string>  $segments
      */
     private function __construct(array $segments)
     {
         foreach ($segments as $tag => $class) {
-            Assert::length($tag, self::TAG_LENGTH);
-
+            Assert::length($tag, self::TAG_LENGTH, "Segment tag '{$tag}' must be " . self::TAG_LENGTH . ' chars');
             if (!$this->isSegment($class)) {
-                throw new InvalidArgumentException("'{$class}' must implements 'SegmentInterface'");
+                throw new InvalidArgumentException("'{$class}' must implement 'SegmentInterface'");
             }
         }
-
         $this->segments = $segments;
     }
 
@@ -63,7 +63,7 @@ final class SegmentFactory implements SegmentFactoryInterface
      * The value: The class that will be created once that 'Segment Tag' is found. It must implement
      * the `SegmentInterface` in order to be able to work with the factory, otherwise it will be ignored.
      *
-     * @param array<string,string> $segments
+     * @param  array<string,string>  $segments
      */
     public static function withSegments(array $segments): self
     {
@@ -77,8 +77,12 @@ final class SegmentFactory implements SegmentFactoryInterface
 
     public function createSegmentFromArray(array $rawArray): SegmentInterface
     {
-        $tag = (string) $rawArray[0];
-        Assert::length($tag, self::TAG_LENGTH);
+        $tag = $rawArray[0] ?? null;
+
+        if (!is_string($tag) || strlen($tag) !== self::TAG_LENGTH) {
+            return new UnknownSegment($rawArray);
+        }
+
         $className = $this->segments[$tag] ?? '';
 
         if (empty($className)) {
