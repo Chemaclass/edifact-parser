@@ -7,7 +7,8 @@ require dirname(__DIR__).'/vendor/autoload.php';
 use EdifactParser\EdifactParser;
 use EdifactParser\IO\ConsolePrinter;
 
-$fileContent = file_get_contents(__DIR__.'/edifact-sample.edi');
+$filepath = $argv[1] ?? __DIR__.'/edifact-sample.edi';
+$fileContent = file_get_contents($filepath);
 $parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
 
 $printer = ConsolePrinter::createWithHeaders([
