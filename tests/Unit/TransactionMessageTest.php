@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit;
 
 use EDI\Parser;
+use EdifactParser\ContextSegment;
 use EdifactParser\LineItem;
 use EdifactParser\ParserResult;
 use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
 use EdifactParser\Segments\LINLineItem;
-use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
-use EdifactParser\ContextSegment;
 use EdifactParser\TransactionMessage;
 use PHPUnit\Framework\TestCase;
 
@@ -349,10 +349,7 @@ EDI;
         self::assertNull($firstMessage->lineItemById(3));
     }
 
-    /**
-     * @test
-     */
-    public function context_segments(): void
+    public function test_context_segments(): void
     {
         $fileContent = <<<EDI
 UNA:+.? '
@@ -370,7 +367,7 @@ EDI;
         $expected = [
             new ContextSegment(
                 new NADNameAddress(['NAD', 'CN']),
-                [new UnknownSegment(['COM', '123:TE'])],
+                [new UnknownSegment(['COM', ['123', 'TE']])],
             ),
             new ContextSegment(
                 new LINLineItem(['LIN', '1']),

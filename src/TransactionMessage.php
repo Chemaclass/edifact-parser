@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser;
 
 use Countable;
-use EdifactParser\ContextSegment;
-use EdifactParser\ContextStackParser;
 use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNHMessageHeader;
