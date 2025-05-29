@@ -35,4 +35,17 @@ foreach ($parserResult->transactionMessages() as $i => $message) {
     print "###################\n";
     $printer->printMessage($message);
     print PHP_EOL;
+
+    print "Context segments:\n";
+    foreach ($message->contextSegments() as $context) {
+        $parent = $context->segment();
+        printf("> %s %s\n", $parent->tag(), $parent->subId());
+        foreach ($context->children() as $child) {
+            printf(
+                "    - %s |> %s\n",
+                $child->tag(),
+                json_encode($child->rawValues(), JSON_THROW_ON_ERROR)
+            );
+        }
+    }
 }
