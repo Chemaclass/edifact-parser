@@ -22,25 +22,36 @@ final class ContextStackParser
     public function parse(SegmentInterface ...$segments): array
     {
         $result = [];
-        $current = null;
+        $stack = [];
 
         foreach ($segments as $segment) {
             $tag = $segment->tag();
 
             if (in_array($tag, self::CONTEXT_TAGS, true)) {
                 $context = new ContextSegment($segment);
-                $result[] = $context;
-                $current = $context;
+
+                // Pop previous context since this is a new one at the same level
+                if ($stack !== []) {
+                    array_pop($stack);
+                }
+
+                if ($stack === []) { // @phpstan-ignore-line
+                    $result[] = $context;
+                } else {
+                    $stack[array_key_last($stack)]->addChild($context);
+                }
+
+                $stack[] = $context;
                 continue;
             }
 
-            if (in_array($tag, self::CHILD_TAGS, true) && $current !== null) {
-                $current->addChild($segment);
+            if (in_array($tag, self::CHILD_TAGS, true) && $stack !== []) {
+                $stack[array_key_last($stack)]->addChild($segment);
                 continue;
             }
 
             if ($tag === 'UNT') {
-                $current = null;
+                $stack = [];
             }
         }
 
