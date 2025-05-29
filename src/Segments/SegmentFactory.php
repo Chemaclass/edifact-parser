@@ -50,7 +50,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         foreach ($segments as $tag => $class) {
             Assert::length($tag, self::TAG_LENGTH);
 
-            if (!$this->classImplements($class, SegmentInterface::class)) {
+            if (!$this->isSegment($class)) {
                 throw new InvalidArgumentException("'{$class}' must implements 'SegmentInterface'");
             }
         }
@@ -91,10 +91,14 @@ final class SegmentFactory implements SegmentFactoryInterface
         return $segment;
     }
 
-    private function classImplements(string $className, string $interface): bool
+    private function isSegment(string $className): bool
     {
         $interfaces = class_implements($className);
 
-        return $interfaces && in_array($interface, class_implements($className));
+        if ($interfaces === false) {
+            return false;
+        }
+
+        return in_array(SegmentInterface::class, $interfaces, true);
     }
 }
