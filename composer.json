@@ -28,7 +28,8 @@
         "phpunit/phpunit": "^9.6",
         "phpstan/phpstan": "^2.1",
         "symfony/var-dumper": "^5.4",
-        "vimeo/psalm": "^4.30"
+        "vimeo/psalm": "^4.30",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -42,6 +43,7 @@
     },
     "scripts": {
         "test": "@test-all",
+        "fix":["@csfix", "@rector"],
         "test-all": [
             "@quality",
             "@phpunit"
@@ -49,7 +51,8 @@
         "quality": [
             "@csrun",
             "@psalm",
-            "@phpstan"
+            "@phpstan",
+            "@rector:dry"
         ],
         "phpunit": [
             "@test-unit",
@@ -60,7 +63,9 @@
         "psalm": "./vendor/bin/psalm",
         "phpstan": "./vendor/bin/phpstan analyze",
         "csfix": "./vendor/bin/php-cs-fixer fix",
-        "csrun": "./vendor/bin/php-cs-fixer fix --dry-run"
+        "csrun": "./vendor/bin/php-cs-fixer fix --dry-run",
+        "rector":"./vendor/bin/rector",
+        "rector:dry":"./vendor/bin/rector --dry-run"
     },
     "config": {
         "platform": {
