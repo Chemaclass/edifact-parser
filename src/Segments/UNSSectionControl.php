@@ -19,6 +19,6 @@ final class UNSSectionControl extends AbstractSegment
 
     public function indicatesEndOfDetailsSection(): bool
     {
-        return $this->rawValues[1] == SectionControlIdentifier::BetweenMessageDetailsAndSummary;
+        return $this->rawValues[1] === SectionControlIdentifier::BetweenMessageDetailsAndSummary;
     }
 }

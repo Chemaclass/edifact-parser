@@ -11,17 +11,19 @@ final class UnknownSegment extends AbstractSegment
 {
     public function tag(): string
     {
-        return $this->rawValues[0];
+        return (string) ($this->rawValues[0] ?? '');
     }
 
     public function subId(): string
     {
-        if (is_string($this->rawValues[1])) {
-            return $this->rawValues[1];
+        $value = $this->rawValues[1] ?? null;
+
+        if (is_string($value)) {
+            return $value;
         }
 
-        if (is_string($this->rawValues[1][0])) {
-            return $this->rawValues[1][0];
+        if (isset($value[0]) && is_string($value[0])) {
+            return $value[0];
         }
 
         return $this->hashContentsWithMD5();
@@ -30,6 +32,9 @@ final class UnknownSegment extends AbstractSegment
     private function hashContentsWithMD5(): string
     {
         $encodedValues = json_encode($this->rawValues);
-        return ($encodedValues) ? md5($encodedValues) : md5(self::class);
+
+        return $encodedValues === false
+            ? md5(self::class)
+            : md5($encodedValues);
     }
 }
