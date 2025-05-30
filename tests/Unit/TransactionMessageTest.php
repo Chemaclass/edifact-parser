@@ -330,12 +330,22 @@ EDI;
         $firstMessage = reset($messages);
 
         $firstLineItem = new LineItem([
-            'LIN' => ['1' => new LINLineItem(['LIN', 1])],
+            'LIN' => [
+                '1' => new ContextSegment(
+                    new LINLineItem(['LIN', 1]),
+                    [new QTYQuantity(['QTY', [25, 5]])],
+                ),
+            ],
             'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
         ]);
 
         $secondLineItem = new LineItem([
-            'LIN' => ['2' => new LINLineItem(['LIN', 2])],
+            'LIN' => [
+                '2' => new ContextSegment(
+                    new LINLineItem(['LIN', 2]),
+                    [new QTYQuantity(['QTY', [23, 10]])],
+                ),
+            ],
             'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
         ]);
 
@@ -376,6 +386,18 @@ EDI;
         ];
 
         self::assertEquals($expected, $firstMessage->contextSegments());
+
+        $nadContext = $firstMessage->segmentByTagAndSubId('NAD', 'CN');
+        self::assertInstanceOf(ContextSegment::class, $nadContext);
+        self::assertEquals([
+            new UnknownSegment(['COM', ['123', 'TE']]),
+        ], $nadContext->children());
+
+        $linContext = $firstMessage->segmentByTagAndSubId('LIN', '1');
+        self::assertInstanceOf(ContextSegment::class, $linContext);
+        self::assertEquals([
+            new QTYQuantity(['QTY', ['21', '5']]),
+        ], $linContext->children());
     }
 
     private function parse(string $fileContent): ParserResult

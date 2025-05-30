@@ -6,7 +6,7 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
-final class ContextSegment
+final class ContextSegment implements SegmentInterface
 {
     /**
      * @param list<ContextSegment|SegmentInterface> $children
@@ -30,6 +30,16 @@ final class ContextSegment
     public function subId(): string
     {
         return $this->segment->subId();
+    }
+
+    public function parsedSubId(): array
+    {
+        return $this->segment->parsedSubId();
+    }
+
+    public function rawValues(): array
+    {
+        return $this->segment->rawValues();
     }
 
     /**

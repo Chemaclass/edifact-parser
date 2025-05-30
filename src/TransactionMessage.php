@@ -91,6 +91,23 @@ final class TransactionMessage implements Countable
         return count($this->groupedSegments);
     }
 
+    public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
+    {
+        $segment = $this->groupedSegments[$tag][$subId] ?? null;
+        if ($segment !== null) {
+            return $segment;
+        }
+
+        foreach ($this->lineItems as $lineItem) {
+            $segment = $lineItem->segmentByTagAndSubId($tag, $subId);
+            if ($segment !== null) {
+                return $segment;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @return TransactionMessage
      */
@@ -122,13 +139,56 @@ final class TransactionMessage implements Countable
         foreach ($segments as $segment) {
             $builder->addSegment($segment);
         }
+        $groupedSegments = $builder->buildSegments();
+        $lineItemsData = [];
+        foreach ($builder->buildLineItems() as $key => $lineItem) {
+            $lineItemsData[$key] = $lineItem->allSegments();
+        }
 
         $contexts = $contextParser->parse(...$segments);
 
+        foreach ($contexts as $context) {
+            self::applyContext($context, $groupedSegments, $lineItemsData);
+        }
+
+        $lineItems = [];
+        foreach ($lineItemsData as $key => $data) {
+            $lineItems[$key] = new LineItem($data);
+        }
+
         return new self(
-            $builder->buildSegments(),
-            $builder->buildLineItems(),
+            $groupedSegments,
+            $lineItems,
             $contexts,
         );
+    }
+
+    /**
+     * @param array<string, array<string, SegmentInterface>> $grouped
+     * @param array<string|int, array<string, array<string, SegmentInterface>>> $lineItems
+     */
+    private static function applyContext(ContextSegment $context, array &$grouped, array &$lineItems): void
+    {
+        $segment = $context->segment();
+        $tag = $segment->tag();
+        $subId = $segment->subId();
+
+        if (isset($grouped[$tag][$subId]) && $grouped[$tag][$subId] === $segment) {
+            $grouped[$tag][$subId] = $context;
+        }
+
+        foreach ($lineItems as &$segments) {
+            if (isset($segments[$tag][$subId]) && $segments[$tag][$subId] === $segment) {
+                $segments[$tag][$subId] = $context;
+                break;
+            }
+        }
+        unset($segments);
+
+        foreach ($context->children() as $child) {
+            if ($child instanceof ContextSegment) {
+                self::applyContext($child, $grouped, $lineItems);
+            }
+        }
     }
 }
