@@ -13,7 +13,6 @@ use EdifactParser\Segments\UNTMessageFooter;
 use function count;
 use function in_array;
 
-/** @psalm-immutable */
 final class TransactionMessage implements Countable
 {
     use HasRetrievableSegments;
@@ -108,9 +107,6 @@ final class TransactionMessage implements Countable
         return null;
     }
 
-    /**
-     * @return TransactionMessage
-     */
     private static function filterGlobalSegments(array $segments): self
     {
         $globalMessages = array_filter(
@@ -151,10 +147,7 @@ final class TransactionMessage implements Countable
             self::applyContext($context, $groupedSegments, $lineItemsData);
         }
 
-        $lineItems = [];
-        foreach ($lineItemsData as $key => $data) {
-            $lineItems[$key] = new LineItem($data);
-        }
+        $lineItems = array_map(static fn ($data) => new LineItem($data), $lineItemsData);
 
         return new self(
             $groupedSegments,

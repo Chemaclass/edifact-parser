@@ -8,6 +8,7 @@ use EdifactParser\ContextSegment;
 use EdifactParser\Segments\NullSegment;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\TransactionMessage;
+
 use function array_key_first;
 use function json_encode;
 use function sprintf;
