@@ -6,15 +6,26 @@ namespace EdifactParser;
 
 use EdifactParser\Segments\SegmentInterface;
 
-use function in_array;
+use function array_key_exists;
 
 final class ContextStackParser
 {
-    /** @var list<string> */
-    private const CONTEXT_TAGS = ['NAD', 'LIN', 'DOC'];
+    /** @var array<string, bool> */
+    private const CONTEXT_TAGS = ['NAD' => true, 'LIN' => true, 'DOC' => true];
 
-    /** @var list<string> */
-    private const CHILD_TAGS = ['COM', 'CTA', 'PIA', 'IMD', 'MEA', 'QTY', 'PRI', 'TAX', 'DTM', 'MOA'];
+    /** @var array<string, bool> */
+    private const CHILD_TAGS = [
+        'COM' => true,
+        'CTA' => true,
+        'PIA' => true,
+        'IMD' => true,
+        'MEA' => true,
+        'QTY' => true,
+        'PRI' => true,
+        'TAX' => true,
+        'DTM' => true,
+        'MOA' => true,
+    ];
 
     /**
      * @return list<ContextSegment>
@@ -27,7 +38,7 @@ final class ContextStackParser
         foreach ($segments as $segment) {
             $tag = $segment->tag();
 
-            if (in_array($tag, self::CONTEXT_TAGS, true)) {
+            if (array_key_exists($tag, self::CONTEXT_TAGS)) {
                 $context = new ContextSegment($segment);
 
                 // Pop previous context since this is a new one at the same level
@@ -45,7 +56,7 @@ final class ContextStackParser
                 continue;
             }
 
-            if (in_array($tag, self::CHILD_TAGS, true) && $stack !== []) {
+            if (array_key_exists($tag, self::CHILD_TAGS) && $stack !== []) {
                 $stack[array_key_last($stack)]->addChild($segment);
                 continue;
             }
