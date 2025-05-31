@@ -26,9 +26,11 @@ final class SegmentList
      */
     public function fromRaw(array $rawArrays): array
     {
-        return array_map(
-            fn (array $raw) => $this->segmentFactory->createSegmentFromArray($raw),
-            $rawArrays
-        );
+        $segments = [];
+        foreach ($rawArrays as $raw) {
+            $segments[] = $this->segmentFactory->createSegmentFromArray($raw);
+        }
+
+        return $segments;
     }
 }
