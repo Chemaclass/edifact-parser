@@ -59,9 +59,8 @@ final class ConsolePrinter implements PrinterInterface
     /**
      * Handles printing of a segment or context segment inline with its children.
      */
-    private function printSingleSegmentWithContext(SegmentInterface $segment): void
+    private function printSingleSegmentWithContext(SegmentInterface $segment, string $indent = '  '): void
     {
-        $indent = '  ';
         $subId = $segment->subId();
         $values = json_encode($segment->rawValues(), JSON_THROW_ON_ERROR);
 
@@ -69,13 +68,7 @@ final class ConsolePrinter implements PrinterInterface
 
         if ($segment instanceof ContextSegment) {
             foreach ($segment->children() as $child) {
-                $childIndent = str_repeat($indent, 2);
-                echo sprintf(
-                    "%s%s |> %s\n",
-                    $childIndent,
-                    $child->tag(),
-                    json_encode($child->rawValues(), JSON_THROW_ON_ERROR)
-                );
+                $this->printSingleSegmentWithContext($child, $indent . '  ');
             }
         }
     }
