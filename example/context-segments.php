@@ -8,8 +8,7 @@ use EdifactParser\ContextSegment;
 use EdifactParser\EdifactParser;
 
 $filepath = $argv[1] ?? __DIR__ . '/edifact-sample.edi';
-$fileContent = file_get_contents($filepath);
-$parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$parserResult = EdifactParser::createWithDefaultSegments()->parseFile($filepath);
 
 foreach ($parserResult->transactionMessages() as $i => $message) {
     echo "Message {$i}" . PHP_EOL;

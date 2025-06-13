@@ -7,8 +7,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 use EdifactParser\EdifactParser;
 use EdifactParser\Segments\SegmentInterface;
 
-$fileContent = file_get_contents(__DIR__ . '/edifact-sample.edi');
-$parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$parserResult = EdifactParser::createWithDefaultSegments()->parseFile(__DIR__ . '/edifact-sample.edi');
 $firstMessage = $parserResult->transactionMessages()[0];
 
 /** @var SegmentInterface $cnNadSegment */
