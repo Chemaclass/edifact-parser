@@ -49,7 +49,10 @@ NAD+CN+++Person Name+Street Nr 2+City2++12345+DE'
 ...
 EDI;
 
-$parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$parser = EdifactParser::createWithDefaultSegments();
+$parserResult = $parser->parse($fileContent);
+// Or directly from a file
+//$parserResult = $parser->parseFile('/path/to/file.edi');
 $firstMessage = $parserResult->transactionMessages()[0];
 
 $nadSegment = $firstMessage->segmentByTagAndSubId('NAD', 'CN');

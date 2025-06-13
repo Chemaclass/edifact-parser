@@ -8,8 +8,7 @@ use EdifactParser\EdifactParser;
 use EdifactParser\IO\ConsolePrinter;
 
 $filepath = $argv[1] ?? __DIR__.'/edifact-sample.edi';
-$fileContent = file_get_contents($filepath);
-$parserResult = EdifactParser::createWithDefaultSegments()->parse($fileContent);
+$parserResult = EdifactParser::createWithDefaultSegments()->parseFile($filepath);
 
 $printer = ConsolePrinter::createWithHeaders([
     'UNB',

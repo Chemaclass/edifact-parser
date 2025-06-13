@@ -41,4 +41,18 @@ final class EdifactParser
 
         return TransactionMessage::groupSegmentsByMessage(...$segments);
     }
+
+    public function parseFile(string $filePath): ParserResult
+    {
+        if (!is_file($filePath)) {
+            throw InvalidFile::withErrors(["File not found: {$filePath}"]);
+        }
+
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            throw InvalidFile::withErrors(["Unable to read file: {$filePath}"]);
+        }
+
+        return $this->parse($content);
+    }
 }
