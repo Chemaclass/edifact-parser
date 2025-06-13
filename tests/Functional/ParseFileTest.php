@@ -9,8 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ParseFileTest extends TestCase
 {
-    /** @test */
-    public function parse_file_from_path(): void
+    public function test_parse_file_from_path(): void
     {
         $filepath = __DIR__ . '/../../example/edifact-sample.edi';
 
