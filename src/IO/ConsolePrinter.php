@@ -13,7 +13,6 @@ use function array_key_first;
 use function json_encode;
 use function sprintf;
 use function str_pad;
-use function str_repeat;
 
 final class ConsolePrinter implements PrinterInterface
 {
