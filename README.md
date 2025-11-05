@@ -65,6 +65,185 @@ $personName = $nadSegment->rawValues()[4]; // 'Person Name'
 - [example/extracting-data.php](example/extracting-data.php) — Extract values from specific segments.
 - [example/context-segments.php](example/context-segments.php) — Traverse hierarchical context segments.
 
+---
+
+## 📖 Usage Guide
+
+### Accessing Segments
+
+```php
+// Direct lookup by tag and subId (fastest)
+$nadSegment = $message->segmentByTagAndSubId('NAD', 'BY');
+
+// Get all segments with the same tag
+$allNadSegments = $message->segmentsByTag('NAD');
+
+// Always null-check when accessing segments
+if ($nadSegment) {
+    $companyName = $nadSegment->rawValues()[4];
+}
+```
+
+### Working with Line Items
+
+Line items group LIN segments with their related data (QTY, PRI, PIA, etc.) — useful for processing orders and invoices:
+
+```php
+foreach ($message->lineItems() as $lineItem) {
+    $linSegment = $lineItem->segmentByTagAndSubId('LIN', '1');
+    $qtySegment = $lineItem->segmentByTagAndSubId('QTY', '21');
+
+    $productId = $linSegment->rawValues()[3];
+    $quantity = $qtySegment->rawValues()[1][0];
+}
+```
+
+### Navigating Hierarchical Segments
+
+Context segments maintain parent-child relationships (e.g., NAD → CTA → COM):
+
+```php
+foreach ($message->contextSegments() as $context) {
+    if ($context->tag() === 'NAD') {
+        $address = $context->segment()->rawValues();
+
+        foreach ($context->children() as $child) {
+            if ($child->tag() === 'CTA') {
+                $contactName = $child->rawValues()[2];
+            }
+        }
+    }
+}
+```
+
+### Global vs Transaction Segments
+
+```php
+// Global segments (file-level): UNA, UNB, UNZ
+$globalSegments = $result->globalSegments();
+
+// Transaction messages (UNH...UNT blocks)
+foreach ($result->transactionMessages() as $message) {
+    // Process each message...
+}
+```
+
+---
+
+## 🔧 Extending with Custom Segments
+
+### Step 1: Create Your Segment Class
+
+```php
+<?php
+namespace YourApp\Segments;
+
+use EdifactParser\Segments\AbstractSegment;
+
+/** @psalm-immutable */
+final class LOCLocation extends AbstractSegment
+{
+    public function tag(): string
+    {
+        return 'LOC';
+    }
+
+    // Optional: Add helper methods
+    public function locationType(): string
+    {
+        return $this->rawValues()[1] ?? '';
+    }
+
+    public function locationCode(): string
+    {
+        return $this->rawValues()[2][0] ?? '';
+    }
+}
+```
+
+### Step 2: Register with SegmentFactory
+
+```php
+use EdifactParser\Segments\SegmentFactory;
+use YourApp\Segments\LOCLocation;
+
+$factory = SegmentFactory::withSegments([
+    ...SegmentFactory::DEFAULT_SEGMENTS,  // Keep defaults
+    'LOC' => LOCLocation::class,          // Add yours
+]);
+
+$parser = new EdifactParser($factory);
+```
+
+### Step 3: Write Tests
+
+```php
+use PHPUnit\Framework\TestCase;
+use YourApp\Segments\LOCLocation;
+
+final class LOCLocationTest extends TestCase
+{
+    /** @test */
+    public function it_parses_location_data(): void
+    {
+        $raw = ['LOC', '11', ['DEHAM', '139', '6'], 'Hamburg'];
+        $segment = new LOCLocation($raw);
+
+        self::assertEquals('LOC', $segment->tag());
+        self::assertEquals('11', $segment->subId());
+        self::assertEquals('DEHAM', $segment->locationCode());
+    }
+}
+```
+
+---
+
+## ✅ Best Practices
+
+### Do
+
+- ✅ Always null-check segments — not all segments exist in every message
+- ✅ Use `segmentByTagAndSubId()` for single lookups, `segmentsByTag()` for multiple
+- ✅ Check field types before accessing — some `rawValues()` fields are arrays
+- ✅ Use line items for order/invoice processing — cleaner than manual grouping
+- ✅ Add helper methods to custom segments for domain-specific logic
+
+### Avoid
+
+- ❌ Don't assume segments exist — wrap in conditionals
+- ❌ Don't hardcode subIds — they vary by message type
+- ❌ Don't modify library segment classes — extend with custom segments instead
+- ❌ Don't parse raw values without checking types
+
+---
+
+## 🛠️ Development
+
+### Commands
+
+```bash
+composer install                        # Install dependencies
+
+# Testing
+composer test                           # Run all tests
+
+# Code Quality
+composer quality                        # Run all checks
+composer csfix                          # Fix code style
+composer psalm                          # Static analysis (Psalm)
+composer phpstan                        # Static analysis (PHPStan)
+composer rector                         # Apply refactoring rules
+```
+
+### Code Standards
+
+- PHP 8.0+, strict types, PSR-4 autoloading
+- All code must pass PHP-CS-Fixer, Psalm, PHPStan, and Rector
+- Type hints required for all methods
+- Tests required for new functionality
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions of all kinds—bug fixes, ideas, and improvements.
