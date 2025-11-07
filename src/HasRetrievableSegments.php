@@ -25,4 +25,19 @@ trait HasRetrievableSegments
     {
         return $this->allSegments()[$tag][$subId] ?? null;
     }
+
+    /**
+     * Start a fluent query for segments
+     */
+    public function query(): SegmentQuery
+    {
+        $flatSegments = [];
+        foreach ($this->allSegments() as $tagSegments) {
+            foreach ($tagSegments as $segment) {
+                $flatSegments[] = $segment;
+            }
+        }
+
+        return new SegmentQuery($flatSegments);
+    }
 }

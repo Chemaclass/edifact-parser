@@ -61,8 +61,9 @@ $personName = $nadSegment->rawValues()[4]; // 'Person Name'
 
 ### 📂 More Examples
 
-- [example/printing-segments.php](example/printing-segments.php) — Print all parsed segments line by line.
-- [example/extracting-data.php](example/extracting-data.php) — Extract values from specific segments.
+- [example/extracting-data.php](example/extracting-data.php) — Extract values using typed accessors and query API.
+- [example/query-filtering.php](example/query-filtering.php) — Advanced filtering with fluent query API.
+- [example/printing-segments.php](example/printing-segments.php) — Print all parsed segments with statistics.
 - [example/context-segments.php](example/context-segments.php) — Traverse hierarchical context segments.
 
 ---
@@ -115,6 +116,61 @@ if ($nadSegment) {
     // Or access raw values directly if needed
     $companyName = $nadSegment->rawValues()[4];
 }
+```
+
+### Fluent Query API (New! ✨)
+
+Chain filters and transformations for powerful segment querying:
+
+```php
+// Find all NAD segments with subId 'CN'
+$consignees = $message->query()
+    ->withTag('NAD')
+    ->withSubId('CN')
+    ->get();
+
+// Find first supplier address
+$supplier = $message->query()
+    ->withTag('NAD')
+    ->withSubId('SU')
+    ->first();
+
+// Get all NAD and LIN segments
+$segments = $message->query()
+    ->withTags(['NAD', 'LIN'])
+    ->get();
+
+// Filter by type
+$addresses = $message->query()
+    ->ofType(NADNameAddress::class)
+    ->get();
+
+// Custom filtering with predicates
+$highValueItems = $message->query()
+    ->withTag('PRI')
+    ->where(fn($s) => $s->priceAsFloat() > 1000)
+    ->get();
+
+// Chain multiple filters
+$germanSuppliers = $message->query()
+    ->withTag('NAD')
+    ->withSubId('SU')
+    ->where(fn($s) => $s->countryCode() === 'DE')
+    ->limit(10)
+    ->get();
+
+// Transform results
+$companyNames = $message->query()
+    ->withTag('NAD')
+    ->map(fn($s) => $s->name());
+
+// Check existence
+if ($message->query()->withTag('UNS')->exists()) {
+    // Process summary section...
+}
+
+// Count matching segments
+$nadCount = $message->query()->withTag('NAD')->count();
 ```
 
 ### Working with Line Items

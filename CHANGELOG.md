@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Fluent Query API
+- **SegmentQuery**: New fluent interface for filtering and transforming segments
+  - `withTag($tag)`: Filter by single tag
+  - `withTags(array $tags)`: Filter by multiple tags
+  - `withSubId($subId)`: Filter by subId
+  - `where(callable $predicate)`: Custom filtering
+  - `ofType($className)`: Filter by segment class type
+  - `limit($limit)`: Limit results
+  - `skip($offset)`: Skip results
+  - `first()`: Get first matching segment
+  - `last()`: Get last matching segment
+  - `count()`: Count matching segments
+  - `exists()`: Check if any segments match
+  - `isEmpty()`: Check if no segments match
+  - `map(callable $mapper)`: Transform segments
+  - `each(callable $callback)`: Execute callback for each segment
+  - `get()`: Get all matching segments
+- **HasRetrievableSegments**: Added `query()` method to ParserResult, TransactionMessage, and LineItem
+- Enables powerful segment filtering with chainable methods
+- Cleaner alternative to manual loops and array_filter
+
 #### Typed Accessor Methods for Segments
 - **NADNameAddress**: Added `partyQualifier()`, `partyIdentification()`, `partyId()`, `name()`, `street()`, `city()`, `postalCode()`, `countryCode()` methods for easier access to address data
 - **QTYQuantity**: Added `qualifier()`, `quantity()`, `quantityAsFloat()`, `measureUnit()` methods for cleaner quantity handling
