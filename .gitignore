@@ -1,5 +1,6 @@
 .scannerwork/
 .idea/
+.claude/
 /public/bundles/
 /var/
 /vendor/
