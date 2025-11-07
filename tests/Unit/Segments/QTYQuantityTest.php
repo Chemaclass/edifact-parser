@@ -21,4 +21,29 @@ class QTYQuantityTest extends TestCase
         self::assertEquals('21', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function typed_accessors(): void
+    {
+        $rawValues = ['QTY', ['21', '100', 'PCE']];
+        $segment = new QTYQuantity($rawValues);
+
+        self::assertEquals('21', $segment->qualifier());
+        self::assertEquals('100', $segment->quantity());
+        self::assertEquals(100.0, $segment->quantityAsFloat());
+        self::assertEquals('PCE', $segment->measureUnit());
+    }
+
+    /**
+     * @test
+     */
+    public function quantity_as_float_with_decimal(): void
+    {
+        $rawValues = ['QTY', ['21', '12.5', 'KGM']];
+        $segment = new QTYQuantity($rawValues);
+
+        self::assertEquals(12.5, $segment->quantityAsFloat());
+    }
 }

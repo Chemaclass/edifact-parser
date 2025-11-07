@@ -90,6 +90,25 @@ final class TransactionMessage implements Countable
         return count($this->groupedSegments);
     }
 
+    /**
+     * Get message type from UNH segment (e.g., 'ORDERS', 'INVOIC', 'IFTMIN')
+     * Returns null if no UNH segment exists
+     */
+    public function messageType(): ?string
+    {
+        $unhSegments = $this->segmentsByTag('UNH');
+        if (empty($unhSegments)) {
+            return null;
+        }
+
+        $unhSegment = reset($unhSegments);
+        if ($unhSegment instanceof UNHMessageHeader) {
+            return $unhSegment->messageType();
+        }
+
+        return null;
+    }
+
     public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
     {
         $segment = $this->groupedSegments[$tag][$subId] ?? null;

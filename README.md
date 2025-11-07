@@ -69,6 +69,36 @@ $personName = $nadSegment->rawValues()[4]; // 'Person Name'
 
 ## 📖 Usage Guide
 
+### Typed Accessor Methods (New! ✨)
+
+Many segments now provide typed accessor methods for cleaner, self-documenting code:
+
+```php
+// NAD (Name and Address) - No more magic array indices!
+$nadSegment = $message->segmentByTagAndSubId('NAD', 'CN');
+$name = $nadSegment->name();              // Instead of rawValues()[4]
+$street = $nadSegment->street();          // Instead of rawValues()[5]
+$city = $nadSegment->city();              // Instead of rawValues()[6]
+$postalCode = $nadSegment->postalCode();  // Instead of rawValues()[8]
+$country = $nadSegment->countryCode();    // Instead of rawValues()[9]
+
+// QTY (Quantity) - With type conversion
+$qtySegment = $lineItem->segmentByTagAndSubId('QTY', '21');
+$quantity = $qtySegment->quantityAsFloat();  // Returns float
+$unit = $qtySegment->measureUnit();          // e.g., 'PCE', 'KGM'
+
+// PRI (Price) - With type conversion
+$priSegment = $lineItem->segmentByTagAndSubId('PRI', 'AAA');
+$price = $priSegment->priceAsFloat();  // Returns float
+
+// DTM (Date/Time) - With date parsing
+$dtmSegment = $message->segmentByTagAndSubId('DTM', '10');
+$dateTime = $dtmSegment->asDateTime();  // Returns DateTimeImmutable or null
+
+// Message type detection
+$messageType = $message->messageType();  // Returns 'ORDERS', 'INVOIC', etc.
+```
+
 ### Accessing Segments
 
 ```php
@@ -80,6 +110,9 @@ $allNadSegments = $message->segmentsByTag('NAD');
 
 // Always null-check when accessing segments
 if ($nadSegment) {
+    // Use typed accessors for cleaner code
+    $companyName = $nadSegment->name();
+    // Or access raw values directly if needed
     $companyName = $nadSegment->rawValues()[4];
 }
 ```
@@ -198,18 +231,57 @@ final class LOCLocationTest extends TestCase
 
 ---
 
+## 🐛 Debugging
+
+### Segment Inspection
+
+```php
+// Convert segment to array
+$array = $segment->toArray();
+// Returns: ['tag' => 'NAD', 'subId' => 'CN', 'rawValues' => [...]]
+
+// Convert segment to JSON
+$json = $segment->toJson();
+// Pretty-printed JSON output
+
+// Detect message type
+$type = $message->messageType();
+echo "Processing {$type} message";  // e.g., "Processing ORDERS message"
+```
+
+### Enhanced Error Messages
+
+```php
+use EdifactParser\Exception\InvalidFile;
+
+try {
+    $result = $parser->parseFile('invalid.edi');
+} catch (InvalidFile $e) {
+    // Get detailed error information
+    $errors = $e->getErrors();
+    $context = $e->getContext();
+
+    // Exception message includes formatted context
+    echo $e->getMessage();
+}
+```
+
+---
+
 ## ✅ Best Practices
 
 ### Do
 
+- ✅ Use typed accessors (e.g., `$nad->name()`) instead of raw array indices
 - ✅ Always null-check segments — not all segments exist in every message
 - ✅ Use `segmentByTagAndSubId()` for single lookups, `segmentsByTag()` for multiple
-- ✅ Check field types before accessing — some `rawValues()` fields are arrays
+- ✅ Use type conversion methods (`quantityAsFloat()`, `asDateTime()`) when available
 - ✅ Use line items for order/invoice processing — cleaner than manual grouping
 - ✅ Add helper methods to custom segments for domain-specific logic
 
 ### Avoid
 
+- ❌ Don't use magic array indices when typed accessors are available
 - ❌ Don't assume segments exist — wrap in conditionals
 - ❌ Don't hardcode subIds — they vary by message type
 - ❌ Don't modify library segment classes — extend with custom segments instead
