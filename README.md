@@ -117,6 +117,61 @@ if ($nadSegment) {
 }
 ```
 
+### Fluent Query API (New! ✨)
+
+Chain filters and transformations for powerful segment querying:
+
+```php
+// Find all NAD segments with subId 'CN'
+$consignees = $message->query()
+    ->withTag('NAD')
+    ->withSubId('CN')
+    ->get();
+
+// Find first supplier address
+$supplier = $message->query()
+    ->withTag('NAD')
+    ->withSubId('SU')
+    ->first();
+
+// Get all NAD and LIN segments
+$segments = $message->query()
+    ->withTags(['NAD', 'LIN'])
+    ->get();
+
+// Filter by type
+$addresses = $message->query()
+    ->ofType(NADNameAddress::class)
+    ->get();
+
+// Custom filtering with predicates
+$highValueItems = $message->query()
+    ->withTag('PRI')
+    ->where(fn($s) => $s->priceAsFloat() > 1000)
+    ->get();
+
+// Chain multiple filters
+$germanSuppliers = $message->query()
+    ->withTag('NAD')
+    ->withSubId('SU')
+    ->where(fn($s) => $s->countryCode() === 'DE')
+    ->limit(10)
+    ->get();
+
+// Transform results
+$companyNames = $message->query()
+    ->withTag('NAD')
+    ->map(fn($s) => $s->name());
+
+// Check existence
+if ($message->query()->withTag('UNS')->exists()) {
+    // Process summary section...
+}
+
+// Count matching segments
+$nadCount = $message->query()->withTag('NAD')->count();
+```
+
 ### Working with Line Items
 
 Line items group LIN segments with their related data (QTY, PRI, PIA, etc.) — useful for processing orders and invoices:
