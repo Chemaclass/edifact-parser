@@ -12,7 +12,7 @@ use function json_encode;
 final class InvalidFile extends Exception
 {
     /**
-     * @param array<string, mixed> $errors
+     * @param array<int|string, mixed> $errors
      * @param array<string, mixed> $context
      */
     private function __construct(private array $errors, private array $context = [])
@@ -30,7 +30,7 @@ final class InvalidFile extends Exception
     }
 
     /**
-     * @param array<int|string, string> $errors
+     * @param array<int|string, mixed> $errors
      */
     public static function withErrors(array $errors): self
     {
@@ -38,7 +38,7 @@ final class InvalidFile extends Exception
     }
 
     /**
-     * @param array<int|string, string> $errors
+     * @param array<int|string, mixed> $errors
      * @param array<string, mixed> $context
      */
     public static function withContext(array $errors, array $context): self
@@ -47,7 +47,7 @@ final class InvalidFile extends Exception
     }
 
     /**
-     * @return array<int|string, string>
+     * @return array<int|string, mixed>
      */
     public function getErrors(): array
     {
