@@ -21,4 +21,18 @@ class PRIPriceTest extends TestCase
         self::assertEquals('AAA', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function typed_accessors(): void
+    {
+        $rawValues = ['PRI', ['AAA', '225.50', 'CA']];
+        $segment = new PRIPrice($rawValues);
+
+        self::assertEquals('AAA', $segment->qualifier());
+        self::assertEquals('225.50', $segment->price());
+        self::assertEquals(225.50, $segment->priceAsFloat());
+        self::assertEquals('CA', $segment->priceType());
+    }
 }
