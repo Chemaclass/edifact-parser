@@ -58,6 +58,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved type hints and documentation for better IDE support
 - All segments now have self-documenting method names instead of magic array indices
 
-## [Previous Releases]
+## [5.2.0] - 2025-05-30
 
-See [GitHub Releases](https://github.com/Chemaclass/EdifactParser/releases) for earlier versions.
+### Fixed
+- Fixed LIN segments with incorrect end detection
+- Use BREAK_LINEITEM_TAGS with UNS, CNT, UNT for proper line item boundaries
+
+### Added
+- Implemented context for segments (parent-child relationships)
+- ContextSegment wrapper for hierarchical segment navigation
+
+## [5.1.0] - 2025-04-30
+
+### Added
+- Support returning list from composite sub-ids
+- Improved `parsedSubId()` to handle array subIds
+
+### Changed
+- Upgraded `sabas/edifact` dependency to 1.2
+
+## [5.0.0] - 2023-02-10
+
+### Added
+- Support for UNB InterchangeHeader segment
+- Global segments (UNA, UNB, UNZ) are now grouped separately from transaction messages
+
+### Changed
+- **Breaking**: ParserResult now separates global segments from transaction messages
+
+## [4.0.0] - 2022-11-10
+
+### Added
+- Proper treatment of line items with DetailsSectionBuilder
+- CUX (Currency Details) and RFF (Reference) segments
+- `TransactionMessage::allSegments()` method
+
+### Changed
+- **Breaking**: Segment keys changed to 3-letter codes (e.g., 'NAD' instead of full names)
+- Improved handling of unknown segments with UnknownSegment class
+
+## [3.0.0] - 2022-10-30
+
+### Added
+- PHP 8.0+ support with strict types
+- Code quality tools: php-cs-fixer, psalm, phpstan
+
+### Changed
+- **Breaking**: Minimum PHP version is now 8.0
+- Improved type safety with psalm and phpstan
+
+## [2.2.0] - 2020-09-20
+
+### Changed
+- Renamed `EdifactParser::create()` to `::createWithDefaultSegments()`
+- Renamed `segmentByName()` to `segmentsByTag()`
+
+### Added
+- `segmentByTagAndSubId()` method for direct segment lookup
+- PrinterInterface and ConsolePrinter for output formatting
+- Split unit and functional test suites
+
+## [2.1.0] - 2020-06-07
+
+### Changed
+- Renamed `SegmentInterface::name()` to `tag()`
+- Renamed `SegmentInterface::subSegmentKey()` to `subId()`
+- Improved SegmentFactory implementation
+
+### Added
+- Documentation about EDIFACT files and parser architecture
+
+## [2.0.0] - 2020-06-01
+
+### Changed
+- **Breaking**: Minimum PHP version is now 7.4
+- **Breaking**: `EdifactParser::parse()` returns `list<TransactionMessage>`
+- TransactionMessage acts as DTO with grouped segments
+- Improved naming: SegmentedValues → SegmentList, improved method names
+
+### Added
+- Psalm level 1 with `@psalm-immutable` and `@psalm-pure` annotations
+- Makefile for development tasks
+
+## Earlier Releases
+
+See [GitHub Releases](https://github.com/Chemaclass/EdifactParser/releases) for versions prior to 2.0.0.
