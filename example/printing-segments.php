@@ -32,7 +32,16 @@ print PHP_EOL;
 foreach ($parserResult->transactionMessages() as $i => $message) {
     print "###################\n";
     print "# Message number: {$i}\n";
+    print "# Message type: {$message->messageType()}\n";
     print "###################\n";
+
+    // Quick statistics using query API
+    $segmentCount = $message->query()->count();
+    $nadCount = $message->query()->withTag('NAD')->count();
+    print "# Total segments: {$segmentCount}\n";
+    print "# NAD segments: {$nadCount}\n";
+    print "###################\n";
+
     $printer->printMessage($message);
     print PHP_EOL;
 }
