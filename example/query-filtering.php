@@ -74,9 +74,7 @@ foreach ($parserResult->transactionMessages() as $i => $message) {
     echo "6. Extract all company names:\n";
     $names = $message->query()
         ->withTag('NAD')
-        ->map(function($s) {
-            return $s instanceof NADNameAddress ? $s->name() : $s->rawValues()[4] ?? 'N/A';
-        });
+        ->map(fn($s) => $s instanceof NADNameAddress ? $s->name() : $s->rawValues()[4] ?? 'N/A');
 
     foreach ($names as $name) {
         echo "   - {$name}\n";
@@ -98,7 +96,7 @@ foreach ($parserResult->transactionMessages() as $i => $message) {
     echo "9. Process each NAD segment:\n";
     $message->query()
         ->withTag('NAD')
-        ->each(function($segment) {
+        ->each(function($segment): void {
             $name = $segment instanceof NADNameAddress ? $segment->name() : $segment->rawValues()[4] ?? 'N/A';
             echo "   → Processing {$segment->subId()}: {$name}\n";
         });

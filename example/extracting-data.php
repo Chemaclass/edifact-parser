@@ -67,11 +67,9 @@ foreach ($addresses as $address) {
 echo "\n=== Company Names Only ===\n";
 $companyNames = $firstMessage->query()
     ->withTag('NAD')
-    ->map(static function ($segment) {
-        return $segment instanceof NADNameAddress
-            ? $segment->name()
-            : $segment->rawValues()[4] ?? 'N/A';
-    });
+    ->map(static fn($segment) => $segment instanceof NADNameAddress
+        ? $segment->name()
+        : $segment->rawValues()[4] ?? 'N/A');
 
 foreach ($companyNames as $name) {
     echo "- {$name}\n";

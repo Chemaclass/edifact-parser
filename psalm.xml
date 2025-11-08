@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <psalm
         resolveFromConfigFile="true"
+        phpVersion="8.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="https://getpsalm.org/schema/config"
         xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -52,5 +53,11 @@
 
         <!-- This hides a number of errors that we don't really care about. -->
         <PropertyNotSetInConstructor errorLevel="suppress"/>
+
+        <RedundantCondition>
+            <errorLevel type="suppress">
+                <directory name="tests/"/>
+            </errorLevel>
+        </RedundantCondition>
     </issueHandlers>
 </psalm>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+use EdifactParser\Segments\Builder\NADBuilder;
+
 use function is_array;
 
 /** @psalm-immutable */
@@ -12,6 +14,14 @@ final class NADNameAddress extends AbstractSegment
     public function tag(): string
     {
         return 'NAD';
+    }
+
+    /**
+     * Create a new builder instance
+     */
+    public static function builder(): NADBuilder
+    {
+        return new NADBuilder();
     }
 
     /**

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+use EdifactParser\Segments\Builder\PRIBuilder;
+
 use function is_array;
 
 /** @psalm-immutable */
@@ -12,6 +14,14 @@ final class PRIPrice extends AbstractSegment
     public function tag(): string
     {
         return 'PRI';
+    }
+
+    /**
+     * Create a new builder instance
+     */
+    public static function builder(): PRIBuilder
+    {
+        return new PRIBuilder();
     }
 
     public function subId(): string
