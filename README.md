@@ -173,9 +173,9 @@ if ($message->query()->withTag('UNS')->exists()) {
 $nadCount = $message->query()->withTag('NAD')->count();
 ```
 
-### Type-Safe Qualifiers with Enums (New! ✨)
+### Type-Safe Qualifiers with Constants (New! ✨)
 
-Use predefined enums for common EDIFACT qualifiers to avoid magic strings and improve IDE autocomplete:
+Use predefined constants for common EDIFACT qualifiers to avoid magic strings and improve IDE autocomplete:
 
 ```php
 use EdifactParser\Segments\Qualifier\NADQualifier;
@@ -201,18 +201,18 @@ $listPrice = PRIQualifier::LIST;            // 'LIS'
 // Use in queries
 $buyers = $message->query()
     ->withTag('NAD')
-    ->where(fn($s) => $s->partyQualifier() === NADQualifier::BUYER->value)
+    ->where(fn($s) => $s->partyQualifier() === NADQualifier::BUYER)
     ->get();
 
 // Use in match expressions
 $role = match ($segment->partyQualifier()) {
-    NADQualifier::BUYER->value => 'Customer',
-    NADQualifier::SUPPLIER->value => 'Vendor',
+    NADQualifier::BUYER => 'Customer',
+    NADQualifier::SUPPLIER => 'Vendor',
     default => 'Unknown'
 };
 ```
 
-Available qualifier enums:
+Available qualifier constants:
 - `NADQualifier` - Party roles (BY, SU, CN, CZ, DP, IV, PR, CA, FW, MF, UC, WH)
 - `QTYQualifier` - Quantity types (1, 3, 11, 12, 21, 33, 46, 47, 48, 192)
 - `PRIQualifier` - Price types (AAA, AAB, AAE, AAF, AAG, CAL, CT, DIS, LIS, MIN, RRP)

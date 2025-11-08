@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit\Segments\Qualifier;
 
 use EdifactParser\Segments\Qualifier\PRIQualifier;
+use Error;
 use PHPUnit\Framework\TestCase;
 
 final class PRIQualifierTest extends TestCase
@@ -12,19 +13,19 @@ final class PRIQualifierTest extends TestCase
     /**
      * @test
      */
-    public function enum_values_are_correct(): void
+    public function const_values_are_correct(): void
     {
-        self::assertEquals('AAA', PRIQualifier::CALCULATION_NET->value);
-        self::assertEquals('AAB', PRIQualifier::CALCULATION_GROSS->value);
-        self::assertEquals('AAE', PRIQualifier::INFORMATION_PRICE->value);
-        self::assertEquals('AAF', PRIQualifier::GROSS->value);
-        self::assertEquals('AAG', PRIQualifier::NET->value);
-        self::assertEquals('CAL', PRIQualifier::CATALOGUE->value);
-        self::assertEquals('CT', PRIQualifier::CONTRACT->value);
-        self::assertEquals('DIS', PRIQualifier::DISCOUNT->value);
-        self::assertEquals('LIS', PRIQualifier::LIST->value);
-        self::assertEquals('MIN', PRIQualifier::MINIMUM_ORDER->value);
-        self::assertEquals('RRP', PRIQualifier::RECOMMENDED_RETAIL->value);
+        self::assertEquals('AAA', PRIQualifier::CALCULATION_NET);
+        self::assertEquals('AAB', PRIQualifier::CALCULATION_GROSS);
+        self::assertEquals('AAE', PRIQualifier::INFORMATION_PRICE);
+        self::assertEquals('AAF', PRIQualifier::GROSS);
+        self::assertEquals('AAG', PRIQualifier::NET);
+        self::assertEquals('CAL', PRIQualifier::CATALOGUE);
+        self::assertEquals('CT', PRIQualifier::CONTRACT);
+        self::assertEquals('DIS', PRIQualifier::DISCOUNT);
+        self::assertEquals('LIS', PRIQualifier::LIST);
+        self::assertEquals('MIN', PRIQualifier::MINIMUM_ORDER);
+        self::assertEquals('RRP', PRIQualifier::RECOMMENDED_RETAIL);
     }
 
     /**
@@ -58,36 +59,13 @@ final class PRIQualifierTest extends TestCase
 
     /**
      * @test
-     */
-    public function can_get_all_cases(): void
-    {
-        $cases = PRIQualifier::cases();
-
-        self::assertCount(11, $cases);
-        self::assertContains(PRIQualifier::CALCULATION_NET, $cases);
-        self::assertContains(PRIQualifier::GROSS, $cases);
-    }
-
-    /**
-     * @test
-     */
-    public function can_create_from_string(): void
-    {
-        $qualifier = PRIQualifier::from('AAA');
-
-        self::assertSame(PRIQualifier::CALCULATION_NET, $qualifier);
-    }
-
-    /**
-     * @test
      *
-     * @psalm-suppress RedundantCondition
+     * @psalm-suppress InaccessibleMethod
      */
-    public function try_from_returns_null_for_invalid_value(): void
+    public function cannot_be_instantiated(): void
     {
-        $qualifier = PRIQualifier::tryFrom('INVALID');
+        $this->expectException(Error::class);
 
-        /** @psalm-suppress RedundantCondition */
-        self::assertNull($qualifier);
+        new PRIQualifier();
     }
 }

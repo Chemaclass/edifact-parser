@@ -9,41 +9,46 @@ namespace EdifactParser\Segments\Qualifier;
  *
  * Common qualifiers used to identify the role of a party in the transaction
  */
-enum NADQualifier: string
+final class NADQualifier
 {
     /** Buyer */
-    case BUYER = 'BY';
+    public const BUYER = 'BY';
 
     /** Supplier */
-    case SUPPLIER = 'SU';
+    public const SUPPLIER = 'SU';
 
     /** Consignee (delivery party) */
-    case CONSIGNEE = 'CN';
+    public const CONSIGNEE = 'CN';
 
     /** Consignor (sender/shipper) */
-    case CONSIGNOR = 'CZ';
+    public const CONSIGNOR = 'CZ';
 
     /** Delivery party */
-    case DELIVERY_PARTY = 'DP';
+    public const DELIVERY_PARTY = 'DP';
 
     /** Invoicee */
-    case INVOICEE = 'IV';
+    public const INVOICEE = 'IV';
 
     /** Payer */
-    case PAYER = 'PR';
+    public const PAYER = 'PR';
 
     /** Carrier */
-    case CARRIER = 'CA';
+    public const CARRIER = 'CA';
 
     /** Freight forwarder */
-    case FREIGHT_FORWARDER = 'FW';
+    public const FREIGHT_FORWARDER = 'FW';
 
     /** Manufacturer */
-    case MANUFACTURER = 'MF';
+    public const MANUFACTURER = 'MF';
 
     /** Ultimate consignee */
-    case ULTIMATE_CONSIGNEE = 'UC';
+    public const ULTIMATE_CONSIGNEE = 'UC';
 
     /** Warehouse keeper */
-    case WAREHOUSE_KEEPER = 'WH';
+    public const WAREHOUSE_KEEPER = 'WH';
+
+    private function __construct()
+    {
+        // Prevent instantiation
+    }
 }

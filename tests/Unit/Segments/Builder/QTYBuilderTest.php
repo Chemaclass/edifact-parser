@@ -32,7 +32,7 @@ final class QTYBuilderTest extends TestCase
     /**
      * @test
      */
-    public function builds_segment_with_enum_qualifier(): void
+    public function builds_segment_with_const_qualifier(): void
     {
         $segment = QTYQuantity::builder()
             ->withQualifier(QTYQualifier::ORDERED)

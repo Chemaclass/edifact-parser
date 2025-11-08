@@ -9,38 +9,43 @@ namespace EdifactParser\Segments\Qualifier;
  *
  * Identifies the type of price
  */
-enum PRIQualifier: string
+final class PRIQualifier
 {
     /** Calculation net */
-    case CALCULATION_NET = 'AAA';
+    public const CALCULATION_NET = 'AAA';
 
     /** Calculation gross */
-    case CALCULATION_GROSS = 'AAB';
+    public const CALCULATION_GROSS = 'AAB';
 
     /** Information price, excluding allowances or charges */
-    case INFORMATION_PRICE = 'AAE';
+    public const INFORMATION_PRICE = 'AAE';
 
     /** Gross price */
-    case GROSS = 'AAF';
+    public const GROSS = 'AAF';
 
     /** Net price */
-    case NET = 'AAG';
+    public const NET = 'AAG';
 
     /** Catalogue price */
-    case CATALOGUE = 'CAL';
+    public const CATALOGUE = 'CAL';
 
     /** Contract price */
-    case CONTRACT = 'CT';
+    public const CONTRACT = 'CT';
 
     /** Discount price */
-    case DISCOUNT = 'DIS';
+    public const DISCOUNT = 'DIS';
 
     /** List price */
-    case LIST = 'LIS';
+    public const LIST = 'LIS';
 
     /** Minimum order price */
-    case MINIMUM_ORDER = 'MIN';
+    public const MINIMUM_ORDER = 'MIN';
 
     /** Recommended retail price */
-    case RECOMMENDED_RETAIL = 'RRP';
+    public const RECOMMENDED_RETAIL = 'RRP';
+
+    private function __construct()
+    {
+        // Prevent instantiation
+    }
 }

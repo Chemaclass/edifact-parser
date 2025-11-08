@@ -9,35 +9,40 @@ namespace EdifactParser\Segments\Qualifier;
  *
  * Defines the type of quantity being specified
  */
-enum QTYQualifier: string
+final class QTYQualifier
 {
     /** Discrete quantity */
-    case DISCRETE = '1';
+    public const DISCRETE = '1';
 
     /** Cumulative quantity */
-    case CUMULATIVE = '3';
+    public const CUMULATIVE = '3';
 
     /** Number of consumer units in the traded unit */
-    case CONSUMER_UNITS = '11';
+    public const CONSUMER_UNITS = '11';
 
     /** Dispatched quantity */
-    case DISPATCHED = '12';
+    public const DISPATCHED = '12';
 
     /** Ordered quantity */
-    case ORDERED = '21';
+    public const ORDERED = '21';
 
     /** Quantity on hand */
-    case ON_HAND = '33';
+    public const ON_HAND = '33';
 
     /** Received quantity */
-    case RECEIVED = '48';
+    public const RECEIVED = '48';
 
     /** Invoiced quantity */
-    case INVOICED = '47';
+    public const INVOICED = '47';
 
     /** Quantity to be delivered */
-    case TO_BE_DELIVERED = '46';
+    public const TO_BE_DELIVERED = '46';
 
     /** Free goods quantity */
-    case FREE_GOODS = '192';
+    public const FREE_GOODS = '192';
+
+    private function __construct()
+    {
+        // Prevent instantiation
+    }
 }

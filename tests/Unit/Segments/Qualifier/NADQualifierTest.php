@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit\Segments\Qualifier;
 
 use EdifactParser\Segments\Qualifier\NADQualifier;
+use Error;
 use PHPUnit\Framework\TestCase;
 
 final class NADQualifierTest extends TestCase
@@ -12,20 +13,20 @@ final class NADQualifierTest extends TestCase
     /**
      * @test
      */
-    public function enum_values_are_correct(): void
+    public function const_values_are_correct(): void
     {
-        self::assertEquals('BY', NADQualifier::BUYER->value);
-        self::assertEquals('SU', NADQualifier::SUPPLIER->value);
-        self::assertEquals('CN', NADQualifier::CONSIGNEE->value);
-        self::assertEquals('CZ', NADQualifier::CONSIGNOR->value);
-        self::assertEquals('DP', NADQualifier::DELIVERY_PARTY->value);
-        self::assertEquals('IV', NADQualifier::INVOICEE->value);
-        self::assertEquals('PR', NADQualifier::PAYER->value);
-        self::assertEquals('CA', NADQualifier::CARRIER->value);
-        self::assertEquals('FW', NADQualifier::FREIGHT_FORWARDER->value);
-        self::assertEquals('MF', NADQualifier::MANUFACTURER->value);
-        self::assertEquals('UC', NADQualifier::ULTIMATE_CONSIGNEE->value);
-        self::assertEquals('WH', NADQualifier::WAREHOUSE_KEEPER->value);
+        self::assertEquals('BY', NADQualifier::BUYER);
+        self::assertEquals('SU', NADQualifier::SUPPLIER);
+        self::assertEquals('CN', NADQualifier::CONSIGNEE);
+        self::assertEquals('CZ', NADQualifier::CONSIGNOR);
+        self::assertEquals('DP', NADQualifier::DELIVERY_PARTY);
+        self::assertEquals('IV', NADQualifier::INVOICEE);
+        self::assertEquals('PR', NADQualifier::PAYER);
+        self::assertEquals('CA', NADQualifier::CARRIER);
+        self::assertEquals('FW', NADQualifier::FREIGHT_FORWARDER);
+        self::assertEquals('MF', NADQualifier::MANUFACTURER);
+        self::assertEquals('UC', NADQualifier::ULTIMATE_CONSIGNEE);
+        self::assertEquals('WH', NADQualifier::WAREHOUSE_KEEPER);
     }
 
     /**
@@ -59,36 +60,13 @@ final class NADQualifierTest extends TestCase
 
     /**
      * @test
-     */
-    public function can_get_all_cases(): void
-    {
-        $cases = NADQualifier::cases();
-
-        self::assertCount(12, $cases);
-        self::assertContains(NADQualifier::BUYER, $cases);
-        self::assertContains(NADQualifier::SUPPLIER, $cases);
-    }
-
-    /**
-     * @test
-     */
-    public function can_create_from_string(): void
-    {
-        $qualifier = NADQualifier::from('BY');
-
-        self::assertSame(NADQualifier::BUYER, $qualifier);
-    }
-
-    /**
-     * @test
      *
-     * @psalm-suppress RedundantCondition
+     * @psalm-suppress InaccessibleMethod
      */
-    public function try_from_returns_null_for_invalid_value(): void
+    public function cannot_be_instantiated(): void
     {
-        $qualifier = NADQualifier::tryFrom('INVALID');
+        $this->expectException(Error::class);
 
-        /** @psalm-suppress RedundantCondition */
-        self::assertNull($qualifier);
+        new NADQualifier();
     }
 }

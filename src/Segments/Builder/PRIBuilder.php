@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Segments\Builder;
 
 use EdifactParser\Segments\PRIPrice;
-use EdifactParser\Segments\Qualifier\PRIQualifier;
 
 /**
  * Fluent builder for PRI (Price) segments
@@ -16,9 +15,9 @@ final class PRIBuilder
     private string $price = '';
     private string $priceType = '';
 
-    public function withQualifier(string|PRIQualifier $qualifier): self
+    public function withQualifier(string $qualifier): self
     {
-        $this->qualifier = $qualifier instanceof PRIQualifier ? $qualifier->value : $qualifier;
+        $this->qualifier = $qualifier;
         return $this;
     }
 

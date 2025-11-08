@@ -7,13 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-#### Type-Safe Qualifiers with Enums
-- **NADQualifier**: Enum for NAD party qualifiers (BUYER, SUPPLIER, CONSIGNEE, CONSIGNOR, DELIVERY_PARTY, INVOICEE, PAYER, CARRIER, FREIGHT_FORWARDER, MANUFACTURER, ULTIMATE_CONSIGNEE, WAREHOUSE_KEEPER)
-- **QTYQualifier**: Enum for QTY quantity qualifiers (DISCRETE, CUMULATIVE, CONSUMER_UNITS, DISPATCHED, ORDERED, ON_HAND, RECEIVED, INVOICED, TO_BE_DELIVERED, FREE_GOODS)
-- **PRIQualifier**: Enum for PRI price qualifiers (CALCULATION_NET, CALCULATION_GROSS, INFORMATION_PRICE, GROSS, NET, CATALOGUE, CONTRACT, DISCOUNT, LIST, MINIMUM_ORDER, RECOMMENDED_RETAIL)
-- **DTMQualifier**: Enum for DTM date/time qualifiers
-- **RFFQualifier**: Enum for RFF reference qualifiers
-- Type-safe alternative to magic strings
+#### Type-Safe Qualifiers with Constants
+- **NADQualifier**: Constants for NAD party qualifiers (BUYER, SUPPLIER, CONSIGNEE, CONSIGNOR, DELIVERY_PARTY, INVOICEE, PAYER, CARRIER, FREIGHT_FORWARDER, MANUFACTURER, ULTIMATE_CONSIGNEE, WAREHOUSE_KEEPER)
+- **QTYQualifier**: Constants for QTY quantity qualifiers (DISCRETE, CUMULATIVE, CONSUMER_UNITS, DISPATCHED, ORDERED, ON_HAND, RECEIVED, INVOICED, TO_BE_DELIVERED, FREE_GOODS)
+- **PRIQualifier**: Constants for PRI price qualifiers (CALCULATION_NET, CALCULATION_GROSS, INFORMATION_PRICE, GROSS, NET, CATALOGUE, CONTRACT, DISCOUNT, LIST, MINIMUM_ORDER, RECOMMENDED_RETAIL)
+- **DTMQualifier**: Constants for DTM date/time qualifiers
+- **RFFQualifier**: Constants for RFF reference qualifiers
+- Type-safe alternative to magic strings (PHP 8.0 compatible)
 - Improved IDE autocomplete and type checking
 - Can be used in match expressions and queries
 
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PRIBuilder**: Build PRI segments with fluent API
     - `withQualifier()`, `withPrice()`, `withPriceType()`
 - All segment classes now have static `builder()` method to create builder instances
-- Accepts both string values and enum qualifiers
+- Accepts string values (use qualifier constants for type safety)
 - Type-safe segment construction with IDE support
 
 #### Message Analysis Tools

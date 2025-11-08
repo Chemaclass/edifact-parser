@@ -9,47 +9,52 @@ namespace EdifactParser\Segments\Qualifier;
  *
  * Identifies the type of date being specified
  */
-enum DTMQualifier: string
+final class DTMQualifier
 {
     /** Document date */
-    case DOCUMENT_DATE = '137';
+    public const DOCUMENT_DATE = '137';
 
     /** Delivery date/time, requested */
-    case DELIVERY_REQUESTED = '2';
+    public const DELIVERY_REQUESTED = '2';
 
     /** Invoice date */
-    case INVOICE_DATE = '3';
+    public const INVOICE_DATE = '3';
 
     /** Order date */
-    case ORDER_DATE = '4';
+    public const ORDER_DATE = '4';
 
     /** Delivery date/time, actual */
-    case DELIVERY_ACTUAL = '35';
+    public const DELIVERY_ACTUAL = '35';
 
     /** Shipment date/time, requested */
-    case SHIPMENT_REQUESTED = '10';
+    public const SHIPMENT_REQUESTED = '10';
 
     /** Despatch date */
-    case DESPATCH_DATE = '11';
+    public const DESPATCH_DATE = '11';
 
     /** Due date */
-    case DUE_DATE = '13';
+    public const DUE_DATE = '13';
 
     /** Expiry date */
-    case EXPIRY_DATE = '36';
+    public const EXPIRY_DATE = '36';
 
     /** Processing date */
-    case PROCESSING_DATE = '63';
+    public const PROCESSING_DATE = '63';
 
     /** Tax period start */
-    case TAX_PERIOD_START = '131';
+    public const TAX_PERIOD_START = '131';
 
     /** Tax period end */
-    case TAX_PERIOD_END = '132';
+    public const TAX_PERIOD_END = '132';
 
     /** Validity period start */
-    case VALIDITY_START = '157';
+    public const VALIDITY_START = '157';
 
     /** Validity period end */
-    case VALIDITY_END = '158';
+    public const VALIDITY_END = '158';
+
+    private function __construct()
+    {
+        // Prevent instantiation
+    }
 }

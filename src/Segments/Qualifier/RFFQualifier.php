@@ -9,47 +9,52 @@ namespace EdifactParser\Segments\Qualifier;
  *
  * Identifies the type of reference number
  */
-enum RFFQualifier: string
+final class RFFQualifier
 {
     /** Order number */
-    case ORDER_NUMBER = 'ON';
+    public const ORDER_NUMBER = 'ON';
 
     /** Invoice number */
-    case INVOICE_NUMBER = 'IV';
+    public const INVOICE_NUMBER = 'IV';
 
     /** Delivery note number */
-    case DELIVERY_NOTE = 'DQ';
+    public const DELIVERY_NOTE = 'DQ';
 
     /** Customs reference */
-    case CUSTOMS_REFERENCE = 'CU';
+    public const CUSTOMS_REFERENCE = 'CU';
 
     /** Shipment reference number */
-    case SHIPMENT_REFERENCE = 'SRN';
+    public const SHIPMENT_REFERENCE = 'SRN';
 
     /** Contract number */
-    case CONTRACT_NUMBER = 'CT';
+    public const CONTRACT_NUMBER = 'CT';
 
     /** Purchase order response number */
-    case PO_RESPONSE_NUMBER = 'POR';
+    public const PO_RESPONSE_NUMBER = 'POR';
 
     /** Proforma invoice number */
-    case PROFORMA_INVOICE = 'PI';
+    public const PROFORMA_INVOICE = 'PI';
 
     /** Consignment identifier */
-    case CONSIGNMENT_ID = 'CN';
+    public const CONSIGNMENT_ID = 'CN';
 
     /** Packing list number */
-    case PACKING_LIST = 'PK';
+    public const PACKING_LIST = 'PK';
 
     /** Buyer's item number */
-    case BUYER_ITEM_NUMBER = 'BO';
+    public const BUYER_ITEM_NUMBER = 'BO';
 
     /** Supplier's item number */
-    case SUPPLIER_ITEM_NUMBER = 'SA';
+    public const SUPPLIER_ITEM_NUMBER = 'SA';
 
     /** Price list number */
-    case PRICE_LIST_NUMBER = 'PL';
+    public const PRICE_LIST_NUMBER = 'PL';
 
     /** Reference version number */
-    case REFERENCE_VERSION = 'VN';
+    public const REFERENCE_VERSION = 'VN';
+
+    private function __construct()
+    {
+        // Prevent instantiation
+    }
 }

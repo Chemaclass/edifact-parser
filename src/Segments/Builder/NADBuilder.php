@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Segments\Builder;
 
 use EdifactParser\Segments\NADNameAddress;
-use EdifactParser\Segments\Qualifier\NADQualifier;
 
 /**
  * Fluent builder for NAD (Name and Address) segments
@@ -20,9 +19,9 @@ final class NADBuilder
     private string $postalCode = '';
     private string $countryCode = '';
 
-    public function withQualifier(string|NADQualifier $qualifier): self
+    public function withQualifier(string $qualifier): self
     {
-        $this->qualifier = $qualifier instanceof NADQualifier ? $qualifier->value : $qualifier;
+        $this->qualifier = $qualifier;
         return $this;
     }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Segments\Builder;
 
 use EdifactParser\Segments\QTYQuantity;
-use EdifactParser\Segments\Qualifier\QTYQualifier;
 
 /**
  * Fluent builder for QTY (Quantity) segments
@@ -16,9 +15,9 @@ final class QTYBuilder
     private string $quantity = '';
     private string $measureUnit = '';
 
-    public function withQualifier(string|QTYQualifier $qualifier): self
+    public function withQualifier(string $qualifier): self
     {
-        $this->qualifier = $qualifier instanceof QTYQualifier ? $qualifier->value : $qualifier;
+        $this->qualifier = $qualifier;
         return $this;
     }
 
