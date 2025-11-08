@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+#### Type-Safe Qualifiers with Constants
+- **NADQualifier**: Constants for NAD party qualifiers (BUYER, SUPPLIER, CONSIGNEE, CONSIGNOR, DELIVERY_PARTY, INVOICEE, PAYER, CARRIER, FREIGHT_FORWARDER, MANUFACTURER, ULTIMATE_CONSIGNEE, WAREHOUSE_KEEPER)
+- **QTYQualifier**: Constants for QTY quantity qualifiers (DISCRETE, CUMULATIVE, CONSUMER_UNITS, DISPATCHED, ORDERED, ON_HAND, RECEIVED, INVOICED, TO_BE_DELIVERED, FREE_GOODS)
+- **PRIQualifier**: Constants for PRI price qualifiers (CALCULATION_NET, CALCULATION_GROSS, INFORMATION_PRICE, GROSS, NET, CATALOGUE, CONTRACT, DISCOUNT, LIST, MINIMUM_ORDER, RECOMMENDED_RETAIL)
+- **DTMQualifier**: Constants for DTM date/time qualifiers
+- **RFFQualifier**: Constants for RFF reference qualifiers
+- Type-safe alternative to magic strings (PHP 8.0 compatible)
+- Improved IDE autocomplete and type checking
+- Can be used in match expressions and queries
+
+#### Fluent Builder Pattern for Segments
+- **NADBuilder**: Build NAD segments programmatically with fluent API
+    - `withQualifier()`, `withPartyId()`, `withName()`, `withStreet()`, `withCity()`, `withPostalCode()`, `withCountryCode()`
+- **QTYBuilder**: Build QTY segments with fluent API
+    - `withQualifier()`, `withQuantity()`, `withMeasureUnit()`
+- **PRIBuilder**: Build PRI segments with fluent API
+    - `withQualifier()`, `withPrice()`, `withPriceType()`
+- All segment classes now have static `builder()` method to create builder instances
+- Accepts string values (use qualifier constants for type safety)
+- Type-safe segment construction with IDE support
+
+#### Message Analysis Tools
+- **MessageAnalyzer**: New class for extracting statistics and insights from EDIFACT messages
+    - `getType()`: Get message type (ORDERS, INVOIC, DESADV, etc.)
+    - `segmentCount()`: Count total segments in message
+    - `segmentCountByTag($tag)`: Count segments by specific tag
+    - `lineItemCount()`: Count number of line items
+    - `addressCount()`: Count NAD segments
+    - `getPartyQualifiers()`: Get unique party qualifiers from NAD segments
+    - `getCurrencies()`: Get unique currencies from CUX segments
+    - `calculateTotalAmount($qualifier)`: Sum monetary amounts from MOA segments (optionally filtered by qualifier)
+    - `calculateTotalQuantity($qualifier)`: Sum quantities from QTY segments (optionally filtered by qualifier)
+    - `hasSegment($tag)`: Check if message contains specific segment type
+    - `hasSummarySection()`: Check if message has UNS summary section
+    - `getSummary()`: Get comprehensive message statistics as array
+- Useful for validation, reporting, and business logic
+
 ## [5.3.0] - 2025-11-08
 
 ### Added

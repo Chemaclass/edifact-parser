@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+use EdifactParser\Segments\Builder\QTYBuilder;
+
 use function is_array;
 
 /** @psalm-immutable */
@@ -12,6 +14,14 @@ final class QTYQuantity extends AbstractSegment
     public function tag(): string
     {
         return 'QTY';
+    }
+
+    /**
+     * Create a new builder instance
+     */
+    public static function builder(): QTYBuilder
+    {
+        return new QTYBuilder();
     }
 
     public function subId(): string
