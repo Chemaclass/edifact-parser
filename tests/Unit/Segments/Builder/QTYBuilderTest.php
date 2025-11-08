@@ -100,4 +100,53 @@ final class QTYBuilderTest extends TestCase
         self::assertEquals('21', $segment->qualifier());
         self::assertEquals('10', $segment->quantity());
     }
+
+    /**
+     * @test
+     */
+    public function preserves_zero_quantity_as_integer(): void
+    {
+        $segment = QTYQuantity::builder()
+            ->withQualifier(QTYQualifier::ORDERED)
+            ->withQuantity(0)
+            ->withMeasureUnit('PCE')
+            ->build();
+
+        self::assertEquals('21', $segment->qualifier());
+        self::assertEquals('0', $segment->quantity());
+        self::assertEquals(0.0, $segment->quantityAsFloat());
+        self::assertEquals('PCE', $segment->measureUnit());
+    }
+
+    /**
+     * @test
+     */
+    public function preserves_zero_quantity_as_float(): void
+    {
+        $segment = QTYQuantity::builder()
+            ->withQualifier(QTYQualifier::DISPATCHED)
+            ->withQuantity(0.0)
+            ->build();
+
+        self::assertEquals('12', $segment->qualifier());
+        self::assertEquals('0', $segment->quantity());
+        self::assertEquals(0.0, $segment->quantityAsFloat());
+    }
+
+    /**
+     * @test
+     */
+    public function preserves_zero_quantity_as_string(): void
+    {
+        $segment = QTYQuantity::builder()
+            ->withQualifier(QTYQualifier::ON_HAND)
+            ->withQuantity('0.00')
+            ->withMeasureUnit('KGM')
+            ->build();
+
+        self::assertEquals('33', $segment->qualifier());
+        self::assertEquals('0.00', $segment->quantity());
+        self::assertEquals(0.0, $segment->quantityAsFloat());
+        self::assertEquals('KGM', $segment->measureUnit());
+    }
 }

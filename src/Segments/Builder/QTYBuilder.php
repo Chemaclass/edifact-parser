@@ -37,7 +37,10 @@ final class QTYBuilder
     {
         $rawValues = [
             'QTY',
-            array_filter([$this->qualifier, $this->quantity, $this->measureUnit]),
+            array_filter(
+                [$this->qualifier, $this->quantity, $this->measureUnit],
+                static fn ($value) => $value !== ''
+            ),
         ];
 
         return new QTYQuantity($rawValues);

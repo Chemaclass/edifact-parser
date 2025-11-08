@@ -100,4 +100,53 @@ final class PRIBuilderTest extends TestCase
         self::assertEquals('AAA', $segment->qualifier());
         self::assertEquals('50', $segment->price());
     }
+
+    /**
+     * @test
+     */
+    public function preserves_zero_price_as_integer(): void
+    {
+        $segment = PRIPrice::builder()
+            ->withQualifier(PRIQualifier::CALCULATION_NET)
+            ->withPrice(0)
+            ->withPriceType('CT')
+            ->build();
+
+        self::assertEquals('AAA', $segment->qualifier());
+        self::assertEquals('0', $segment->price());
+        self::assertEquals(0.0, $segment->priceAsFloat());
+        self::assertEquals('CT', $segment->priceType());
+    }
+
+    /**
+     * @test
+     */
+    public function preserves_zero_price_as_float(): void
+    {
+        $segment = PRIPrice::builder()
+            ->withQualifier(PRIQualifier::GROSS)
+            ->withPrice(0.0)
+            ->build();
+
+        self::assertEquals('AAF', $segment->qualifier());
+        self::assertEquals('0', $segment->price());
+        self::assertEquals(0.0, $segment->priceAsFloat());
+    }
+
+    /**
+     * @test
+     */
+    public function preserves_zero_price_as_string(): void
+    {
+        $segment = PRIPrice::builder()
+            ->withQualifier(PRIQualifier::LIST)
+            ->withPrice('0.00')
+            ->withPriceType('LR')
+            ->build();
+
+        self::assertEquals('LIS', $segment->qualifier());
+        self::assertEquals('0.00', $segment->price());
+        self::assertEquals(0.0, $segment->priceAsFloat());
+        self::assertEquals('LR', $segment->priceType());
+    }
 }

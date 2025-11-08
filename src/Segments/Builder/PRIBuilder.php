@@ -37,7 +37,10 @@ final class PRIBuilder
     {
         $rawValues = [
             'PRI',
-            array_filter([$this->qualifier, $this->price, $this->priceType]),
+            array_filter(
+                [$this->qualifier, $this->price, $this->priceType],
+                static fn ($value) => $value !== ''
+            ),
         ];
 
         return new PRIPrice($rawValues);
