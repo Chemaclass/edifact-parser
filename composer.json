@@ -21,7 +21,8 @@
     "require": {
         "ext-json": "*",
         "php": ">=8.0",
-        "sabas/edifact": "^1.2"
+        "sabas/edifact": "^1.2",
+        "webmozart/assert": "^1.12"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.57",
