@@ -7,6 +7,8 @@ namespace EdifactParser;
 use Countable;
 use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
 use EdifactParser\Segments\SegmentInterface;
+use EdifactParser\Segments\UNEFunctionalGroupTrailer;
+use EdifactParser\Segments\UNGFunctionalGroupHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
 
@@ -38,7 +40,26 @@ final class TransactionMessage implements Countable
         $messages = [];
         $groupedSegments = [];
 
+        $functionalGroups = [];
+        $openHeader = null;
+        $openGroupMessages = [];
+
         foreach ($segments as $segment) {
+            if ($segment instanceof UNGFunctionalGroupHeader) {
+                $openHeader = $segment;
+                $openGroupMessages = [];
+                continue;
+            }
+
+            if ($segment instanceof UNEFunctionalGroupTrailer) {
+                if ($openHeader !== null) {
+                    $functionalGroups[] = new FunctionalGroup($openHeader, $openGroupMessages, $segment);
+                    $openHeader = null;
+                    $openGroupMessages = [];
+                }
+                continue;
+            }
+
             if ($segment instanceof UNHMessageHeader) {
                 $groupedSegments = [];
             }
@@ -46,13 +67,19 @@ final class TransactionMessage implements Countable
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter) {
-                $messages[] = self::groupSegmentsByName(...$groupedSegments);
+                $message = self::groupSegmentsByName(...$groupedSegments);
+                $messages[] = $message;
+
+                if ($openHeader !== null) {
+                    $openGroupMessages[] = $message;
+                }
             }
         }
 
         return new ParserResult(
             self::filterGlobalSegments($segments),
-            self::hasUnhSegment(...$messages)
+            self::hasUnhSegment(...$messages),
+            $functionalGroups,
         );
     }
 

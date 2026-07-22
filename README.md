@@ -387,6 +387,24 @@ foreach ($result->transactionMessages() as $message) {
 }
 ```
 
+### Functional Groups (UNG/UNE)
+
+When an interchange wraps messages in `UNG...UNE` functional groups, access them
+directly. Interchanges without groups return an empty list — messages remain
+available flat via `transactionMessages()`:
+
+```php
+foreach ($result->functionalGroups() as $group) {
+    $group->messageType();              // e.g. 'ORDERS' (from the UNG)
+    $group->header()->groupReference(); // functional group reference number
+    $group->trailer()?->controlCount(); // message count from the UNE
+
+    foreach ($group->messages() as $message) {
+        // Process each message in this group...
+    }
+}
+```
+
 ---
 
 ## 🔧 Extending with Custom Segments
