@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.5.0] - 2026-07-22
 
 #### Added
+- **Streaming parser** (`StreamingParser`): parse large interchanges incrementally,
+  yielding one `TransactionMessage` at a time in bounded memory (only a single
+  message is buffered), instead of building the whole result up front. (#61)
 - **Structural validation** (`Validation\MessageValidator` + `MessageRuleSet`):
   check a message against a pluggable rule set (required segments and per-tag
   cardinality) and get a list of `ValidationViolation`s back — never throws;

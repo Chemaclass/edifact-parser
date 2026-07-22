@@ -375,6 +375,20 @@ foreach ($message->contextSegments() as $context) {
 }
 ```
 
+### Streaming Large Files
+
+For large interchanges, stream messages one at a time in bounded memory instead of
+building the whole result up front:
+
+```php
+use EdifactParser\StreamingParser;
+
+foreach (StreamingParser::createWithDefaultSegments()->parseFile('/path/to/large.edi') as $message) {
+    // Only one message is held in memory at a time
+    process($message);
+}
+```
+
 ### Global vs Transaction Segments
 
 ```php
