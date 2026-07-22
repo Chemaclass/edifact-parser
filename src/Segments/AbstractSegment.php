@@ -91,4 +91,14 @@ abstract class AbstractSegment implements SegmentInterface
 
         return is_array($value) ? (string) ($value[$index] ?? '') : '';
     }
+
+    /**
+     * Read simple element $index (a non-composite value), '' when absent or composite.
+     */
+    protected function element(int $index): string
+    {
+        $value = $this->rawValues[$index] ?? '';
+
+        return is_array($value) ? '' : (string) $value;
+    }
 }

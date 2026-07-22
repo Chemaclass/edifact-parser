@@ -17,6 +17,7 @@ use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
+use EdifactParser\Segments\UNZInterchangeTrailer;
 use EdifactParser\TransactionMessage;
 use PHPUnit\Framework\TestCase;
 
@@ -241,11 +242,11 @@ EDI;
                 ),
             ],
             'UNZ' => [
-                '2' => new UnknownSegment(['UNZ', '2', '3']),
+                '2' => new UNZInterchangeTrailer(['UNZ', '2', '3']),
             ],
         ], [], [], [
             new UNBInterchangeHeader(['UNB', ['UNOC', '0'], ['1', '2'], ['3', '4'], '5', 'Anything here', '6']),
-            new UnknownSegment(['UNZ', '2', '3']),
+            new UNZInterchangeTrailer(['UNZ', '2', '3']),
         ]), $parerResult->globalSegments());
 
         self::assertEquals([

@@ -36,6 +36,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         'MOA' => MOAMonetaryAmount::class,
         'UNG' => UNGFunctionalGroupHeader::class,
         'UNE' => UNEFunctionalGroupTrailer::class,
+        'UNZ' => UNZInterchangeTrailer::class,
     ];
 
     private const TAG_LENGTH = 3;

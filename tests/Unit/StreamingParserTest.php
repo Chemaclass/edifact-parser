@@ -66,4 +66,27 @@ final class StreamingParserTest extends TestCase
             @unlink($path);
         }
     }
+
+    /**
+     * @test
+     */
+    public function honours_a_leading_una_with_custom_delimiters(): void
+    {
+        // Custom segment terminator '~' declared by the UNA service-string advice.
+        $edi = 'UNA:+.? ~UNB+UNOC:3+S+R+200101:1200+1~UNH+1+ORDERS:D:96A:UN~BGM+220~UNT+3+1~UNZ+1+1~';
+        $path = (string) tempnam(sys_get_temp_dir(), 'edi');
+        file_put_contents($path, $edi);
+
+        try {
+            $messages = [];
+            foreach (StreamingParser::createWithDefaultSegments()->parseFile($path) as $message) {
+                $messages[] = $message;
+            }
+
+            self::assertCount(1, $messages);
+            self::assertSame('ORDERS', $messages[0]->messageType());
+        } finally {
+            @unlink($path);
+        }
+    }
 }
