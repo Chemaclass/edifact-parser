@@ -289,6 +289,39 @@ $edi = $serializer->serialize([$unh, $bgm, $nadSegment, $unt], includeUna: true)
 $custom = new EdifactSerializer(new UnaSeparators(component: '#', element: '|'));
 ```
 
+#### Assembling a full interchange
+
+`InterchangeBuilder` assembles a complete UNB…UNZ interchange and fills in the UNT
+segment counts and the UNZ control count automatically:
+
+```php
+use EdifactParser\Writer\InterchangeBuilder;
+use EdifactParser\Writer\MessageBuilder;
+use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\Qualifier\NADQualifier;
+
+$edi = InterchangeBuilder::create('SENDER', 'RECIPIENT', 'REF1')
+    ->preparedAt('200101', '1200')
+    ->addMessage(
+        MessageBuilder::create('1', 'ORDERS')
+            ->addSegment(NADNameAddress::builder()->withQualifier(NADQualifier::BUYER)->withName('ACME')->build())
+    )
+    ->toString(); // ready-to-send EDIFACT string
+```
+
+### Character Sets
+
+The parser reads raw bytes. Decode non-ASCII values to UTF-8 using the interchange
+syntax identifier:
+
+```php
+use EdifactParser\Charset\Charset;
+
+$unb = $result->globalSegments()->segmentByTagAndSubId('UNB', 'UNOC');
+$encoding = $unb->characterEncoding();               // 'ISO-8859-1'
+$name = Charset::toUtf8($nad->name(), $unb->syntaxIdentifier());
+```
+
 ### Message Statistics and Analysis
 
 Analyze EDIFACT messages to extract statistics and insights:
@@ -479,6 +512,14 @@ foreach ($validator->validate($message, $rules) as $violation) {
 if ($validator->isValid($message, $rules)) {
     // conforms to the rule set
 }
+```
+
+Ready-to-use rule sets for common message types are provided as starting points:
+
+```php
+use EdifactParser\Validation\MessageRuleSets;
+
+$validator->validate($message, MessageRuleSets::orders());  // or invoic(), desadv(), iftmin()
 ```
 
 ---

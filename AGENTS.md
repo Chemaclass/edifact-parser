@@ -72,6 +72,10 @@ TransactionMessage organizes segments three ways:
 - **Qualifier constants** (`Segments\Qualifier\*`): NAD/QTY/PRI/DTM/RFF magic-string maps
 - **Writer** (`Serializer\EdifactSerializer` + `UnaSeparators`): render `iterable<SegmentInterface>`
   back to an `.edi` string (inverse of parsing)
+- **Interchange assembly** (`Writer\InterchangeBuilder` + `Writer\MessageBuilder`): build a full
+  UNB…UNZ with auto UNT/UNZ counts, then `toString()`
+- **Predefined rule sets** (`Validation\MessageRuleSets`): `orders()`/`invoic()`/`desadv()`/`iftmin()`
+- **Charset** (`Charset\Charset`): map UNB syntax id → encoding, decode values to UTF-8
 - **Validation** (`Validation\MessageValidator` + `MessageRuleSet` → `ValidationViolation`):
   required-segment, cardinality and `inSequence()` conformance checks; never throws
 - **Duplicate-preserving access**: `query()` and `TransactionMessage::segments()` keep
