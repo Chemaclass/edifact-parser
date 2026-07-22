@@ -62,6 +62,8 @@ TransactionMessage organizes segments three ways:
 
 - **Typed accessors** on segments: e.g. `NADNameAddress::name()/countryCode()`,
   `QTYQuantity::quantityAsFloat()`, `PRIPrice::priceAsFloat()`, `DTMDateTimePeriod::asDateTime()`
+- **Envelope metadata**: `UNBInterchangeHeader` (syntax id/version, sender/recipient,
+  prep date/time, control ref), `UNZInterchangeTrailer`, `UNTMessageFooter`, `BGMBeginningOfMessage`
 - **`SegmentQuery`** (`$message->query()`): fluent `withTag/withTags/withSubId/where/ofType/
   limit/skip/first/last/get/count/exists/isEmpty/map/each`
 - **`Analysis\MessageAnalyzer`**: counts, `getPartyQualifiers()`, `getCurrencies()`,
@@ -76,7 +78,7 @@ TransactionMessage organizes segments three ways:
   every segment in order (dups included); keyed views index by tag+subId (last wins)
 - **Grouping config** (`GroupingRules`): injectable context/child/line-item-break tags
 - **Streaming** (`StreamingParser`): generator yielding one `TransactionMessage` at a time,
-  bounded memory for large interchanges
+  bounded memory for large interchanges; honours a leading `UNA` (custom delimiters)
 - **Functional groups** (`ParserResult::functionalGroups()` → `FunctionalGroup`): UNG/UNE
   envelope; messages also stay available flat via `transactionMessages()`
 

@@ -22,11 +22,14 @@ use function trim;
  * interchanges parse in bounded memory — unlike {@see EdifactParser} which builds
  * the whole result up front.
  *
- * Assumes the default segment terminator (`'`) and release char (`?`).
+ * A leading `UNA` service-string advice is honoured — custom separators and
+ * release char declared there are used for splitting. Otherwise the constructor
+ * defaults (`'` terminator, `?` release) apply.
  */
 final class StreamingParser
 {
     private const CHUNK_BYTES = 8192;
+    private const UNA_LENGTH = 9;
 
     public function __construct(
         private EdifactParser $parser,
@@ -68,6 +71,10 @@ final class StreamingParser
         $buffer = '';
         $message = [];
         $inMessage = false;
+        $terminator = $this->segmentTerminator;
+        $release = $this->releaseCharacter;
+        $unaPrefix = '';
+        $unaChecked = false;
 
         while (!feof($handle)) {
             $chunk = fread($handle, self::CHUNK_BYTES);
@@ -77,7 +84,15 @@ final class StreamingParser
 
             $buffer .= $chunk;
 
-            foreach ($this->extractSegments($buffer) as $segment) {
+            if (!$unaChecked && strlen($buffer) >= self::UNA_LENGTH) {
+                $unaChecked = true;
+                $una = $this->detectUna($buffer);
+                if ($una !== null) {
+                    [$terminator, $release, $buffer, $unaPrefix] = $una;
+                }
+            }
+
+            foreach ($this->extractSegments($buffer, $terminator, $release) as $segment) {
                 $tag = strtoupper(substr($segment, 0, 3));
 
                 if ($tag === 'UNH') {
@@ -91,7 +106,7 @@ final class StreamingParser
                 }
 
                 if ($tag === 'UNT') {
-                    $text = implode($this->segmentTerminator, $message) . $this->segmentTerminator;
+                    $text = $unaPrefix . implode($terminator, $message) . $terminator;
                     yield from $this->parser->parse($text)->transactionMessages();
 
                     $message = [];
@@ -102,12 +117,33 @@ final class StreamingParser
     }
 
     /**
+     * Detects a leading UNA service-string advice and returns
+     * [terminator, release, buffer-without-una, una-string], or null when there is no UNA.
+     * The UNA string is prepended to each message so the batch parser reuses the
+     * declared delimiters.
+     *
+     * @return array{0: string, 1: string, 2: string, 3: string}|null
+     */
+    private function detectUna(string $buffer): ?array
+    {
+        $offset = strspn($buffer, " \t\r\n");
+
+        if (substr($buffer, $offset, 3) !== 'UNA' || strlen($buffer) < $offset + self::UNA_LENGTH) {
+            return null;
+        }
+
+        $una = substr($buffer, $offset, self::UNA_LENGTH);
+
+        return [$una[8], $una[6], substr($buffer, $offset + self::UNA_LENGTH), $una];
+    }
+
+    /**
      * Splits complete segments out of the buffer, leaving the trailing partial
      * segment (and its escape state) in place for the next read.
      *
      * @return list<string>
      */
-    private function extractSegments(string &$buffer): array
+    private function extractSegments(string &$buffer, string $terminator, string $release): array
     {
         $segments = [];
         $current = '';
@@ -123,13 +159,13 @@ final class StreamingParser
                 continue;
             }
 
-            if ($char === $this->releaseCharacter) {
+            if ($char === $release) {
                 $current .= $char;
                 $escaped = true;
                 continue;
             }
 
-            if ($char === $this->segmentTerminator) {
+            if ($char === $terminator) {
                 $trimmed = trim($current);
                 if ($trimmed !== '') {
                     $segments[] = $trimmed;

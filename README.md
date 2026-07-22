@@ -406,6 +406,35 @@ foreach ($result->transactionMessages() as $message) {
 }
 ```
 
+### Interchange & Envelope Metadata
+
+The envelope segments expose typed accessors for their metadata:
+
+```php
+// UNB interchange header (from the global segments)
+$unb = $result->globalSegments()->segmentByTagAndSubId('UNB', 'UNOC');
+$unb->syntaxIdentifier();            // 'UNOC' (character set)
+$unb->senderIdentification();        // interchange sender
+$unb->recipientIdentification();     // interchange recipient
+$unb->preparationDate();             // 'YYMMDD'
+$unb->interchangeControlReference(); // sender-assigned reference
+
+// UNZ interchange trailer
+$unz = $result->globalSegments()->segmentByTagAndSubId('UNZ', '2');
+$unz->interchangeControlCount();     // number of messages/groups
+$unz->interchangeControlReference(); // matches the UNB
+
+// UNT trailer and BGM, per message
+$unt = $message->query()->withTag('UNT')->first();
+$unt->segmentCount();                // segment count of the message
+$bgm = $message->query()->withTag('BGM')->first();
+$bgm->documentCode();                // e.g. '220' (order), '380' (invoice)
+$bgm->documentNumber();
+```
+
+> `StreamingParser` reads a leading `UNA` service-string advice and honours its
+> custom separators and release character automatically.
+
 ### Functional Groups (UNG/UNE)
 
 When an interchange wraps messages in `UNG...UNE` functional groups, access them
