@@ -6,12 +6,10 @@ namespace EdifactParser\Segments\Builder;
 
 use EdifactParser\Segments\NADNameAddress;
 
-/**
- * Fluent builder for NAD (Name and Address) segments
- */
 final class NADBuilder
 {
     private string $qualifier = '';
+    /** @var array<int, string> */
     private array $partyIdentification = [];
     private string $name = '';
     private string $street = '';

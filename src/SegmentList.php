@@ -20,7 +20,7 @@ final class SegmentList
     }
 
     /**
-     * @param  array<mixed>  $rawArrays
+     * @param  list<array<int, string|array<int, string>>>  $rawArrays
      *
      * @return list<SegmentInterface>
      */

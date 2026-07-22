@@ -24,6 +24,9 @@ final class ParserResult
         return $this->globalSegments;
     }
 
+    /**
+     * @return list<TransactionMessage>
+     */
     public function transactionMessages(): array
     {
         return $this->transactionMessages;

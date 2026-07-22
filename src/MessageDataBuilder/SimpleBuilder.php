@@ -8,6 +8,7 @@ use EdifactParser\Segments\SegmentInterface;
 
 final class SimpleBuilder implements BuilderInterface
 {
+    /** @var array<string, array<string, SegmentInterface>> */
     protected array $data = [];
 
     public function addSegment(SegmentInterface $segment): self
@@ -18,6 +19,9 @@ final class SimpleBuilder implements BuilderInterface
         return $this;
     }
 
+    /**
+     * @return array<string, array<string, SegmentInterface>>
+     */
     public function build(): array
     {
         return $this->data;

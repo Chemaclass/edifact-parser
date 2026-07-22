@@ -126,6 +126,9 @@ final class TransactionMessage implements Countable
         return null;
     }
 
+    /**
+     * @param list<SegmentInterface> $segments
+     */
     private static function filterGlobalSegments(array $segments): self
     {
         $globalMessages = array_filter(

@@ -52,7 +52,7 @@ final class Builder
     }
 
     /**
-     * @returns array<LineItem>
+     * @return array<string|int, LineItem>
      */
     public function buildLineItems(): array
     {
