@@ -101,4 +101,16 @@ abstract class AbstractSegment implements SegmentInterface
 
         return is_array($value) ? '' : (string) $value;
     }
+
+    /**
+     * First component of element $group, or the element itself when it is simple.
+     * An element with a single value round-trips as a plain string, not a 1-tuple,
+     * so accessors for the leading component must handle both shapes.
+     */
+    protected function firstComponent(int $group): string
+    {
+        $value = $this->rawValues[$group] ?? '';
+
+        return is_array($value) ? (string) ($value[0] ?? '') : (string) $value;
+    }
 }

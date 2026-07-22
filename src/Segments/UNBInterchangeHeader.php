@@ -22,7 +22,7 @@ final class UNBInterchangeHeader extends AbstractSegment
      */
     public function syntaxIdentifier(): string
     {
-        return $this->component(0);
+        return $this->firstComponent(1);
     }
 
     /**
@@ -38,7 +38,7 @@ final class UNBInterchangeHeader extends AbstractSegment
      */
     public function senderIdentification(): string
     {
-        return $this->component(0, 2);
+        return $this->firstComponent(2);
     }
 
     /**
@@ -46,7 +46,7 @@ final class UNBInterchangeHeader extends AbstractSegment
      */
     public function recipientIdentification(): string
     {
-        return $this->component(0, 3);
+        return $this->firstComponent(3);
     }
 
     /**
@@ -54,7 +54,7 @@ final class UNBInterchangeHeader extends AbstractSegment
      */
     public function preparationDate(): string
     {
-        return $this->component(0, 4);
+        return $this->firstComponent(4);
     }
 
     /**
