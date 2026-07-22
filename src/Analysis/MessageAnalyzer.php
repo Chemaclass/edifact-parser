@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace EdifactParser\Analysis;
 
 use EdifactParser\Segments\CUXCurrencyDetails;
+use EdifactParser\Segments\MOAMonetaryAmount;
 use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\QTYQuantity;
+use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\TransactionMessage;
 
 use function count;
@@ -102,17 +104,11 @@ final class MessageAnalyzer
         $query = $this->message->query()->withTag('MOA');
 
         if ($qualifier !== null) {
-            $query = $query->where(static function ($segment) use ($qualifier) {
-                $values = $segment->rawValues()[1] ?? [];
-                return is_array($values) && ($values[0] ?? '') === $qualifier;
-            });
+            $query = $query->where(static fn (SegmentInterface $s) => self::moaQualifier($s) === $qualifier);
         }
 
-        $query->each(static function ($segment) use (&$total): void {
-            $values = $segment->rawValues()[1] ?? [];
-            if (is_array($values)) {
-                $total += (float) ($values[1] ?? 0);
-            }
+        $query->each(static function (SegmentInterface $s) use (&$total): void {
+            $total += self::moaAmount($s);
         });
 
         return $total;
@@ -189,5 +185,27 @@ final class MessageAnalyzer
     public function hasSummarySection(): bool
     {
         return $this->hasSegment('UNS');
+    }
+
+    private static function moaQualifier(SegmentInterface $segment): string
+    {
+        if ($segment instanceof MOAMonetaryAmount) {
+            return $segment->amountQualifier();
+        }
+
+        $values = $segment->rawValues()[1] ?? [];
+
+        return is_array($values) ? (string) ($values[0] ?? '') : '';
+    }
+
+    private static function moaAmount(SegmentInterface $segment): float
+    {
+        if ($segment instanceof MOAMonetaryAmount) {
+            return $segment->amountAsFloat();
+        }
+
+        $values = $segment->rawValues()[1] ?? [];
+
+        return is_array($values) ? (float) ($values[1] ?? 0) : 0.0;
     }
 }
