@@ -262,6 +262,28 @@ echo $qtySegment->quantityAsFloat(); // 100.0
 echo $priSegment->priceAsFloat();    // 99.99
 ```
 
+### Writing / Serializing to EDIFACT
+
+Render segments back into an EDIFACT string — the inverse of parsing. Combine with
+the builders to generate messages, or re-serialize parsed segments:
+
+```php
+use EdifactParser\Serializer\EdifactSerializer;
+use EdifactParser\Serializer\UnaSeparators;
+
+$serializer = new EdifactSerializer();
+
+// Serialize built segments (separators and the release char are handled for you)
+echo $serializer->serializeSegment($nadSegment);
+// NAD+BY+123456++ACME Corporation+123 Main Street+Springfield++12345+US'
+
+// Serialize a whole message, optionally prepending the UNA service-string advice
+$edi = $serializer->serialize([$unh, $bgm, $nadSegment, $unt], includeUna: true);
+
+// Custom delimiters
+$custom = new EdifactSerializer(new UnaSeparators(component: '#', element: '|'));
+```
+
 ### Message Statistics and Analysis
 
 Analyze EDIFACT messages to extract statistics and insights:
