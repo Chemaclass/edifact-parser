@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.5.0] - 2026-07-22
+
+#### Added
+- **EDIFACT writer/serializer** (`Serializer\EdifactSerializer`): render any
+  `iterable<SegmentInterface>` back into an EDIFACT string — the inverse of parsing.
+  Pairs with the fluent builders to generate messages. Separators and the release
+  char are configurable via `Serializer\UnaSeparators` and can prepend a `UNA` segment.
+  Round-trips the sample file byte-for-byte through the low-level parser. (#58)
+
 ## [5.4.2] - 2026-07-22
 
 #### Changed
