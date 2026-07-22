@@ -12,10 +12,12 @@ final class ParserResult
 
     /**
      * @param list<TransactionMessage> $transactionMessages
+     * @param list<FunctionalGroup> $functionalGroups
      */
     public function __construct(
         private TransactionMessage $globalSegments,
         private array $transactionMessages,
+        private array $functionalGroups = [],
     ) {
     }
 
@@ -30,6 +32,17 @@ final class ParserResult
     public function transactionMessages(): array
     {
         return $this->transactionMessages;
+    }
+
+    /**
+     * UNG...UNE functional groups, when the interchange uses them (otherwise empty;
+     * messages are still available flat via transactionMessages()).
+     *
+     * @return list<FunctionalGroup>
+     */
+    public function functionalGroups(): array
+    {
+        return $this->functionalGroups;
     }
 
     /**

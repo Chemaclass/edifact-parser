@@ -34,6 +34,8 @@ final class SegmentFactory implements SegmentFactoryInterface
         'PIA' => PIAAdditionalProductId::class,
         'UNS' => UNSSectionControl::class,
         'MOA' => MOAMonetaryAmount::class,
+        'UNG' => UNGFunctionalGroupHeader::class,
+        'UNE' => UNEFunctionalGroupTrailer::class,
     ];
 
     private const TAG_LENGTH = 3;

@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.5.0] - 2026-07-22
 
 #### Added
+- **Functional groups (UNG/UNE)**: typed `UNGFunctionalGroupHeader` /
+  `UNEFunctionalGroupTrailer` segments and `ParserResult::functionalGroups()`
+  returning `FunctionalGroup` objects (header, trailer, messages). Interchanges
+  without groups are unaffected — messages stay available flat via
+  `transactionMessages()`. (#59)
 - **Typed `MOA` (monetary amount) segment** (`Segments\MOAMonetaryAmount`), now
   registered by default with `amountQualifier()`/`amount()`/`amountAsFloat()`/
   `currencyCode()`. `MessageAnalyzer` uses it (previously `MOA` was an
