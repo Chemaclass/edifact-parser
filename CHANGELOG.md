@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.5.0] - 2026-07-22
 
 #### Added
+- **Structural validation** (`Validation\MessageValidator` + `MessageRuleSet`):
+  check a message against a pluggable rule set (required segments and per-tag
+  cardinality) and get a list of `ValidationViolation`s back — never throws;
+  empty means conforming. (#60)
 - **Functional groups (UNG/UNE)**: typed `UNGFunctionalGroupHeader` /
   `UNEFunctionalGroupTrailer` segments and `ParserResult::functionalGroups()`
   returning `FunctionalGroup` objects (header, trailer, messages). Interchanges

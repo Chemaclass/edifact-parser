@@ -407,6 +407,33 @@ foreach ($result->functionalGroups() as $group) {
 
 ---
 
+### Validation / Conformance
+
+Check a message against a pluggable rule set (required segments + cardinality). The
+validator never throws — an empty list means the message conforms:
+
+```php
+use EdifactParser\Validation\MessageRuleSet;
+use EdifactParser\Validation\MessageValidator;
+
+$rules = MessageRuleSet::forType('ORDERS')
+    ->require('UNH', 'BGM', 'UNT')  // mandatory segments
+    ->occurs('NAD', 1, 5)           // between 1 and 5 NAD segments
+    ->occurs('LIN', 1);             // at least 1 line item
+
+$validator = new MessageValidator();
+
+foreach ($validator->validate($message, $rules) as $violation) {
+    echo "{$violation->segmentTag()}: {$violation->message()}\n";
+}
+
+if ($validator->isValid($message, $rules)) {
+    // conforms to the rule set
+}
+```
+
+---
+
 ## 🔧 Extending with Custom Segments
 
 ### Step 1: Create Your Segment Class
