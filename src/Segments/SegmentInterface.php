@@ -25,8 +25,6 @@ interface SegmentInterface
 
     /**
      * Variable length data elements. These can be either simple or composite.
-     *
-     * @return array<int, string|array<int, string>>
      */
     public function rawValues(): array;
 }

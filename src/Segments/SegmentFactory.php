@@ -75,9 +75,6 @@ final class SegmentFactory implements SegmentFactoryInterface
         return new self(self::DEFAULT_SEGMENTS);
     }
 
-    /**
-     * @param array<int, string|array<int, string>> $rawArray
-     */
     public function createSegmentFromArray(array $rawArray): SegmentInterface
     {
         $tag = $rawArray[0] ?? null;

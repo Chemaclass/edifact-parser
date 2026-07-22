@@ -12,17 +12,11 @@ use function is_array;
 /** @psalm-immutable */
 abstract class AbstractSegment implements SegmentInterface
 {
-    /**
-     * @param array<int, string|array<int, string>> $rawValues
-     */
     public function __construct(
         protected array $rawValues = [],
     ) {
     }
 
-    /**
-     * @return array<int, string|array<int, string>>
-     */
     public function rawValues(): array
     {
         return $this->rawValues;
@@ -52,7 +46,7 @@ abstract class AbstractSegment implements SegmentInterface
     /**
      * Convert segment to associative array for debugging
      *
-     * @return array{tag: string, subId: string, rawValues: array<int, string|array<int, string>>}
+     * @return array<string, mixed>
      *
      * @psalm-suppress ImpureMethodCall
      */

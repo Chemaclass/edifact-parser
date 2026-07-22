@@ -37,9 +37,6 @@ final class ContextSegment implements SegmentInterface
         return $this->segment->parsedSubId();
     }
 
-    /**
-     * @return array<int, string|array<int, string>>
-     */
     public function rawValues(): array
     {
         return $this->segment->rawValues();
