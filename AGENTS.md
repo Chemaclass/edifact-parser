@@ -46,20 +46,42 @@ TransactionMessage organizes segments three ways:
 
 **Segment abstraction**:
 - SegmentInterface: `tag()`, `subId()`, `rawValues()`, `parsedSubId()`
-- AbstractSegment: Base implementation (handles subId parsing)
+- AbstractSegment: Base implementation. Shared protected helpers segments delegate to:
+  - `requiredSubId()` — subId from `rawValues[1][0]`, throws `MissingSubId` if absent
+  - `component(int $index, int $group = 1)` — read a composite element, `''` if absent
 - ContextSegment: Decorator with `children()` for hierarchy
-- HasRetrievableSegments: Trait for `segmentsByTag()`, `segmentByTagAndSubId()`
+- HasRetrievableSegments: Trait for `segmentsByTag()`, `segmentByTagAndSubId()`, `query()`
 
 **SubId logic**:
-- From `rawValues()[1]`
-- String `'CN'` or array `['21', 'C62']` → joined as `'21:C62'`
-- Used for distinguishing multiple segments with same tag
+- Base `subId()` reads `rawValues()[1]`; string `'CN'` or array `['21', 'C62']` → joined as `'21:C62'`
+- Segments with a mandatory composite id (UNH/UNB/CNT/DTM/CUX/PRI/QTY/RFF) override
+  `subId()` with `requiredSubId()` — these throw `MissingSubId` on malformed input
+- Used for distinguishing multiple segments with the same tag
+
+## Public API Surface (for extraction/consumption)
+
+- **Typed accessors** on segments: e.g. `NADNameAddress::name()/countryCode()`,
+  `QTYQuantity::quantityAsFloat()`, `PRIPrice::priceAsFloat()`, `DTMDateTimePeriod::asDateTime()`
+- **`SegmentQuery`** (`$message->query()`): fluent `withTag/withTags/withSubId/where/ofType/
+  limit/skip/first/last/get/count/exists/isEmpty/map/each`
+- **`Analysis\MessageAnalyzer`**: counts, `getPartyQualifiers()`, `getCurrencies()`,
+  `calculateTotalAmount()/Quantity()`, `getSummary()`
+- **Fluent builders** (`Segments\Builder\*`): `NADNameAddress::builder()` etc. → `build()`
+- **Qualifier constants** (`Segments\Qualifier\*`): NAD/QTY/PRI/DTM/RFF magic-string maps
 
 ## Extension Points
 
 - Add custom segments: Extend AbstractSegment, register in SegmentFactory
 - Modify context rules: Update ContextStackParser::CONTEXT_TAGS/CHILD_TAGS
 - Custom builders: Implement BuilderInterface for different grouping logic
+
+## Conventions & Constraints
+
+- **Min PHP 8.0** (`composer.json` `platform.php: 8.0`) — enums (8.1) are NOT available;
+  use `final class` + `public const` for constant groups (see `Segments/Qualifier/*`).
+- Public library: preserve method signatures and const values; changes to them are BC breaks.
+- All code passes PHP-CS-Fixer, Psalm, PHPStan (level 5) and Rector; tests required for new behavior.
+- Conventional commits (`ref:` for refactors); land work via a branch + PR.
 
 ## Commands
 
@@ -69,3 +91,8 @@ composer test-functional        # Functional tests
 composer quality                # All checks (CS, Psalm, PHPStan, Rector)
 composer csfix                  # Fix code style
 ```
+
+**Toolchain gotcha:** the pinned Psalm (`^4.30`) only runs on **PHP ≤ 8.3** — run it under
+8.3 if your CLI is newer. On PHP > 8.3, PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`.
+PHPStan passing does not guarantee Psalm passes (Psalm is stricter about union returns
+from `rawValues()` accessors) — run both before pushing.
