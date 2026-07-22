@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.2.0] - 2026-07-22
 
 #### Added
+- **More typed segments** (registered by default): `FTX` (free text), `LOC` (place),
+  `TDT` (transport details), `IMD` (item description), `PAC` (package), `GID`
+  (goods item details), each with domain accessors.
 - **Character-set decoding** (`Charset\Charset`): map a UNB syntax identifier
   (UNOA/UNOB → ASCII, UNOC → ISO-8859-1, … UNOY → UTF-8) to an encoding and decode
   data values to UTF-8. `UNBInterchangeHeader::characterEncoding()` exposes the

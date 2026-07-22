@@ -37,6 +37,12 @@ final class SegmentFactory implements SegmentFactoryInterface
         'UNG' => UNGFunctionalGroupHeader::class,
         'UNE' => UNEFunctionalGroupTrailer::class,
         'UNZ' => UNZInterchangeTrailer::class,
+        'FTX' => FTXFreeText::class,
+        'LOC' => LOCPlace::class,
+        'TDT' => TDTTransportDetails::class,
+        'IMD' => IMDItemDescription::class,
+        'PAC' => PACPackage::class,
+        'GID' => GIDGoodsItemDetails::class,
     ];
 
     private const TAG_LENGTH = 3;
