@@ -23,19 +23,33 @@ final class TransactionMessage implements Countable
      * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
      * @param  array<int|string, LineItem>  $lineItems
      * @param  list<ContextSegment>  $contextSegments
+     * @param  list<SegmentInterface>  $segments  Every segment in original order, duplicates preserved
      */
     public function __construct(
         private array $groupedSegments,
         private array $lineItems = [],
         private array $contextSegments = [],
+        private array $segments = [],
     ) {
+    }
+
+    /**
+     * Every segment of the message in original order, with duplicates preserved
+     * (unlike the keyed views, which index by tag+subId). Feed this to the
+     * serializer to round-trip a message.
+     *
+     * @return list<SegmentInterface>
+     */
+    public function segments(): array
+    {
+        return $this->segments;
     }
 
     /**
      * A transaction message starts with the "UNHMessageHeader" segment and finalizes with
      * the "UNTMessageFooter" segment, this process is repeated for each pair of segments.
      */
-    public static function groupSegmentsByMessage(SegmentInterface ...$segments): ParserResult
+    public static function groupSegmentsByMessage(GroupingRules $rules, SegmentInterface ...$segments): ParserResult
     {
         $messages = [];
         $groupedSegments = [];
@@ -67,7 +81,7 @@ final class TransactionMessage implements Countable
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter) {
-                $message = self::groupSegmentsByName(...$groupedSegments);
+                $message = self::groupSegmentsByName($rules, ...$groupedSegments);
                 $messages[] = $message;
 
                 if ($openHeader !== null) {
@@ -77,7 +91,7 @@ final class TransactionMessage implements Countable
         }
 
         return new ParserResult(
-            self::filterGlobalSegments($segments),
+            self::filterGlobalSegments($rules, $segments),
             self::hasUnhSegment(...$messages),
             $functionalGroups,
         );
@@ -112,9 +126,31 @@ final class TransactionMessage implements Countable
         return $this->groupedSegments;
     }
 
+    /**
+     * A duplicate-preserving, ordered query over every segment of the message.
+     */
+    public function query(): SegmentQuery
+    {
+        if ($this->segments !== []) {
+            return new SegmentQuery($this->segments);
+        }
+
+        $flat = [];
+        foreach ($this->groupedSegments as $tagSegments) {
+            foreach ($tagSegments as $segment) {
+                $flat[] = $segment;
+            }
+        }
+
+        return new SegmentQuery($flat);
+    }
+
+    /**
+     * Total number of segments in the message (duplicates included).
+     */
     public function count(): int
     {
-        return count($this->groupedSegments);
+        return $this->segments !== [] ? count($this->segments) : count($this->groupedSegments);
     }
 
     /**
@@ -156,14 +192,14 @@ final class TransactionMessage implements Countable
     /**
      * @param list<SegmentInterface> $segments
      */
-    private static function filterGlobalSegments(array $segments): self
+    private static function filterGlobalSegments(GroupingRules $rules, array $segments): self
     {
         $globalMessages = array_filter(
             $segments,
             static fn (SegmentInterface $s) => in_array($s->tag(), ['UNA', 'UNB', 'UNZ'])
         );
 
-        return self::groupSegmentsByName(...$globalMessages);
+        return self::groupSegmentsByName($rules, ...$globalMessages);
     }
 
     /**
@@ -176,10 +212,10 @@ final class TransactionMessage implements Countable
         );
     }
 
-    private static function groupSegmentsByName(SegmentInterface ...$segments): self
+    private static function groupSegmentsByName(GroupingRules $rules, SegmentInterface ...$segments): self
     {
-        $builder = new MessageDataBuilder();
-        $contextParser = new ContextStackParser();
+        $builder = new MessageDataBuilder($rules);
+        $contextParser = new ContextStackParser($rules);
 
         foreach ($segments as $segment) {
             $builder->addSegment($segment);
@@ -202,6 +238,7 @@ final class TransactionMessage implements Countable
             $groupedSegments,
             $lineItems,
             $contexts,
+            array_values($segments),
         );
     }
 

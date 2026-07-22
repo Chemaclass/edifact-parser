@@ -34,11 +34,11 @@ TransactionMessage organizes segments three ways:
 
 ## Key Patterns
 
-**Context hierarchy** (`ContextStackParser`):
+**Context hierarchy** (`ContextStackParser`, defaults — override via `GroupingRules`):
 - Parents: NAD, LIN, DOC
 - Children: COM, CTA, PIA, IMD, MEA, QTY, PRI, TAX, DTM, MOA
 
-**Line item boundaries** (`MessageDataBuilder\Builder`):
+**Line item boundaries** (`MessageDataBuilder\Builder`, defaults — override via `GroupingRules`):
 - Start: LIN segment
 - End: UNS, CNT, or UNT segments
 - DetailsSectionBuilder groups segments into line items
@@ -71,7 +71,10 @@ TransactionMessage organizes segments three ways:
 - **Writer** (`Serializer\EdifactSerializer` + `UnaSeparators`): render `iterable<SegmentInterface>`
   back to an `.edi` string (inverse of parsing)
 - **Validation** (`Validation\MessageValidator` + `MessageRuleSet` → `ValidationViolation`):
-  required-segment and cardinality conformance checks; never throws
+  required-segment, cardinality and `inSequence()` conformance checks; never throws
+- **Duplicate-preserving access**: `query()` and `TransactionMessage::segments()` keep
+  every segment in order (dups included); keyed views index by tag+subId (last wins)
+- **Grouping config** (`GroupingRules`): injectable context/child/line-item-break tags
 - **Streaming** (`StreamingParser`): generator yielding one `TransactionMessage` at a time,
   bounded memory for large interchanges
 - **Functional groups** (`ParserResult::functionalGroups()` → `FunctionalGroup`): UNG/UNE
@@ -80,7 +83,8 @@ TransactionMessage organizes segments three ways:
 ## Extension Points
 
 - Add custom segments: Extend AbstractSegment, register in SegmentFactory
-- Modify context rules: Update ContextStackParser::CONTEXT_TAGS/CHILD_TAGS
+- Modify context / line-item rules: pass a customized `GroupingRules` to the
+  `EdifactParser` constructor (no longer hardcoded consts)
 - Custom builders: Implement BuilderInterface for different grouping logic
 
 ## Conventions & Constraints

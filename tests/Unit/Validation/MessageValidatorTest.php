@@ -54,6 +54,31 @@ final class MessageValidatorTest extends TestCase
         self::assertSame('cardinality', $violations[0]->rule());
         self::assertSame('cardinality', $violations[1]->rule());
     }
+
+    /**
+     * @test
+     */
+    public function accepts_segments_in_the_expected_sequence(): void
+    {
+        // In the sample: UNH ... BGM ... UNT appear in that order.
+        $rules = MessageRuleSet::forType('IFTMIN')->inSequence('UNH', 'BGM', 'UNT');
+
+        self::assertSame([], (new MessageValidator())->validate($this->sampleMessage(), $rules));
+    }
+
+    /**
+     * @test
+     */
+    public function reports_segments_out_of_sequence(): void
+    {
+        // BGM actually precedes UNT, so requiring UNT before BGM must fail.
+        $rules = MessageRuleSet::forType('IFTMIN')->inSequence('UNT', 'BGM');
+
+        $violations = (new MessageValidator())->validate($this->sampleMessage(), $rules);
+
+        self::assertCount(1, $violations);
+        self::assertSame('sequence', $violations[0]->rule());
+    }
     private function sampleMessage(): TransactionMessage
     {
         return EdifactParser::createWithDefaultSegments()

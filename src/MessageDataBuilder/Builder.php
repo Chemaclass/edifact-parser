@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 namespace EdifactParser\MessageDataBuilder;
 
+use EdifactParser\GroupingRules;
 use EdifactParser\LineItem;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNSSectionControl;
 
-use function in_array;
-
 final class Builder
 {
     use MultipleBuilderWrapper;
 
-    /**
-     * Tags that indicate the end of a line item section.
-     * After one of these tags is found all following segments are
-     * considered part of the summary until another LIN tag appears.
-     */
-    private const BREAK_LINEITEM_TAGS = ['UNS', 'CNT', 'UNT'];
+    private GroupingRules $rules;
 
-    public function __construct()
+    public function __construct(?GroupingRules $rules = null)
     {
+        $this->rules = $rules ?? GroupingRules::default();
         $this->setCurrentBuilder(new SimpleBuilder());
     }
 
@@ -92,7 +87,7 @@ final class Builder
             return false;
         }
 
-        if (in_array($segment->tag(), self::BREAK_LINEITEM_TAGS, true)) {
+        if ($this->rules->isBreakLineItemTag($segment->tag())) {
             if ($segment instanceof UNSSectionControl) {
                 return $segment->indicatesEndOfDetailsSection();
             }
