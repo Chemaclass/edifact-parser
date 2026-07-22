@@ -68,6 +68,14 @@ TransactionMessage organizes segments three ways:
   `calculateTotalAmount()/Quantity()`, `getSummary()`
 - **Fluent builders** (`Segments\Builder\*`): `NADNameAddress::builder()` etc. → `build()`
 - **Qualifier constants** (`Segments\Qualifier\*`): NAD/QTY/PRI/DTM/RFF magic-string maps
+- **Writer** (`Serializer\EdifactSerializer` + `UnaSeparators`): render `iterable<SegmentInterface>`
+  back to an `.edi` string (inverse of parsing)
+- **Validation** (`Validation\MessageValidator` + `MessageRuleSet` → `ValidationViolation`):
+  required-segment and cardinality conformance checks; never throws
+- **Streaming** (`StreamingParser`): generator yielding one `TransactionMessage` at a time,
+  bounded memory for large interchanges
+- **Functional groups** (`ParserResult::functionalGroups()` → `FunctionalGroup`): UNG/UNE
+  envelope; messages also stay available flat via `transactionMessages()`
 
 ## Extension Points
 
