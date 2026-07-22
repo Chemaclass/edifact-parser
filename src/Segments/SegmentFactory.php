@@ -33,6 +33,7 @@ final class SegmentFactory implements SegmentFactoryInterface
         'PRI' => PRIPrice::class,
         'PIA' => PIAAdditionalProductId::class,
         'UNS' => UNSSectionControl::class,
+        'MOA' => MOAMonetaryAmount::class,
     ];
 
     private const TAG_LENGTH = 3;

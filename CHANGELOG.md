@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [5.5.0] - 2026-07-22
 
 #### Added
+- **Typed `MOA` (monetary amount) segment** (`Segments\MOAMonetaryAmount`), now
+  registered by default with `amountQualifier()`/`amount()`/`amountAsFloat()`/
+  `currencyCode()`. `MessageAnalyzer` uses it (previously `MOA` was an
+  `UnknownSegment` read via raw values). (#62)
 - **EDIFACT writer/serializer** (`Serializer\EdifactSerializer`): render any
   `iterable<SegmentInterface>` back into an EDIFACT string — the inverse of parsing.
   Pairs with the fluent builders to generate messages. Separators and the release
