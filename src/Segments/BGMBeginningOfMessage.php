@@ -17,7 +17,7 @@ final class BGMBeginningOfMessage extends AbstractSegment
      */
     public function documentCode(): string
     {
-        return $this->component(0);
+        return $this->firstComponent(1);
     }
 
     /**
