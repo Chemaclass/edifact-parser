@@ -14,9 +14,6 @@ final class LINLineItem extends AbstractSegment
         return 'LIN';
     }
 
-    /**
-     * Line item number
-     */
     public function lineNumber(): string
     {
         return $this->rawValues()[1] ?? '';

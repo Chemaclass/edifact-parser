@@ -22,7 +22,9 @@ final class UnknownSegment extends AbstractSegment
             return $value;
         }
 
-        if (isset($value[0]) && is_string($value[0])) {
+        // Raw input can nest deeper than the declared rawValues shape; only a
+        // scalar first component is a usable subId, otherwise fall back to a hash.
+        if (isset($value[0]) && is_string($value[0])) { // @phpstan-ignore booleanAnd.rightAlwaysTrue
             return $value[0];
         }
 

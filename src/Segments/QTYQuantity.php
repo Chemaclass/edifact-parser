@@ -6,8 +6,6 @@ namespace EdifactParser\Segments;
 
 use EdifactParser\Segments\Builder\QTYBuilder;
 
-use function is_array;
-
 /** @psalm-immutable */
 final class QTYQuantity extends AbstractSegment
 {
@@ -16,9 +14,6 @@ final class QTYQuantity extends AbstractSegment
         return 'QTY';
     }
 
-    /**
-     * Create a new builder instance
-     */
     public static function builder(): QTYBuilder
     {
         return new QTYBuilder();
@@ -26,7 +21,7 @@ final class QTYQuantity extends AbstractSegment
 
     public function subId(): string
     {
-        return $this->rawValues[1][0];
+        return $this->requiredSubId();
     }
 
     /**
@@ -34,22 +29,14 @@ final class QTYQuantity extends AbstractSegment
      */
     public function qualifier(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[0] ?? '') : '';
+        return $this->component(0);
     }
 
-    /**
-     * Quantity value
-     */
     public function quantity(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[1] ?? '') : '';
+        return $this->component(1);
     }
 
-    /**
-     * Quantity as float
-     */
     public function quantityAsFloat(): float
     {
         return (float) $this->quantity();
@@ -60,7 +47,6 @@ final class QTYQuantity extends AbstractSegment
      */
     public function measureUnit(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[2] ?? '') : '';
+        return $this->component(2);
     }
 }

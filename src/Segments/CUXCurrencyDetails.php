@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Segments;
 
 /** @psalm-immutable */
-class CUXCurrencyDetails extends AbstractSegment
+final class CUXCurrencyDetails extends AbstractSegment
 {
     public function tag(): string
     {
@@ -14,6 +14,6 @@ class CUXCurrencyDetails extends AbstractSegment
 
     public function subId(): string
     {
-        return $this->rawValues[1][0];
+        return $this->requiredSubId();
     }
 }

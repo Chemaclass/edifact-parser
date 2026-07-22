@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+use EdifactParser\Exception\MissingSubId;
 use JsonException;
 
 use function is_array;
@@ -11,11 +12,17 @@ use function is_array;
 /** @psalm-immutable */
 abstract class AbstractSegment implements SegmentInterface
 {
+    /**
+     * @param array<int, string|array<int, string>> $rawValues
+     */
     public function __construct(
         protected array $rawValues = [],
     ) {
     }
 
+    /**
+     * @return array<int, string|array<int, string>>
+     */
     public function rawValues(): array
     {
         return $this->rawValues;
@@ -45,7 +52,7 @@ abstract class AbstractSegment implements SegmentInterface
     /**
      * Convert segment to associative array for debugging
      *
-     * @return array<string, mixed>
+     * @return array{tag: string, subId: string, rawValues: array<int, string|array<int, string>>}
      *
      * @psalm-suppress ImpureMethodCall
      */
@@ -66,5 +73,28 @@ abstract class AbstractSegment implements SegmentInterface
     public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT): string
     {
         return json_encode($this->toArray(), $flags);
+    }
+
+    /**
+     * subId taken from the first component of element [1], required by segments
+     * whose [1][0] identifies the record (e.g. UNH/UNB/CNT/DTM/CUX/PRI/QTY/RFF).
+     */
+    protected function requiredSubId(): string
+    {
+        if (!isset($this->rawValues[1][0])) {
+            throw new MissingSubId('[1][0]', $this->rawValues);
+        }
+
+        return (string) $this->rawValues[1][0];
+    }
+
+    /**
+     * Read component $index of composite element $group, '' when absent.
+     */
+    protected function component(int $index, int $group = 1): string
+    {
+        $value = $this->rawValues[$group] ?? [];
+
+        return is_array($value) ? (string) ($value[$index] ?? '') : '';
     }
 }
