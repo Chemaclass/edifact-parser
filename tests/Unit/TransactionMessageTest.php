@@ -37,7 +37,10 @@ final class TransactionMessageTest extends TestCase
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
+                new UNTMessageFooter(['UNT', '19', '1']),
+            ]),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -61,7 +64,10 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
+                new UNTMessageFooter(['UNT', '19', '1']),
+            ]),
             new TransactionMessage([
                 'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
@@ -69,7 +75,10 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '2', ['IFTMIN', 'S', '94A', 'UN', 'PN002']]),
+                new UNTMessageFooter(['UNT', '19', '2']),
+            ]),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -99,7 +108,13 @@ EDI;
                     '11' => new CNTControl(['CNT', ['11', '1', 'PCE']]),
                     '15' => new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '1', ['IFTMIN', 'S', '93A', 'UN', 'PN001']]),
+                new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
+                new CNTControl(['CNT', ['11', '1', 'PCE']]),
+                new CNTControl(['CNT', ['15', '0.068224', 'MTQ']]),
+                new UNTMessageFooter(['UNT', '19', '1']),
+            ]),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -129,7 +144,11 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '1']),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '1', 'anything']),
+                new CNTControl(['CNT', ['7', '0.1', 'KGM']]),
+                new UNTMessageFooter(['UNT', '19', '1']),
+            ]),
             new TransactionMessage([
                 'UNH' => [
                     '2' => new UNHMessageHeader(['UNH', '2', 'anything']),
@@ -137,7 +156,10 @@ EDI;
                 'UNT' => [
                     '19' => new UNTMessageFooter(['UNT', '19', '2']),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '2', 'anything']),
+                new UNTMessageFooter(['UNT', '19', '2']),
+            ]),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -166,7 +188,11 @@ EDI;
                 'UNT' => [
                     '10' => new UNTMessageFooter(['UNT', '10', '2']),
                 ],
-            ], [], []),
+            ], [], [], [
+                new UNHMessageHeader(['UNH', '2', 'anything']),
+                new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
+                new UNTMessageFooter(['UNT', '10', '2']),
+            ]),
         ], $this->parse($fileContent)->transactionMessages());
     }
 
@@ -217,7 +243,10 @@ EDI;
             'UNZ' => [
                 '2' => new UnknownSegment(['UNZ', '2', '3']),
             ],
-        ], [], []), $parerResult->globalSegments());
+        ], [], [], [
+            new UNBInterchangeHeader(['UNB', ['UNOC', '0'], ['1', '2'], ['3', '4'], '5', 'Anything here', '6']),
+            new UnknownSegment(['UNZ', '2', '3']),
+        ]), $parerResult->globalSegments());
 
         self::assertEquals([
             'UNH' => [
@@ -407,6 +436,6 @@ EDI;
         $segments = SegmentList::withDefaultFactory()
             ->fromRaw($parser->get());
 
-        return TransactionMessage::groupSegmentsByMessage(...$segments);
+        return TransactionMessage::groupSegmentsByMessage(\EdifactParser\GroupingRules::default(), ...$segments);
     }
 }

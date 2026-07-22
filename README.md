@@ -173,6 +173,11 @@ if ($message->query()->withTag('UNS')->exists()) {
 $nadCount = $message->query()->withTag('NAD')->count();
 ```
 
+> `query()` and `$message->segments()` preserve **every** segment in original order,
+> including duplicates that share a tag + subId. The keyed lookups
+> (`segmentByTagAndSubId()`, `allSegments()`) index by tag + subId and keep the last
+> occurrence — use the query API when duplicates matter.
+
 ### Type-Safe Qualifiers with Constants
 
 Use predefined constants for common EDIFACT qualifiers to avoid magic strings and improve IDE autocomplete:
@@ -431,9 +436,10 @@ use EdifactParser\Validation\MessageRuleSet;
 use EdifactParser\Validation\MessageValidator;
 
 $rules = MessageRuleSet::forType('ORDERS')
-    ->require('UNH', 'BGM', 'UNT')  // mandatory segments
-    ->occurs('NAD', 1, 5)           // between 1 and 5 NAD segments
-    ->occurs('LIN', 1);             // at least 1 line item
+    ->require('UNH', 'BGM', 'UNT')       // mandatory segments
+    ->occurs('NAD', 1, 5)                // between 1 and 5 NAD segments
+    ->occurs('LIN', 1)                   // at least 1 line item
+    ->inSequence('UNH', 'BGM', 'UNT');   // relative order of these tags
 
 $validator = new MessageValidator();
 
@@ -512,6 +518,25 @@ final class LOCLocationTest extends TestCase
         self::assertEquals('DEHAM', $segment->locationCode());
     }
 }
+```
+
+### Custom Grouping Rules
+
+Context hierarchies and line-item boundaries are driven by `GroupingRules`. Pass a
+customized instance to the parser to change which tags open a context, attach as
+children, or close a line-item section:
+
+```php
+use EdifactParser\EdifactParser;
+use EdifactParser\GroupingRules;
+use EdifactParser\Segments\SegmentFactory;
+
+$rules = GroupingRules::default()
+    ->withContextTags(['NAD', 'LIN'])           // parents that open a context
+    ->withChildTags(['CTA', 'COM', 'DTM'])       // segments attached to the context
+    ->withBreakLineItemTags(['UNS', 'CNT', 'UNT']); // tags that end the detail section
+
+$parser = new EdifactParser(SegmentFactory::withDefaultSegments(), $rules);
 ```
 
 ---

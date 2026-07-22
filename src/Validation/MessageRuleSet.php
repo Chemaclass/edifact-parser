@@ -16,11 +16,13 @@ final class MessageRuleSet
     /**
      * @param list<string> $requiredTags
      * @param array<string, array{min: int, max: int|null}> $cardinality
+     * @param list<string> $sequence Expected relative order of the listed tags
      */
     public function __construct(
         private string $messageType,
         private array $requiredTags = [],
         private array $cardinality = [],
+        private array $sequence = [],
     ) {
     }
 
@@ -45,6 +47,17 @@ final class MessageRuleSet
         return $clone;
     }
 
+    /**
+     * Declare the expected relative order of the given tags. Other tags are ignored.
+     */
+    public function inSequence(string ...$tags): self
+    {
+        $clone = clone $this;
+        $clone->sequence = array_values($tags);
+
+        return $clone;
+    }
+
     public function messageType(): string
     {
         return $this->messageType;
@@ -64,5 +77,13 @@ final class MessageRuleSet
     public function cardinality(): array
     {
         return $this->cardinality;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function sequence(): array
+    {
+        return $this->sequence;
     }
 }

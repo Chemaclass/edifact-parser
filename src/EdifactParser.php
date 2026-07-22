@@ -11,8 +11,11 @@ use EdifactParser\Segments\SegmentFactoryInterface;
 
 final class EdifactParser
 {
-    public function __construct(private SegmentFactoryInterface $segmentFactory)
+    private GroupingRules $groupingRules;
+
+    public function __construct(private SegmentFactoryInterface $segmentFactory, ?GroupingRules $groupingRules = null)
     {
+        $this->groupingRules = $groupingRules ?? GroupingRules::default();
     }
 
     /**
@@ -39,7 +42,7 @@ final class EdifactParser
         $segmentList = new SegmentList($this->segmentFactory);
         $segments = $segmentList->fromRaw($parser->get());
 
-        return TransactionMessage::groupSegmentsByMessage(...$segments);
+        return TransactionMessage::groupSegmentsByMessage($this->groupingRules, ...$segments);
     }
 
     public function parseFile(string $filePath): ParserResult

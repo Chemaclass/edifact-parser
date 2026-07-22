@@ -45,11 +45,46 @@ final class MessageValidator
             }
         }
 
+        $sequenceViolation = $this->checkSequence($message, $rules);
+        if ($sequenceViolation !== null) {
+            $violations[] = $sequenceViolation;
+        }
+
         return $violations;
     }
 
     public function isValid(TransactionMessage $message, MessageRuleSet $rules): bool
     {
         return $this->validate($message, $rules) === [];
+    }
+
+    private function checkSequence(TransactionMessage $message, MessageRuleSet $rules): ?ValidationViolation
+    {
+        $sequence = $rules->sequence();
+        if ($sequence === []) {
+            return null;
+        }
+
+        $rank = array_flip($sequence);
+        $highest = -1;
+
+        foreach ($message->query()->get() as $segment) {
+            $tag = $segment->tag();
+            if (!isset($rank[$tag])) {
+                continue;
+            }
+
+            if ($rank[$tag] < $highest) {
+                return new ValidationViolation(
+                    $tag,
+                    'sequence',
+                    'Segments are not in the expected order: ' . implode(' -> ', $sequence),
+                );
+            }
+
+            $highest = $rank[$tag];
+        }
+
+        return null;
     }
 }

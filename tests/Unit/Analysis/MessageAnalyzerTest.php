@@ -364,7 +364,7 @@ EDI
     {
         $parser = (new Parser())->loadString($edifactContent);
         $segments = SegmentList::withDefaultFactory()->fromRaw($parser->get());
-        $result = TransactionMessage::groupSegmentsByMessage(...$segments);
+        $result = TransactionMessage::groupSegmentsByMessage(\EdifactParser\GroupingRules::default(), ...$segments);
 
         return $result->transactionMessages()[0];
     }

@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] - 2026-07-22
+
+#### Added
+- **Duplicate-segment preservation**: `TransactionMessage::query()` and the new
+  `TransactionMessage::segments()` now return every segment in original order,
+  including repeated segments that share a tag + subId (previously collapsed by the
+  keyed index). `count()` now reports the true segment total. (#59)
+- **Injectable grouping rules** (`GroupingRules`): customize context parents/children
+  and the tags that close a line-item section, passed via a new optional second
+  argument to the `EdifactParser` constructor. (#62)
+- **Sequence validation**: `MessageRuleSet::inSequence(...$tags)` checks the relative
+  order of segments; `MessageValidator` reports a `sequence` violation when broken. (#60)
+
+#### Changed (breaking)
+- `EdifactParser::__construct()` takes an optional `?GroupingRules $groupingRules`
+  second argument. Existing single-argument calls keep working.
+- `TransactionMessage::groupSegmentsByMessage()` now takes a `GroupingRules` as its
+  first argument (before the variadic segments).
+- `TransactionMessage::__construct()` gained a fourth `array $segments` argument (the
+  ordered, duplicate-preserving segment list). Optional; defaults to `[]`.
+- `TransactionMessage::count()` now returns the total number of segments, not the
+  number of distinct tags.
+- `TransactionMessage::query()` now preserves duplicates and original order.
+
+##### Migration
+- Building a parser: `new EdifactParser($factory)` is unchanged; pass
+  `new EdifactParser($factory, $groupingRules)` only to customize grouping.
+- Calling `TransactionMessage::groupSegmentsByMessage(...$segments)` directly:
+  pass rules first — `groupSegmentsByMessage(GroupingRules::default(), ...$segments)`.
+- If you relied on `count($message)` returning the distinct-tag count, use
+  `count($message->allSegments())` instead.
+
 ## [5.5.0] - 2026-07-22
 
 #### Added
