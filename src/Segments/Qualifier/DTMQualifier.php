@@ -55,6 +55,5 @@ final class DTMQualifier
 
     private function __construct()
     {
-        // Prevent instantiation
     }
 }

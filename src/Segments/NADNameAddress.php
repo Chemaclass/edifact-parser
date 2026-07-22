@@ -16,9 +16,6 @@ final class NADNameAddress extends AbstractSegment
         return 'NAD';
     }
 
-    /**
-     * Create a new builder instance
-     */
     public static function builder(): NADBuilder
     {
         return new NADBuilder();
@@ -43,41 +40,26 @@ final class NADNameAddress extends AbstractSegment
         return is_array($value) ? $value : [];
     }
 
-    /**
-     * Party ID (first element of party identification)
-     */
     public function partyId(): string
     {
         return $this->partyIdentification()[0] ?? '';
     }
 
-    /**
-     * Party name
-     */
     public function name(): string
     {
         return $this->rawValues()[4] ?? '';
     }
 
-    /**
-     * Street and number
-     */
     public function street(): string
     {
         return $this->rawValues()[5] ?? '';
     }
 
-    /**
-     * City name
-     */
     public function city(): string
     {
         return $this->rawValues()[6] ?? '';
     }
 
-    /**
-     * Postal code
-     */
     public function postalCode(): string
     {
         return $this->rawValues()[8] ?? '';

@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Segments;
 
 use DateTimeImmutable;
-use EdifactParser\Exception\MissingSubId;
-
-use function is_array;
 
 /** @psalm-immutable */
 final class DTMDateTimePeriod extends AbstractSegment
@@ -19,11 +16,7 @@ final class DTMDateTimePeriod extends AbstractSegment
 
     public function subId(): string
     {
-        if (!isset($this->rawValues[1][0])) {
-            throw new MissingSubId('[1][0]', $this->rawValues);
-        }
-
-        return (string) $this->rawValues[1][0];
+        return $this->requiredSubId();
     }
 
     /**
@@ -31,17 +24,12 @@ final class DTMDateTimePeriod extends AbstractSegment
      */
     public function qualifier(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[0] ?? '') : '';
+        return $this->component(0);
     }
 
-    /**
-     * Date/time/period value (raw string)
-     */
     public function dateTime(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[1] ?? '') : '';
+        return $this->component(1);
     }
 
     /**
@@ -49,8 +37,7 @@ final class DTMDateTimePeriod extends AbstractSegment
      */
     public function formatQualifier(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[2] ?? '') : '';
+        return $this->component(2);
     }
 
     /**

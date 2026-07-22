@@ -22,6 +22,9 @@ final class DetailsSectionBuilder implements BuilderInterface
         return $this;
     }
 
+    /**
+     * @return array<string|int, array<string, array<string, SegmentInterface>>>
+     */
     public function build(): array
     {
         $data = [];

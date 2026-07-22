@@ -19,7 +19,7 @@ final class TransactionMessage implements Countable
 
     /**
      * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
-     * @param  array<string, LineItem>  $lineItems
+     * @param  array<int|string, LineItem>  $lineItems
      * @param  list<ContextSegment>  $contextSegments
      */
     public function __construct(
@@ -57,7 +57,7 @@ final class TransactionMessage implements Countable
     }
 
     /**
-     * @return array<string, LineItem>
+     * @return array<int|string, LineItem>
      */
     public function lineItems(): array
     {
@@ -126,6 +126,9 @@ final class TransactionMessage implements Countable
         return null;
     }
 
+    /**
+     * @param list<SegmentInterface> $segments
+     */
     private static function filterGlobalSegments(array $segments): self
     {
         $globalMessages = array_filter(

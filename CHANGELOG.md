@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.2] - 2026-07-22
+
+#### Changed
+- `subId()` on `CUX`/`PRI`/`QTY`/`RFF` segments now throws `MissingSubId` when the
+  `[1][0]` component is absent, matching `UNH`/`UNB`/`CNT`/`DTM`. Previously these
+  returned an invalid value on malformed input. Valid messages are unaffected.
+
+#### Internal
+- Deduplicated segment `subId()` and composite-component accessors into shared
+  `AbstractSegment` helpers (`requiredSubId()`, `component()`).
+- Strengthened array type hints across the raw-value chain
+  (`array<int, string|array<int, string>>`) and other public docblocks.
+- Removed redundant restatement docblocks; kept EDIFACT domain documentation.
+
 ## [5.4.1] - 2025-12-07
 
 - Add `webmozart/assert` as direct dependency (#53)

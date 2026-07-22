@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-use function is_array;
-
 /** @psalm-immutable */
 final class RFFReference extends AbstractSegment
 {
@@ -16,7 +14,7 @@ final class RFFReference extends AbstractSegment
 
     public function subId(): string
     {
-        return $this->rawValues[1][0];
+        return $this->requiredSubId();
     }
 
     /**
@@ -24,16 +22,11 @@ final class RFFReference extends AbstractSegment
      */
     public function qualifier(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[0] ?? '') : '';
+        return $this->component(0);
     }
 
-    /**
-     * Reference number/identifier
-     */
     public function referenceNumber(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[1] ?? '') : '';
+        return $this->component(1);
     }
 }

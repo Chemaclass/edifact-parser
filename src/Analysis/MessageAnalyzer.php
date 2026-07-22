@@ -12,9 +12,6 @@ use EdifactParser\TransactionMessage;
 use function count;
 use function is_array;
 
-/**
- * Analyzes EDIFACT messages to extract statistics and insights
- */
 final class MessageAnalyzer
 {
     public function __construct(private TransactionMessage $message)
@@ -29,25 +26,16 @@ final class MessageAnalyzer
         return $this->message->messageType();
     }
 
-    /**
-     * Count total segments in the message
-     */
     public function segmentCount(): int
     {
         return $this->message->query()->count();
     }
 
-    /**
-     * Count segments by tag
-     */
     public function segmentCountByTag(string $tag): int
     {
         return $this->message->query()->withTag($tag)->count();
     }
 
-    /**
-     * Count line items
-     */
     public function lineItemCount(): int
     {
         return count($this->message->lineItems());
@@ -160,9 +148,15 @@ final class MessageAnalyzer
     }
 
     /**
-     * Get summary statistics as an array
-     *
-     * @return array<string, mixed>
+     * @return array{
+     *     message_type: string|null,
+     *     total_segments: int,
+     *     line_items: int,
+     *     addresses: int,
+     *     party_qualifiers: list<string>,
+     *     currencies: list<string>,
+     *     segment_counts: array{NAD: int, LIN: int, QTY: int, PRI: int, MOA: int, DTM: int}
+     * }
      */
     public function getSummary(): array
     {
@@ -184,9 +178,6 @@ final class MessageAnalyzer
         ];
     }
 
-    /**
-     * Check if message has specific segment
-     */
     public function hasSegment(string $tag): bool
     {
         return $this->message->query()->withTag($tag)->exists();

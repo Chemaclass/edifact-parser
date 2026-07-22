@@ -6,8 +6,6 @@ namespace EdifactParser\Segments;
 
 use EdifactParser\Segments\Builder\PRIBuilder;
 
-use function is_array;
-
 /** @psalm-immutable */
 final class PRIPrice extends AbstractSegment
 {
@@ -16,9 +14,6 @@ final class PRIPrice extends AbstractSegment
         return 'PRI';
     }
 
-    /**
-     * Create a new builder instance
-     */
     public static function builder(): PRIBuilder
     {
         return new PRIBuilder();
@@ -26,7 +21,7 @@ final class PRIPrice extends AbstractSegment
 
     public function subId(): string
     {
-        return $this->rawValues[1][0];
+        return $this->requiredSubId();
     }
 
     /**
@@ -34,33 +29,21 @@ final class PRIPrice extends AbstractSegment
      */
     public function qualifier(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[0] ?? '') : '';
+        return $this->component(0);
     }
 
-    /**
-     * Price amount
-     */
     public function price(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[1] ?? '') : '';
+        return $this->component(1);
     }
 
-    /**
-     * Price as float
-     */
     public function priceAsFloat(): float
     {
         return (float) $this->price();
     }
 
-    /**
-     * Price type qualifier
-     */
     public function priceType(): string
     {
-        $value = $this->rawValues()[1] ?? [];
-        return is_array($value) ? ($value[2] ?? '') : '';
+        return $this->component(2);
     }
 }

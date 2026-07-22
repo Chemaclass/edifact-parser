@@ -55,6 +55,5 @@ final class RFFQualifier
 
     private function __construct()
     {
-        // Prevent instantiation
     }
 }

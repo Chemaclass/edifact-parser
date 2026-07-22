@@ -22,6 +22,9 @@ final class ConsolePrinter implements PrinterInterface
     ) {
     }
 
+    /**
+     * @param list<string> $segmentNames
+     */
     public static function createWithHeaders(array $segmentNames): self
     {
         return new self($segmentNames);

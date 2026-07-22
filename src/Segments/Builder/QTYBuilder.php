@@ -6,9 +6,6 @@ namespace EdifactParser\Segments\Builder;
 
 use EdifactParser\Segments\QTYQuantity;
 
-/**
- * Fluent builder for QTY (Quantity) segments
- */
 final class QTYBuilder
 {
     private string $qualifier = '';
