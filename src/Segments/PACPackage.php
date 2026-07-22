@@ -12,9 +12,6 @@ final class PACPackage extends AbstractSegment
         return 'PAC';
     }
 
-    /**
-     * Number of packages
-     */
     public function numberOfPackages(): string
     {
         return $this->element(1);

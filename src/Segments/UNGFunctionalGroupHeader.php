@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-use function is_array;
-
 /** @psalm-immutable */
 final class UNGFunctionalGroupHeader extends AbstractSegment
 {
@@ -19,9 +17,7 @@ final class UNGFunctionalGroupHeader extends AbstractSegment
      */
     public function messageType(): string
     {
-        $value = $this->rawValues()[1] ?? '';
-
-        return is_array($value) ? '' : (string) $value;
+        return $this->element(1);
     }
 
     /**
@@ -29,8 +25,6 @@ final class UNGFunctionalGroupHeader extends AbstractSegment
      */
     public function groupReference(): string
     {
-        $value = $this->rawValues()[5] ?? '';
-
-        return is_array($value) ? '' : (string) $value;
+        return $this->element(5);
     }
 }

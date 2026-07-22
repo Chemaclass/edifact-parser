@@ -21,11 +21,7 @@ final class MessageRuleSets
      */
     public static function orders(): MessageRuleSet
     {
-        return MessageRuleSet::forType('ORDERS')
-            ->require('UNH', 'BGM', 'UNT')
-            ->occurs('BGM', 1, 1)
-            ->occurs('UNH', 1, 1)
-            ->occurs('UNT', 1, 1)
+        return self::serviceEnvelope('ORDERS')
             ->inSequence('UNH', 'BGM', 'DTM', 'NAD', 'LIN', 'UNS', 'CNT', 'UNT');
     }
 
@@ -34,11 +30,7 @@ final class MessageRuleSets
      */
     public static function invoic(): MessageRuleSet
     {
-        return MessageRuleSet::forType('INVOIC')
-            ->require('UNH', 'BGM', 'UNT')
-            ->occurs('BGM', 1, 1)
-            ->occurs('UNH', 1, 1)
-            ->occurs('UNT', 1, 1)
+        return self::serviceEnvelope('INVOIC')
             ->inSequence('UNH', 'BGM', 'DTM', 'NAD', 'CUX', 'LIN', 'UNS', 'MOA', 'UNT');
     }
 
@@ -47,11 +39,7 @@ final class MessageRuleSets
      */
     public static function desadv(): MessageRuleSet
     {
-        return MessageRuleSet::forType('DESADV')
-            ->require('UNH', 'BGM', 'UNT')
-            ->occurs('BGM', 1, 1)
-            ->occurs('UNH', 1, 1)
-            ->occurs('UNT', 1, 1)
+        return self::serviceEnvelope('DESADV')
             ->inSequence('UNH', 'BGM', 'DTM', 'NAD', 'CPS', 'LIN', 'UNT');
     }
 
@@ -60,11 +48,20 @@ final class MessageRuleSets
      */
     public static function iftmin(): MessageRuleSet
     {
-        return MessageRuleSet::forType('IFTMIN')
+        return self::serviceEnvelope('IFTMIN')
+            ->inSequence('UNH', 'BGM', 'DTM', 'NAD', 'UNT');
+    }
+
+    /**
+     * The mandatory service segments (UNH/BGM/UNT, exactly one each) shared by every
+     * message type; callers append the type-specific sequence.
+     */
+    private static function serviceEnvelope(string $type): MessageRuleSet
+    {
+        return MessageRuleSet::forType($type)
             ->require('UNH', 'BGM', 'UNT')
             ->occurs('BGM', 1, 1)
             ->occurs('UNH', 1, 1)
-            ->occurs('UNT', 1, 1)
-            ->inSequence('UNH', 'BGM', 'DTM', 'NAD', 'UNT');
+            ->occurs('UNT', 1, 1);
     }
 }

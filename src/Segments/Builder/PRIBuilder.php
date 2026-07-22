@@ -36,7 +36,7 @@ final class PRIBuilder
             'PRI',
             array_filter(
                 [$this->qualifier, $this->price, $this->priceType],
-                static fn ($value) => $value !== ''
+                static fn (string $value) => $value !== ''
             ),
         ];
 

@@ -58,14 +58,16 @@ final class MessageAnalyzer
      */
     public function getPartyQualifiers(): array
     {
-        return $this->message->query()
+        $qualifiers = $this->message->query()
             ->withTag('NAD')
-            ->map(static function ($segment) {
+            ->map(static function (SegmentInterface $segment) {
                 if ($segment instanceof NADNameAddress) {
                     return $segment->partyQualifier();
                 }
                 return $segment->rawValues()[1] ?? '';
             });
+
+        return array_values(array_unique($qualifiers));
     }
 
     /**
@@ -79,7 +81,7 @@ final class MessageAnalyzer
 
         $this->message->query()
             ->withTag('CUX')
-            ->each(static function ($segment) use (&$currencies): void {
+            ->each(static function (SegmentInterface $segment) use (&$currencies): void {
                 if ($segment instanceof CUXCurrencyDetails) {
                     $values = $segment->rawValues();
                     // CUX format: CUX+<usage>:<currency>:<qualifier>
@@ -126,7 +128,7 @@ final class MessageAnalyzer
         $query = $this->message->query()->withTag('QTY');
 
         if ($qualifier !== null) {
-            $query = $query->where(static function ($segment) use ($qualifier) {
+            $query = $query->where(static function (SegmentInterface $segment) use ($qualifier): bool {
                 if ($segment instanceof QTYQuantity) {
                     return $segment->qualifier() === $qualifier;
                 }
@@ -134,7 +136,7 @@ final class MessageAnalyzer
             });
         }
 
-        $query->each(static function ($segment) use (&$total): void {
+        $query->each(static function (SegmentInterface $segment) use (&$total): void {
             if ($segment instanceof QTYQuantity) {
                 $total += $segment->quantityAsFloat();
             }

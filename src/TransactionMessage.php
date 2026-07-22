@@ -150,7 +150,13 @@ final class TransactionMessage implements Countable
      */
     public function count(): int
     {
-        return $this->segments !== [] ? count($this->segments) : count($this->groupedSegments);
+        if ($this->segments !== []) {
+            return count($this->segments);
+        }
+
+        // Fallback for a message built directly from the keyed map (no ordered list):
+        // sum the segments across tags rather than counting tags.
+        return array_sum(array_map('count', $this->groupedSegments));
     }
 
     /**
@@ -196,7 +202,7 @@ final class TransactionMessage implements Countable
     {
         $globalMessages = array_filter(
             $segments,
-            static fn (SegmentInterface $s) => in_array($s->tag(), ['UNA', 'UNB', 'UNZ'])
+            static fn (SegmentInterface $s) => in_array($s->tag(), ['UNA', 'UNB', 'UNZ'], true)
         );
 
         return self::groupSegmentsByName($rules, ...$globalMessages);
@@ -232,7 +238,7 @@ final class TransactionMessage implements Countable
             self::applyContext($context, $groupedSegments, $lineItemsData);
         }
 
-        $lineItems = array_map(static fn ($data) => new LineItem($data), $lineItemsData);
+        $lineItems = array_map(static fn (array $data) => new LineItem($data), $lineItemsData);
 
         return new self(
             $groupedSegments,

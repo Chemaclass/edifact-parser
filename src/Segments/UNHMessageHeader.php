@@ -19,12 +19,9 @@ final class UNHMessageHeader extends AbstractSegment
         return $this->requiredSubId();
     }
 
-    /**
-     * Message reference number
-     */
     public function messageReferenceNumber(): string
     {
-        return $this->rawValues()[1] ?? '';
+        return $this->element(1);
     }
 
     /**

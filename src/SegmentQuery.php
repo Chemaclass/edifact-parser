@@ -23,10 +23,7 @@ final class SegmentQuery
 
     public function withTag(string $tag): self
     {
-        return new self(array_values(array_filter(
-            $this->segments,
-            static fn (SegmentInterface $s) => $s->tag() === $tag
-        )));
+        return $this->where(static fn (SegmentInterface $s) => $s->tag() === $tag);
     }
 
     /**
@@ -34,18 +31,12 @@ final class SegmentQuery
      */
     public function withTags(array $tags): self
     {
-        return new self(array_values(array_filter(
-            $this->segments,
-            static fn (SegmentInterface $s) => in_array($s->tag(), $tags, true)
-        )));
+        return $this->where(static fn (SegmentInterface $s) => in_array($s->tag(), $tags, true));
     }
 
     public function withSubId(string $subId): self
     {
-        return new self(array_values(array_filter(
-            $this->segments,
-            static fn (SegmentInterface $s) => $s->subId() === $subId
-        )));
+        return $this->where(static fn (SegmentInterface $s) => $s->subId() === $subId);
     }
 
     /**
@@ -63,10 +54,7 @@ final class SegmentQuery
      */
     public function ofType(string $className): self
     {
-        return new self(array_values(array_filter(
-            $this->segments,
-            static fn (SegmentInterface $s) => $s instanceof $className
-        )));
+        return $this->where(static fn (SegmentInterface $s) => $s instanceof $className);
     }
 
     public function limit(int $limit): self
