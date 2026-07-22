@@ -16,7 +16,7 @@ final class LINLineItem extends AbstractSegment
 
     public function lineNumber(): string
     {
-        return $this->rawValues()[1] ?? '';
+        return $this->element(1);
     }
 
     /**
@@ -35,7 +35,7 @@ final class LINLineItem extends AbstractSegment
      */
     public function itemNumber(): string
     {
-        return $this->itemNumberIdentification()[0] ?? '';
+        return $this->firstComponent(3);
     }
 
     /**
@@ -43,6 +43,6 @@ final class LINLineItem extends AbstractSegment
      */
     public function itemTypeCode(): string
     {
-        return $this->itemNumberIdentification()[1] ?? '';
+        return $this->component(1, 3);
     }
 }

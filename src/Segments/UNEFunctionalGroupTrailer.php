@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
-use function is_array;
-
 /** @psalm-immutable */
 final class UNEFunctionalGroupTrailer extends AbstractSegment
 {
@@ -19,9 +17,7 @@ final class UNEFunctionalGroupTrailer extends AbstractSegment
      */
     public function controlCount(): string
     {
-        $value = $this->rawValues()[1] ?? '';
-
-        return is_array($value) ? '' : (string) $value;
+        return $this->element(1);
     }
 
     /**
@@ -29,8 +25,6 @@ final class UNEFunctionalGroupTrailer extends AbstractSegment
      */
     public function groupReference(): string
     {
-        $value = $this->rawValues()[2] ?? '';
-
-        return is_array($value) ? '' : (string) $value;
+        return $this->element(2);
     }
 }

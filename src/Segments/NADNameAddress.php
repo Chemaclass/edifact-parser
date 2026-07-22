@@ -26,7 +26,7 @@ final class NADNameAddress extends AbstractSegment
      */
     public function partyQualifier(): string
     {
-        return $this->rawValues()[1] ?? '';
+        return $this->element(1);
     }
 
     /**
@@ -42,27 +42,27 @@ final class NADNameAddress extends AbstractSegment
 
     public function partyId(): string
     {
-        return $this->partyIdentification()[0] ?? '';
+        return $this->firstComponent(2);
     }
 
     public function name(): string
     {
-        return $this->rawValues()[4] ?? '';
+        return $this->element(4);
     }
 
     public function street(): string
     {
-        return $this->rawValues()[5] ?? '';
+        return $this->element(5);
     }
 
     public function city(): string
     {
-        return $this->rawValues()[6] ?? '';
+        return $this->element(6);
     }
 
     public function postalCode(): string
     {
-        return $this->rawValues()[8] ?? '';
+        return $this->element(8);
     }
 
     /**
@@ -70,6 +70,6 @@ final class NADNameAddress extends AbstractSegment
      */
     public function countryCode(): string
     {
-        return $this->rawValues()[9] ?? '';
+        return $this->element(9);
     }
 }
