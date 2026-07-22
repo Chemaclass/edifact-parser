@@ -1,8 +1,8 @@
 # 📦 EDIFACT Parser
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Chemaclass/EdifactParser/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Chemaclass/EdifactParser/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Chemaclass/EdifactParser/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/Chemaclass/EdifactParser/?branch=main)
 [![Type Coverage](https://shepherd.dev/github/Chemaclass/EdifactParser/coverage.svg)](https://shepherd.dev/github/chemaclass/EdifactParser)
-[![CI](https://github.com/Chemaclass/EdifactParser/workflows/CI/badge.svg?branch=master)](https://github.com/Chemaclass/EdifactParser/actions)
+[![CI](https://github.com/Chemaclass/EdifactParser/workflows/CI/badge.svg?branch=main)](https://github.com/Chemaclass/EdifactParser/actions)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg?style=flat-square)](https://php.net/)
 
 **EDIFACT** stands for _Electronic Data Interchange For Administration, Commerce, and Transport_.
@@ -70,7 +70,7 @@ $personName = $nadSegment->rawValues()[4]; // 'Person Name'
 
 ## 📖 Usage Guide
 
-### Typed Accessor Methods (New! ✨)
+### Typed Accessor Methods
 
 Many segments now provide typed accessor methods for cleaner, self-documenting code:
 
@@ -118,7 +118,7 @@ if ($nadSegment) {
 }
 ```
 
-### Fluent Query API (New! ✨)
+### Fluent Query API
 
 Chain filters and transformations for powerful segment querying:
 
@@ -173,7 +173,7 @@ if ($message->query()->withTag('UNS')->exists()) {
 $nadCount = $message->query()->withTag('NAD')->count();
 ```
 
-### Type-Safe Qualifiers with Constants (New! ✨)
+### Type-Safe Qualifiers with Constants
 
 Use predefined constants for common EDIFACT qualifiers to avoid magic strings and improve IDE autocomplete:
 
@@ -216,10 +216,10 @@ Available qualifier constants:
 - `NADQualifier` - Party roles (BY, SU, CN, CZ, DP, IV, PR, CA, FW, MF, UC, WH)
 - `QTYQualifier` - Quantity types (1, 3, 11, 12, 21, 33, 46, 47, 48, 192)
 - `PRIQualifier` - Price types (AAA, AAB, AAE, AAF, AAG, CAL, CT, DIS, LIS, MIN, RRP)
-- `DTMQualifier` - Date/time types (137, 2, 10, 11, etc.)
-- `RFFQualifier` - Reference types (ON, CR, DQ, PD, etc.)
+- `DTMQualifier` - Date/time types (137, 2, 3, 4, 10, 11, 13, etc.)
+- `RFFQualifier` - Reference types (ON, IV, DQ, CU, SRN, CT, POR, etc.)
 
-### Building Segments with Fluent Builders (New! ✨)
+### Building Segments with Fluent Builders
 
 Create segment objects programmatically with a fluent, type-safe API:
 
@@ -262,7 +262,7 @@ echo $qtySegment->quantityAsFloat(); // 100.0
 echo $priSegment->priceAsFloat();    // 99.99
 ```
 
-### Message Statistics and Analysis (New! ✨)
+### Message Statistics and Analysis
 
 Analyze EDIFACT messages to extract statistics and insights:
 
@@ -510,6 +510,11 @@ composer psalm                          # Static analysis (Psalm)
 composer phpstan                        # Static analysis (PHPStan)
 composer rector                         # Apply refactoring rules
 ```
+
+> **Local toolchain:** the pinned Psalm (`vimeo/psalm ^4.30`) runs on **PHP ≤ 8.3** —
+> run it under 8.3 if your CLI is newer (e.g. `/path/to/php8.3 vendor/bin/psalm`). On
+> PHP > 8.3, PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`. CI runs the full gate on
+> the supported versions, so `composer quality` there is authoritative.
 
 ### Code Standards
 

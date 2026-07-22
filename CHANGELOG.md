@@ -15,9 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Internal
 - Deduplicated segment `subId()` and composite-component accessors into shared
   `AbstractSegment` helpers (`requiredSubId()`, `component()`).
-- Strengthened array type hints across the raw-value chain
-  (`array<int, string|array<int, string>>`) and other public docblocks.
+- Added missing `array`/`list` generics on builders, results and the printer,
+  and typed line-item keys as `int|string`; fixed an invalid `@returns` tag.
 - Removed redundant restatement docblocks; kept EDIFACT domain documentation.
+
+#### Documentation
+- Refreshed README and `AGENTS.md`: corrected the RFF qualifier list, dropped
+  stale "New!" markers, fixed `master` → `main` badges, and documented the local
+  toolchain (Psalm requires PHP ≤ 8.3; PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV`
+  on newer PHP).
 
 ## [5.4.1] - 2025-12-07
 
