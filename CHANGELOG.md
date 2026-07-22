@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.2.0] - 2026-07-22
 
 #### Added
+- **Character-set decoding** (`Charset\Charset`): map a UNB syntax identifier
+  (UNOA/UNOB → ASCII, UNOC → ISO-8859-1, … UNOY → UTF-8) to an encoding and decode
+  data values to UTF-8. `UNBInterchangeHeader::characterEncoding()` exposes the
+  interchange encoding. Adds an `ext-mbstring` requirement.
 - **Predefined validation rule sets** (`Validation\MessageRuleSets`): ready-to-use
   `MessageRuleSet`s for `ORDERS`, `INVOIC`, `DESADV` and `IFTMIN` (mandatory segments
   + typical order), extensible for partner-specific rules.

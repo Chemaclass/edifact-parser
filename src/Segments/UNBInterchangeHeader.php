@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EdifactParser\Segments;
 
+use EdifactParser\Charset\Charset;
+
 /** @psalm-immutable */
 final class UNBInterchangeHeader extends AbstractSegment
 {
@@ -71,5 +73,14 @@ final class UNBInterchangeHeader extends AbstractSegment
     public function interchangeControlReference(): string
     {
         return $this->element(5);
+    }
+
+    /**
+     * PHP character encoding implied by the syntax identifier (e.g., 'ISO-8859-1').
+     * Use with {@see Charset::toUtf8()} to normalize non-ASCII data values.
+     */
+    public function characterEncoding(): string
+    {
+        return Charset::encodingFor($this->syntaxIdentifier());
     }
 }
