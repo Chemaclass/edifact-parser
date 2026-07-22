@@ -20,6 +20,7 @@
     "prefer-stable": true,
     "require": {
         "ext-json": "*",
+        "ext-mbstring": "*",
         "php": ">=8.0",
         "sabas/edifact": "^1.2",
         "webmozart/assert": "^1.12"
