@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.1] - 2026-07-23
+
+#### Fixed
+- `MessageAnalyzer::getPartyQualifiers()` now returns unique values (matching its
+  documented contract and `getCurrencies()`).
+- `NADBuilder::withPartyId()` no longer drops a party-id component equal to the
+  string `'0'`.
+- `TransactionMessage::count()` reports the true segment total for messages built
+  directly from the keyed map (previously counted distinct tags).
+
+#### Internal
+- Routed segment accessors through the shared `AbstractSegment` helpers, deduplicated
+  the `MessageRuleSets` service-segment block and the `SegmentQuery` filters, and
+  strengthened previously-untyped closure parameters. No API changes.
+
 ## [6.2.0] - 2026-07-22
 
 #### Added
