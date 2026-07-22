@@ -6,9 +6,6 @@ namespace EdifactParser\Segments\Builder;
 
 use EdifactParser\Segments\PRIPrice;
 
-/**
- * Fluent builder for PRI (Price) segments
- */
 final class PRIBuilder
 {
     private string $qualifier = '';

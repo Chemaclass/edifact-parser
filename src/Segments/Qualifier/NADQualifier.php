@@ -49,6 +49,5 @@ final class NADQualifier
 
     private function __construct()
     {
-        // Prevent instantiation
     }
 }

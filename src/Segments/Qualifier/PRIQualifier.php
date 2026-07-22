@@ -46,6 +46,5 @@ final class PRIQualifier
 
     private function __construct()
     {
-        // Prevent instantiation
     }
 }

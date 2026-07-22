@@ -43,6 +43,5 @@ final class QTYQualifier
 
     private function __construct()
     {
-        // Prevent instantiation
     }
 }
