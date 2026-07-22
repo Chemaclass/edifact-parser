@@ -30,17 +30,6 @@ final class Builder
         return $this;
     }
 
-    public function updateState(SegmentInterface $segment): void
-    {
-        if ($this->atStartOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new DetailsSectionBuilder());
-        }
-
-        if ($this->atEndOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new SimpleBuilder());
-        }
-    }
-
     public function buildSegments(): array
     {
         return $this->buildWhereBuilderIs(SimpleBuilder::class);
@@ -52,9 +41,20 @@ final class Builder
     public function buildLineItems(): array
     {
         return array_map(
-            static fn ($data) => new LineItem($data),
+            static fn (array $data) => new LineItem($data),
             $this->buildWhereBuilderIs(DetailsSectionBuilder::class),
         );
+    }
+
+    private function updateState(SegmentInterface $segment): void
+    {
+        if ($this->atStartOfDetailsSection($segment)) {
+            $this->setCurrentBuilder(new DetailsSectionBuilder());
+        }
+
+        if ($this->atEndOfDetailsSection($segment)) {
+            $this->setCurrentBuilder(new SimpleBuilder());
+        }
     }
 
     /**

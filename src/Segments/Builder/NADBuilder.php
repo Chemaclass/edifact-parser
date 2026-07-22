@@ -34,7 +34,11 @@ final class NADBuilder
 
     public function withPartyId(string $id, string $codeListQualifier = '', string $codeListAgency = ''): self
     {
-        $this->partyIdentification = array_filter([$id, $codeListQualifier, $codeListAgency]);
+        // Drop only empty parts — a bare array_filter would also strip a literal '0'.
+        $this->partyIdentification = array_values(array_filter(
+            [$id, $codeListQualifier, $codeListAgency],
+            static fn (string $value) => $value !== '',
+        ));
         return $this;
     }
 

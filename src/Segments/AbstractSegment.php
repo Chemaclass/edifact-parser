@@ -46,7 +46,7 @@ abstract class AbstractSegment implements SegmentInterface
     /**
      * Convert segment to associative array for debugging
      *
-     * @return array<string, mixed>
+     * @return array{tag: string, subId: string, rawValues: array}
      *
      * @psalm-suppress ImpureMethodCall
      */

@@ -36,7 +36,7 @@ final class QTYBuilder
             'QTY',
             array_filter(
                 [$this->qualifier, $this->quantity, $this->measureUnit],
-                static fn ($value) => $value !== ''
+                static fn (string $value) => $value !== ''
             ),
         ];
 

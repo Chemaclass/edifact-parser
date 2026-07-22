@@ -36,9 +36,6 @@ final class TDTTransportDetails extends AbstractSegment
         return $this->firstComponent(3);
     }
 
-    /**
-     * Carrier identification
-     */
     public function carrierId(): string
     {
         return $this->firstComponent(5);
