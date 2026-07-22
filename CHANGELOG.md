@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [6.2.0] - 2026-07-22
 
 #### Added
+- **Predefined validation rule sets** (`Validation\MessageRuleSets`): ready-to-use
+  `MessageRuleSet`s for `ORDERS`, `INVOIC`, `DESADV` and `IFTMIN` (mandatory segments
+  + typical order), extensible for partner-specific rules.
 - **Interchange assembly** (`Writer\InterchangeBuilder` + `Writer\MessageBuilder`):
   build a full UNB…UNZ interchange programmatically with **auto-computed UNT segment
   counts and UNZ interchange control count**, then `toString()` to a ready-to-send
