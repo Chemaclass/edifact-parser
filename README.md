@@ -5,493 +5,392 @@
 [![CI](https://github.com/Chemaclass/EdifactParser/workflows/CI/badge.svg?branch=main)](https://github.com/Chemaclass/EdifactParser/actions)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-8892BF.svg?style=flat-square)](https://php.net/)
 
-**EDIFACT** stands for _Electronic Data Interchange For Administration, Commerce, and Transport_.
+A complete **PHP toolkit for UN/EDIFACT** — read, write, validate, and stream EDI
+interchanges with a typed, object-oriented API.
 
-This package provides a robust and extensible **PHP parser** to read, interpret, and extract data from EDIFACT-formatted files.
+> **EDIFACT** — _Electronic Data Interchange For Administration, Commerce, and Transport_ —
+> is the international standard for structured business documents (orders, invoices,
+> despatch advices, transport instructions). 🔍 New to it? [Start here](/docu/README.md).
 
-🔍 Not sure what EDIFACT is? [Learn more here](/docu/README.md)
+## Why this library
 
----
+- 📥 **Parse** any interchange — unknown tags degrade gracefully to raw values, so no
+  message type is unsupported.
+- 📤 **Write** it back — serialize segments to a valid `.edi` string, or assemble a full
+  `UNB…UNZ` interchange with **auto-computed control counts**.
+- ✅ **Validate** — pluggable rule sets for required segments, cardinality, and order.
+- 🌊 **Stream** — parse multi-gigabyte files in bounded memory (one message at a time).
+- 🧱 **Model the full envelope** — interchange → functional groups (`UNG/UNE`) → messages,
+  with duplicate-preserving access and typed metadata on every envelope segment.
+- 🏷️ **26 typed segments** out of the box with domain accessors, plus qualifier constants —
+  and trivially [extensible](#-extending) with your own.
+- 🔎 **Fluent query API** and a **statistics analyzer** for extracting data.
+- 🌍 **Charset-aware** (`UNOA`…`UNOY`), **strictly typed** (PHP 8.0+, PSR-4), and fully
+  covered by PHPUnit, PHPStan, Psalm, Rector and PHP-CS-Fixer.
 
-## 📚 EDIFACT Format Overview
+## Table of Contents
 
-- A file is composed of multiple **segments**—each begins with a **tag** (e.g., `UNH`, `NAD`).
-- Each segment contains structured data relevant to that tag.
-- A **message** typically starts with a `UNH` segment and ends with a `UNT` segment.
-- A **transaction** is a list of such messages within a file.
-
-👉 Read more about segments [here](/docu/segments/README.md)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Parsing](#-parsing) · [Streaming large files](#streaming-large-files)
+- [Reading data](#-reading-data) · [Typed accessors](#typed-accessors) · [Query API](#fluent-query-api) · [Line items](#line-items) · [Context hierarchy](#hierarchical-context-segments) · [Envelope metadata](#interchange--envelope-metadata) · [Functional groups](#functional-groups-ungune) · [Statistics](#statistics--analysis) · [Qualifier constants](#qualifier-constants) · [Character sets](#character-sets) · [Built-in segments](#built-in-segments)
+- [Writing EDIFACT](#-writing-edifact)
+- [Validation](#-validation)
+- [Extending](#-extending)
+- [Debugging](#-debugging)
+- [Development](#-development)
+- [Contributing](#-contributing)
 
 ---
 
 ## 💾 Installation
 
-Install via [Composer](https://packagist.org/packages/chemaclass/edifact-parser):
-
 ```bash
 composer require chemaclass/edifact-parser
 ```
 
-## 🧪 Examples
+Requires PHP 8.0+ with `ext-json` and `ext-mbstring`.
 
-### 🔎 Usage example
+---
+
+## 🚀 Quick Start
 
 ```php
 <?php declare(strict_types=1);
 
 use EdifactParser\EdifactParser;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require 'vendor/autoload.php';
 
-$fileContent = <<<EDI
-...
-NAD+CN+++Person Name+Street Nr 2+City2++12345+DE'
-...
-EDI;
+$result = EdifactParser::createWithDefaultSegments()
+    ->parseFile('/path/to/order.edi'); // or ->parse($ediString)
 
-$parser = EdifactParser::createWithDefaultSegments();
-$parserResult = $parser->parse($fileContent);
-// Or directly from a file
-//$parserResult = $parser->parseFile('/path/to/file.edi');
-$firstMessage = $parserResult->transactionMessages()[0];
+foreach ($result->transactionMessages() as $message) {
+    echo $message->messageType();      // 'ORDERS', 'INVOIC', 'IFTMIN', …
 
-$nadSegment = $firstMessage->segmentByTagAndSubId('NAD', 'CN');
-$personName = $nadSegment->rawValues()[4]; // 'Person Name'
+    // Typed accessors — no magic array indices
+    $buyer = $message->segmentByTagAndSubId('NAD', 'BY');
+    echo $buyer?->name();              // 'ACME Corporation'
+    echo $buyer?->countryCode();       // 'DE'
+
+    foreach ($message->lineItems() as $lineItem) {
+        $qty = $lineItem->segmentByTagAndSubId('QTY', '21');
+        echo $qty?->quantityAsFloat(); // 100.0
+    }
+}
 ```
 
-### 📂 More Examples
-
-- [example/extracting-data.php](example/extracting-data.php) — Extract values using typed accessors and query API.
-- [example/query-filtering.php](example/query-filtering.php) — Advanced filtering with fluent query API.
-- [example/printing-segments.php](example/printing-segments.php) — Print all parsed segments with statistics.
-- [example/context-segments.php](example/context-segments.php) — Traverse hierarchical context segments.
+The parser never throws on unknown segments — they become `UnknownSegment`s you can still
+read via `rawValues()`, so you can process any interchange and add typed segments later.
 
 ---
 
-## 📖 Usage Guide
+## 📥 Parsing
 
-### Typed Accessor Methods
-
-Many segments now provide typed accessor methods for cleaner, self-documenting code:
+`EdifactParser::parse()` / `parseFile()` return a `ParserResult`:
 
 ```php
-// NAD (Name and Address) - No more magic array indices!
-$nadSegment = $message->segmentByTagAndSubId('NAD', 'CN');
-$name = $nadSegment->name();              // Instead of rawValues()[4]
-$street = $nadSegment->street();          // Instead of rawValues()[5]
-$city = $nadSegment->city();              // Instead of rawValues()[6]
-$postalCode = $nadSegment->postalCode();  // Instead of rawValues()[8]
-$country = $nadSegment->countryCode();    // Instead of rawValues()[9]
+$result = EdifactParser::createWithDefaultSegments()->parse($ediString);
 
-// QTY (Quantity) - With type conversion
-$qtySegment = $lineItem->segmentByTagAndSubId('QTY', '21');
-$quantity = $qtySegment->quantityAsFloat();  // Returns float
-$unit = $qtySegment->measureUnit();          // e.g., 'PCE', 'KGM'
-
-// PRI (Price) - With type conversion
-$priSegment = $lineItem->segmentByTagAndSubId('PRI', 'AAA');
-$price = $priSegment->priceAsFloat();  // Returns float
-
-// DTM (Date/Time) - With date parsing
-$dtmSegment = $message->segmentByTagAndSubId('DTM', '10');
-$dateTime = $dtmSegment->asDateTime();  // Returns DateTimeImmutable or null
-
-// Message type detection
-$messageType = $message->messageType();  // Returns 'ORDERS', 'INVOIC', etc.
+$result->transactionMessages();  // list<TransactionMessage> — the UNH…UNT blocks
+$result->functionalGroups();     // list<FunctionalGroup>     — UNG…UNE groups, if any
+$result->globalSegments();       // TransactionMessage        — file-level UNA/UNB/UNZ
 ```
 
-### Accessing Segments
+A **message** starts at `UNH` and ends at `UNT`; an **interchange** wraps messages between
+`UNB` and `UNZ`, optionally grouped by `UNG`/`UNE`. Invalid input throws
+[`InvalidFile`](#error-handling).
+
+### Streaming large files
+
+Stream messages one at a time in **bounded memory** — ideal for large interchanges. A
+leading `UNA` service-string advice (custom separators/release char) is honoured
+automatically:
 
 ```php
-// Direct lookup by tag and subId (fastest)
-$nadSegment = $message->segmentByTagAndSubId('NAD', 'BY');
+use EdifactParser\StreamingParser;
 
-// Get all segments with the same tag
-$allNadSegments = $message->segmentsByTag('NAD');
-
-// Always null-check when accessing segments
-if ($nadSegment) {
-    // Use typed accessors for cleaner code
-    $companyName = $nadSegment->name();
-    // Or access raw values directly if needed
-    $companyName = $nadSegment->rawValues()[4];
+foreach (StreamingParser::createWithDefaultSegments()->parseFile('/path/to/large.edi') as $message) {
+    process($message); // only one message is held in memory at a time
 }
 ```
 
-### Fluent Query API
+---
 
-Chain filters and transformations for powerful segment querying:
+## 📖 Reading data
+
+### Typed accessors
+
+Typed segments expose their fields as methods — self-documenting and IDE-friendly:
 
 ```php
-// Find all NAD segments with subId 'CN'
-$consignees = $message->query()
-    ->withTag('NAD')
-    ->withSubId('CN')
-    ->get();
+// NAD (Name & Address)
+$nad->partyQualifier();  // 'BY'
+$nad->name();            // 'ACME Corporation'
+$nad->street();
+$nad->city();
+$nad->postalCode();
+$nad->countryCode();     // ISO 3166-1 alpha-2
 
-// Find first supplier address
-$supplier = $message->query()
-    ->withTag('NAD')
-    ->withSubId('SU')
-    ->first();
+// QTY / PRI — with numeric conversion
+$qty->quantityAsFloat(); // float
+$qty->measureUnit();     // 'PCE', 'KGM', …
+$pri->priceAsFloat();    // float
 
-// Get all NAD and LIN segments
-$segments = $message->query()
-    ->withTags(['NAD', 'LIN'])
-    ->get();
+// DTM — with date parsing
+$dtm->asDateTime();      // DateTimeImmutable|null
+```
 
-// Filter by type
-$addresses = $message->query()
-    ->ofType(NADNameAddress::class)
-    ->get();
+Every segment also exposes the raw structure when you need it:
 
-// Custom filtering with predicates
-$highValueItems = $message->query()
-    ->withTag('PRI')
-    ->where(fn($s) => $s->priceAsFloat() > 1000)
-    ->get();
+```php
+$segment->tag();          // 'NAD'
+$segment->subId();        // 'BY'
+$segment->rawValues();    // ['NAD', 'BY', ['0410106314', '160', 'Z12'], …]
+```
 
-// Chain multiple filters
-$germanSuppliers = $message->query()
-    ->withTag('NAD')
-    ->withSubId('SU')
+### Accessing segments
+
+```php
+// Fastest single lookup, by tag + subId
+$nad = $message->segmentByTagAndSubId('NAD', 'BY'); // ?SegmentInterface
+
+// All segments with a tag (keyed by subId)
+$allNad = $message->segmentsByTag('NAD');
+
+$nad?->name(); // always null-check — not every segment exists in every message
+```
+
+### Fluent query API
+
+Chain filters and transformations over **every** segment (order preserved, duplicates
+included):
+
+```php
+// Filter
+$message->query()->withTag('NAD')->withSubId('CN')->get();
+$message->query()->withTags(['NAD', 'LIN'])->get();
+$message->query()->ofType(NADNameAddress::class)->get();
+$message->query()->withTag('PRI')->where(fn($s) => $s->priceAsFloat() > 1000)->get();
+
+// Chain + paginate
+$message->query()
+    ->withTag('NAD')->withSubId('SU')
     ->where(fn($s) => $s->countryCode() === 'DE')
-    ->limit(10)
-    ->get();
+    ->limit(10)->skip(0)->get();
 
-// Transform results
-$companyNames = $message->query()
-    ->withTag('NAD')
-    ->map(fn($s) => $s->name());
+// Transform / inspect
+$message->query()->withTag('NAD')->map(fn($s) => $s->name());
+$message->query()->withTag('NAD')->first();   // ?SegmentInterface
+$message->query()->withTag('NAD')->count();
+$message->query()->withTag('UNS')->exists();  // bool
+```
 
-// Check existence
-if ($message->query()->withTag('UNS')->exists()) {
-    // Process summary section...
+> `query()` and `$message->segments()` return **every** segment in original order,
+> duplicates included. The keyed lookups (`segmentByTagAndSubId()`, `allSegments()`) index
+> by tag + subId and keep the **last** occurrence — use the query API when duplicates matter.
+
+### Line items
+
+Line items group each `LIN` with its related detail segments (`QTY`, `PRI`, `PIA`, …) —
+ideal for orders and invoices:
+
+```php
+foreach ($message->lineItems() as $lineItem) {
+    $lin = $lineItem->segmentByTagAndSubId('LIN', '1');
+    $qty = $lineItem->segmentByTagAndSubId('QTY', '21');
+
+    echo $lin?->itemNumber();      // product identifier
+    echo $qty?->quantityAsFloat();
 }
-
-// Count matching segments
-$nadCount = $message->query()->withTag('NAD')->count();
 ```
 
-> `query()` and `$message->segments()` preserve **every** segment in original order,
-> including duplicates that share a tag + subId. The keyed lookups
-> (`segmentByTagAndSubId()`, `allSegments()`) index by tag + subId and keep the last
-> occurrence — use the query API when duplicates matter.
+### Hierarchical context segments
 
-### Type-Safe Qualifiers with Constants
-
-Use predefined constants for common EDIFACT qualifiers to avoid magic strings and improve IDE autocomplete:
+Context segments preserve parent → child relationships (e.g. `NAD → CTA → COM`):
 
 ```php
-use EdifactParser\Segments\Qualifier\NADQualifier;
-use EdifactParser\Segments\Qualifier\QTYQualifier;
-use EdifactParser\Segments\Qualifier\PRIQualifier;
-
-// NAD qualifiers - party roles
-$buyer = NADQualifier::BUYER;           // 'BY'
-$supplier = NADQualifier::SUPPLIER;     // 'SU'
-$consignee = NADQualifier::CONSIGNEE;   // 'CN'
-$carrier = NADQualifier::CARRIER;       // 'CA'
-
-// QTY qualifiers - quantity types
-$ordered = QTYQualifier::ORDERED;       // '21'
-$dispatched = QTYQualifier::DISPATCHED; // '12'
-$invoiced = QTYQualifier::INVOICED;     // '47'
-
-// PRI qualifiers - price types
-$netPrice = PRIQualifier::CALCULATION_NET;  // 'AAA'
-$grossPrice = PRIQualifier::GROSS;          // 'AAF'
-$listPrice = PRIQualifier::LIST;            // 'LIS'
-
-// Use in queries
-$buyers = $message->query()
-    ->withTag('NAD')
-    ->where(fn($s) => $s->partyQualifier() === NADQualifier::BUYER)
-    ->get();
-
-// Use in match expressions
-$role = match ($segment->partyQualifier()) {
-    NADQualifier::BUYER => 'Customer',
-    NADQualifier::SUPPLIER => 'Vendor',
-    default => 'Unknown'
-};
+foreach ($message->contextSegments() as $context) {
+    if ($context->tag() === 'NAD') {
+        foreach ($context->children() as $child) {
+            // $child->tag(), $child->rawValues(), …
+        }
+    }
+}
 ```
 
-Available qualifier constants:
-- `NADQualifier` - Party roles (BY, SU, CN, CZ, DP, IV, PR, CA, FW, MF, UC, WH)
-- `QTYQualifier` - Quantity types (1, 3, 11, 12, 21, 33, 46, 47, 48, 192)
-- `PRIQualifier` - Price types (AAA, AAB, AAE, AAF, AAG, CAL, CT, DIS, LIS, MIN, RRP)
-- `DTMQualifier` - Date/time types (137, 2, 3, 4, 10, 11, 13, etc.)
-- `RFFQualifier` - Reference types (ON, IV, DQ, CU, SRN, CT, POR, etc.)
+### Interchange & envelope metadata
 
-### Building Segments with Fluent Builders
-
-Create segment objects programmatically with a fluent, type-safe API:
+Every envelope segment exposes typed metadata:
 
 ```php
-use EdifactParser\Segments\NADNameAddress;
-use EdifactParser\Segments\QTYQuantity;
-use EdifactParser\Segments\PRIPrice;
-use EdifactParser\Segments\Qualifier\NADQualifier;
-use EdifactParser\Segments\Qualifier\QTYQualifier;
-use EdifactParser\Segments\Qualifier\PRIQualifier;
-
-// Build NAD segment
-$nadSegment = NADNameAddress::builder()
-    ->withQualifier(NADQualifier::BUYER)
-    ->withPartyId('123456')
-    ->withName('ACME Corporation')
-    ->withStreet('123 Main Street')
-    ->withCity('Springfield')
-    ->withPostalCode('12345')
-    ->withCountryCode('US')
-    ->build();
-
-// Build QTY segment
-$qtySegment = QTYQuantity::builder()
-    ->withQualifier(QTYQualifier::ORDERED)
-    ->withQuantity(100)
-    ->withMeasureUnit('PCE')
-    ->build();
-
-// Build PRI segment
-$priSegment = PRIPrice::builder()
-    ->withQualifier(PRIQualifier::CALCULATION_NET)
-    ->withPrice(99.99)
-    ->withPriceType('CT')
-    ->build();
-
-// Use built segments
-echo $nadSegment->name();           // 'ACME Corporation'
-echo $qtySegment->quantityAsFloat(); // 100.0
-echo $priSegment->priceAsFloat();    // 99.99
-```
-
-### Writing / Serializing to EDIFACT
-
-Render segments back into an EDIFACT string — the inverse of parsing. Combine with
-the builders to generate messages, or re-serialize parsed segments:
-
-```php
-use EdifactParser\Serializer\EdifactSerializer;
-use EdifactParser\Serializer\UnaSeparators;
-
-$serializer = new EdifactSerializer();
-
-// Serialize built segments (separators and the release char are handled for you)
-echo $serializer->serializeSegment($nadSegment);
-// NAD+BY+123456++ACME Corporation+123 Main Street+Springfield++12345+US'
-
-// Serialize a whole message, optionally prepending the UNA service-string advice
-$edi = $serializer->serialize([$unh, $bgm, $nadSegment, $unt], includeUna: true);
-
-// Custom delimiters
-$custom = new EdifactSerializer(new UnaSeparators(component: '#', element: '|'));
-```
-
-#### Assembling a full interchange
-
-`InterchangeBuilder` assembles a complete UNB…UNZ interchange and fills in the UNT
-segment counts and the UNZ control count automatically:
-
-```php
-use EdifactParser\Writer\InterchangeBuilder;
-use EdifactParser\Writer\MessageBuilder;
-use EdifactParser\Segments\NADNameAddress;
-use EdifactParser\Segments\Qualifier\NADQualifier;
-
-$edi = InterchangeBuilder::create('SENDER', 'RECIPIENT', 'REF1')
-    ->preparedAt('200101', '1200')
-    ->addMessage(
-        MessageBuilder::create('1', 'ORDERS')
-            ->addSegment(NADNameAddress::builder()->withQualifier(NADQualifier::BUYER)->withName('ACME')->build())
-    )
-    ->toString(); // ready-to-send EDIFACT string
-```
-
-### Character Sets
-
-The parser reads raw bytes. Decode non-ASCII values to UTF-8 using the interchange
-syntax identifier:
-
-```php
-use EdifactParser\Charset\Charset;
-
 $unb = $result->globalSegments()->segmentByTagAndSubId('UNB', 'UNOC');
-$encoding = $unb->characterEncoding();               // 'ISO-8859-1'
-$name = Charset::toUtf8($nad->name(), $unb->syntaxIdentifier());
+$unb?->syntaxIdentifier();            // 'UNOC'
+$unb?->senderIdentification();
+$unb?->recipientIdentification();
+$unb?->preparationDate();             // 'YYMMDD'
+$unb?->interchangeControlReference();
+
+$unz = $result->globalSegments()->segmentByTagAndSubId('UNZ', '1');
+$unz?->interchangeControlCount();     // number of messages/groups
+
+$unt = $message->query()->withTag('UNT')->first(); // segmentCount(), messageReferenceNumber()
+$bgm = $message->query()->withTag('BGM')->first();  // documentCode() e.g. '220', documentNumber()
 ```
 
-### Message Statistics and Analysis
+### Functional groups (UNG/UNE)
 
-Analyze EDIFACT messages to extract statistics and insights:
+When an interchange wraps messages in `UNG…UNE` groups, read them directly. Interchanges
+without groups return an empty list — messages stay available flat via
+`transactionMessages()`:
+
+```php
+foreach ($result->functionalGroups() as $group) {
+    $group->messageType();               // e.g. 'ORDERS' (from the UNG)
+    $group->header()->groupReference();
+    $group->trailer()?->controlCount();
+
+    foreach ($group->messages() as $message) {
+        // …
+    }
+}
+```
+
+### Statistics & analysis
+
+`MessageAnalyzer` extracts counts and aggregates:
 
 ```php
 use EdifactParser\Analysis\MessageAnalyzer;
 
 $analyzer = new MessageAnalyzer($message);
 
-// Basic counts
-$type = $analyzer->getType();              // 'ORDERS', 'INVOIC', etc.
-$totalSegments = $analyzer->segmentCount(); // Total number of segments
-$lineItems = $analyzer->lineItemCount();   // Number of line items
-$addresses = $analyzer->addressCount();    // Number of NAD segments
-
-// Segment-specific counts
-$qtyCount = $analyzer->segmentCountByTag('QTY');
-$priCount = $analyzer->segmentCountByTag('PRI');
-
-// Extract unique values
-$partyQualifiers = $analyzer->getPartyQualifiers();  // ['BY', 'SU', 'CN']
-$currencies = $analyzer->getCurrencies();            // ['EUR', 'USD']
-
-// Calculate totals
-$totalAmount = $analyzer->calculateTotalAmount();      // Sum all MOA segments
-$taxableAmount = $analyzer->calculateTotalAmount('125'); // Sum MOA with qualifier 125
-$totalQty = $analyzer->calculateTotalQuantity();       // Sum all QTY segments
-$orderedQty = $analyzer->calculateTotalQuantity('21'); // Sum ordered quantities
-
-// Check for specific segments
-if ($analyzer->hasSegment('UNS')) {
-    // Message has summary section
-}
-if ($analyzer->hasSummarySection()) {
-    // Shortcut for UNS check
-}
-
-// Get comprehensive summary
-$summary = $analyzer->getSummary();
-/*
-[
-    'message_type' => 'ORDERS',
-    'total_segments' => 42,
-    'line_items' => 5,
-    'addresses' => 3,
-    'party_qualifiers' => ['BY', 'SU', 'CN'],
-    'currencies' => ['EUR'],
-    'segment_counts' => [
-        'NAD' => 3,
-        'LIN' => 5,
-        'QTY' => 5,
-        'PRI' => 5,
-        'MOA' => 2,
-        'DTM' => 4,
-    ],
-]
-*/
+$analyzer->getType();                     // 'ORDERS'
+$analyzer->segmentCount();
+$analyzer->lineItemCount();
+$analyzer->segmentCountByTag('QTY');
+$analyzer->getPartyQualifiers();          // ['BY', 'SU', 'CN'] (unique)
+$analyzer->getCurrencies();               // ['EUR']
+$analyzer->calculateTotalAmount('125');   // sum MOA with qualifier 125
+$analyzer->calculateTotalQuantity('21');  // sum ordered quantities
+$analyzer->hasSummarySection();           // UNS present?
+$analyzer->getSummary();                  // array of the above
 ```
 
-### Working with Line Items
+### Qualifier constants
 
-Line items group LIN segments with their related data (QTY, PRI, PIA, etc.) — useful for processing orders and invoices:
+Avoid magic strings with typed qualifier catalogs (IDE autocomplete, usable in `match`):
 
 ```php
-foreach ($message->lineItems() as $lineItem) {
-    $linSegment = $lineItem->segmentByTagAndSubId('LIN', '1');
-    $qtySegment = $lineItem->segmentByTagAndSubId('QTY', '21');
+use EdifactParser\Segments\Qualifier\NADQualifier;
 
-    $productId = $linSegment->rawValues()[3];
-    $quantity = $qtySegment->rawValues()[1][0];
-}
+$message->query()
+    ->withTag('NAD')
+    ->where(fn($s) => $s->partyQualifier() === NADQualifier::BUYER) // 'BY'
+    ->get();
 ```
 
-### Navigating Hierarchical Segments
+| Class | Covers |
+|-------|--------|
+| `NADQualifier` | Party roles — `BY`, `SU`, `CN`, `CZ`, `DP`, `IV`, `PR`, `CA`, `FW`, `MF`, `UC`, `WH` |
+| `QTYQualifier` | Quantity types — `1`, `3`, `11`, `12`, `21`, `33`, `46`, `47`, `48`, `192` |
+| `PRIQualifier` | Price types — `AAA`, `AAB`, `AAE`, `AAF`, `AAG`, `CAL`, `CT`, `DIS`, `LIS`, `MIN`, `RRP` |
+| `DTMQualifier` | Date/time types — `137`, `2`, `3`, `4`, `10`, `11`, `13`, … |
+| `RFFQualifier` | Reference types — `ON`, `IV`, `DQ`, `CU`, `SRN`, `CT`, `POR`, … |
 
-Context segments maintain parent-child relationships (e.g., NAD → CTA → COM):
+### Character sets
 
-```php
-foreach ($message->contextSegments() as $context) {
-    if ($context->tag() === 'NAD') {
-        $address = $context->segment()->rawValues();
-
-        foreach ($context->children() as $child) {
-            if ($child->tag() === 'CTA') {
-                $contactName = $child->rawValues()[2];
-            }
-        }
-    }
-}
-```
-
-### Streaming Large Files
-
-For large interchanges, stream messages one at a time in bounded memory instead of
-building the whole result up front:
+The parser reads raw bytes. Decode non-ASCII values to UTF-8 from the interchange's syntax
+identifier:
 
 ```php
-use EdifactParser\StreamingParser;
+use EdifactParser\Charset\Charset;
 
-foreach (StreamingParser::createWithDefaultSegments()->parseFile('/path/to/large.edi') as $message) {
-    // Only one message is held in memory at a time
-    process($message);
-}
-```
-
-### Global vs Transaction Segments
-
-```php
-// Global segments (file-level): UNA, UNB, UNZ
-$globalSegments = $result->globalSegments();
-
-// Transaction messages (UNH...UNT blocks)
-foreach ($result->transactionMessages() as $message) {
-    // Process each message...
-}
-```
-
-### Interchange & Envelope Metadata
-
-The envelope segments expose typed accessors for their metadata:
-
-```php
-// UNB interchange header (from the global segments)
 $unb = $result->globalSegments()->segmentByTagAndSubId('UNB', 'UNOC');
-$unb->syntaxIdentifier();            // 'UNOC' (character set)
-$unb->senderIdentification();        // interchange sender
-$unb->recipientIdentification();     // interchange recipient
-$unb->preparationDate();             // 'YYMMDD'
-$unb->interchangeControlReference(); // sender-assigned reference
-
-// UNZ interchange trailer
-$unz = $result->globalSegments()->segmentByTagAndSubId('UNZ', '2');
-$unz->interchangeControlCount();     // number of messages/groups
-$unz->interchangeControlReference(); // matches the UNB
-
-// UNT trailer and BGM, per message
-$unt = $message->query()->withTag('UNT')->first();
-$unt->segmentCount();                // segment count of the message
-$bgm = $message->query()->withTag('BGM')->first();
-$bgm->documentCode();                // e.g. '220' (order), '380' (invoice)
-$bgm->documentNumber();
+$unb?->characterEncoding();                              // 'ISO-8859-1'
+$name = Charset::toUtf8($nad->name(), $unb->syntaxIdentifier());
 ```
 
-> `StreamingParser` reads a leading `UNA` service-string advice and honours its
-> custom separators and release character automatically.
+`UNOA`/`UNOB` → ASCII, `UNOC`–`UNOK` → ISO-8859-*, `UNOY` → UTF-8.
 
-### Functional Groups (UNG/UNE)
+### Built-in segments
 
-When an interchange wraps messages in `UNG...UNE` functional groups, access them
-directly. Interchanges without groups return an empty list — messages remain
-available flat via `transactionMessages()`:
+26 segments are typed and registered by default:
+
+- **Envelope / service:** `UNB`, `UNG`, `UNH`, `UNS`, `UNT`, `UNE`, `UNZ`
+- **Header:** `BGM`, `DTM`, `RFF`, `NAD`, `CUX`, `TDT`, `LOC`, `FTX`
+- **Detail / summary:** `LIN`, `PIA`, `IMD`, `QTY`, `PRI`, `MEA`, `PAC`, `GID`, `MOA`, `PCI`, `CNT`
+
+Any other tag parses as an `UnknownSegment` (readable via `rawValues()`); add your own typed
+class in a few lines — see [Extending](#-extending).
+
+---
+
+## 📤 Writing EDIFACT
+
+### Build individual segments
+
+Fluent, type-safe builders produce segment objects:
 
 ```php
-foreach ($result->functionalGroups() as $group) {
-    $group->messageType();              // e.g. 'ORDERS' (from the UNG)
-    $group->header()->groupReference(); // functional group reference number
-    $group->trailer()?->controlCount(); // message count from the UNE
+use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\Qualifier\NADQualifier;
 
-    foreach ($group->messages() as $message) {
-        // Process each message in this group...
-    }
-}
+$nad = NADNameAddress::builder()
+    ->withQualifier(NADQualifier::BUYER)
+    ->withPartyId('123456')
+    ->withName('ACME Corporation')
+    ->withCity('Springfield')
+    ->withCountryCode('US')
+    ->build();
+```
+
+`NADNameAddress`, `QTYQuantity` and `PRIPrice` provide `::builder()`.
+
+### Serialize segments to a string
+
+`EdifactSerializer` is the inverse of parsing — it round-trips a parsed interchange
+byte-for-byte and escapes separators/release chars for you:
+
+```php
+use EdifactParser\Serializer\EdifactSerializer;
+use EdifactParser\Serializer\UnaSeparators;
+
+$serializer = new EdifactSerializer();
+echo $serializer->serializeSegment($nad);
+// NAD+BY+123456++ACME Corporation++Springfield+++US'
+
+$edi = $serializer->serialize([$unh, $bgm, $nad, $unt], includeUna: true);
+
+// Custom delimiters
+new EdifactSerializer(new UnaSeparators(component: '#', element: '|'));
+```
+
+### Assemble a full interchange
+
+`InterchangeBuilder` writes a complete `UNB…UNZ` interchange and **fills in the UNT segment
+counts and the UNZ control count automatically**:
+
+```php
+use EdifactParser\Writer\InterchangeBuilder;
+use EdifactParser\Writer\MessageBuilder;
+
+$edi = InterchangeBuilder::create('SENDER', 'RECIPIENT', 'REF1')
+    ->preparedAt('200101', '1200')
+    ->addMessage(
+        MessageBuilder::create('1', 'ORDERS')
+            ->addSegment($bgm)
+            ->addSegment($nad)
+    )
+    ->toString(); // ready-to-send EDIFACT string
 ```
 
 ---
 
-### Validation / Conformance
+## ✅ Validation
 
-Check a message against a pluggable rule set (required segments + cardinality). The
-validator never throws — an empty list means the message conforms:
+Check a message against a pluggable rule set — required segments, cardinality, and relative
+order. The validator never throws; an empty result means the message conforms:
 
 ```php
 use EdifactParser\Validation\MessageRuleSet;
@@ -509,92 +408,70 @@ foreach ($validator->validate($message, $rules) as $violation) {
     echo "{$violation->segmentTag()}: {$violation->message()}\n";
 }
 
-if ($validator->isValid($message, $rules)) {
-    // conforms to the rule set
-}
+$validator->isValid($message, $rules); // bool
 ```
 
-Ready-to-use rule sets for common message types are provided as starting points:
+Ready-made rule sets for common message types are provided as starting points:
 
 ```php
 use EdifactParser\Validation\MessageRuleSets;
 
-$validator->validate($message, MessageRuleSets::orders());  // or invoic(), desadv(), iftmin()
+$validator->validate($message, MessageRuleSets::orders()); // orders(), invoic(), desadv(), iftmin()
 ```
 
 ---
 
-## 🔧 Extending with Custom Segments
+## 🔧 Extending
 
-### Step 1: Create Your Segment Class
+### Custom segments
+
+Extend `AbstractSegment` and register your class. The shared accessor helpers
+(`element()`, `component()`, `firstComponent()`) safely read simple and composite elements:
 
 ```php
-<?php
 namespace YourApp\Segments;
 
 use EdifactParser\Segments\AbstractSegment;
 
 /** @psalm-immutable */
-final class LOCLocation extends AbstractSegment
+final class EQDEquipmentDetails extends AbstractSegment
 {
     public function tag(): string
     {
-        return 'LOC';
+        return 'EQD';
     }
 
-    // Optional: Add helper methods
-    public function locationType(): string
+    // EQD+CN+ABCU1234567+22G1
+    public function equipmentQualifier(): string
     {
-        return $this->rawValues()[1] ?? '';
+        return $this->element(1);        // 'CN'
     }
 
-    public function locationCode(): string
+    public function equipmentId(): string
     {
-        return $this->rawValues()[2][0] ?? '';
+        return $this->firstComponent(2); // 'ABCU1234567'
     }
 }
 ```
 
-### Step 2: Register with SegmentFactory
-
 ```php
+use EdifactParser\EdifactParser;
 use EdifactParser\Segments\SegmentFactory;
-use YourApp\Segments\LOCLocation;
+use YourApp\Segments\EQDEquipmentDetails;
 
 $factory = SegmentFactory::withSegments([
-    ...SegmentFactory::DEFAULT_SEGMENTS,  // Keep defaults
-    'LOC' => LOCLocation::class,          // Add yours
+    ...SegmentFactory::DEFAULT_SEGMENTS, // keep the 26 built-ins
+    'EQD' => EQDEquipmentDetails::class, // add yours
 ]);
 
 $parser = new EdifactParser($factory);
 ```
 
-### Step 3: Write Tests
-
-```php
-use PHPUnit\Framework\TestCase;
-use YourApp\Segments\LOCLocation;
-
-final class LOCLocationTest extends TestCase
-{
-    /** @test */
-    public function it_parses_location_data(): void
-    {
-        $raw = ['LOC', '11', ['DEHAM', '139', '6'], 'Hamburg'];
-        $segment = new LOCLocation($raw);
-
-        self::assertEquals('LOC', $segment->tag());
-        self::assertEquals('11', $segment->subId());
-        self::assertEquals('DEHAM', $segment->locationCode());
-    }
-}
-```
-
-### Custom Grouping Rules
+### Custom grouping rules
 
 Context hierarchies and line-item boundaries are driven by `GroupingRules`. Pass a
-customized instance to the parser to change which tags open a context, attach as
-children, or close a line-item section:
+customized instance to change which tags open a context, attach as children, or close a
+line-item section:
 
 ```php
 use EdifactParser\EdifactParser;
@@ -602,34 +479,28 @@ use EdifactParser\GroupingRules;
 use EdifactParser\Segments\SegmentFactory;
 
 $rules = GroupingRules::default()
-    ->withContextTags(['NAD', 'LIN'])           // parents that open a context
-    ->withChildTags(['CTA', 'COM', 'DTM'])       // segments attached to the context
-    ->withBreakLineItemTags(['UNS', 'CNT', 'UNT']); // tags that end the detail section
+    ->withContextTags(['NAD', 'LIN'])
+    ->withChildTags(['CTA', 'COM', 'DTM'])
+    ->withBreakLineItemTags(['UNS', 'CNT', 'UNT']);
 
 $parser = new EdifactParser(SegmentFactory::withDefaultSegments(), $rules);
 ```
+
+More examples in [`example/`](example): [extracting data](example/extracting-data.php),
+[query filtering](example/query-filtering.php),
+[printing segments](example/printing-segments.php),
+[context segments](example/context-segments.php).
 
 ---
 
 ## 🐛 Debugging
 
-### Segment Inspection
-
 ```php
-// Convert segment to array
-$array = $segment->toArray();
-// Returns: ['tag' => 'NAD', 'subId' => 'CN', 'rawValues' => [...]]
-
-// Convert segment to JSON
-$json = $segment->toJson();
-// Pretty-printed JSON output
-
-// Detect message type
-$type = $message->messageType();
-echo "Processing {$type} message";  // e.g., "Processing ORDERS message"
+$segment->toArray(); // ['tag' => 'NAD', 'subId' => 'CN', 'rawValues' => [...]]
+$segment->toJson();  // pretty-printed JSON
 ```
 
-### Enhanced Error Messages
+### Error handling
 
 ```php
 use EdifactParser\Exception\InvalidFile;
@@ -637,75 +508,36 @@ use EdifactParser\Exception\InvalidFile;
 try {
     $result = $parser->parseFile('invalid.edi');
 } catch (InvalidFile $e) {
-    // Get detailed error information
-    $errors = $e->getErrors();
-    $context = $e->getContext();
-
-    // Exception message includes formatted context
-    echo $e->getMessage();
+    $e->getErrors();   // parser errors
+    $e->getContext();  // extra context, formatted into getMessage()
 }
 ```
 
 ---
 
-## ✅ Best Practices
-
-### Do
-
-- ✅ Use typed accessors (e.g., `$nad->name()`) instead of raw array indices
-- ✅ Always null-check segments — not all segments exist in every message
-- ✅ Use `segmentByTagAndSubId()` for single lookups, `segmentsByTag()` for multiple
-- ✅ Use type conversion methods (`quantityAsFloat()`, `asDateTime()`) when available
-- ✅ Use line items for order/invoice processing — cleaner than manual grouping
-- ✅ Add helper methods to custom segments for domain-specific logic
-
-### Avoid
-
-- ❌ Don't use magic array indices when typed accessors are available
-- ❌ Don't assume segments exist — wrap in conditionals
-- ❌ Don't hardcode subIds — they vary by message type
-- ❌ Don't modify library segment classes — extend with custom segments instead
-- ❌ Don't parse raw values without checking types
-
----
-
 ## 🛠️ Development
 
-### Commands
-
 ```bash
-composer install                        # Install dependencies
-
-# Testing
-composer test                           # Run all tests
-
-# Code Quality
-composer quality                        # Run all checks
-composer csfix                          # Fix code style
-composer psalm                          # Static analysis (Psalm)
-composer phpstan                        # Static analysis (PHPStan)
-composer rector                         # Apply refactoring rules
+composer install
+composer test       # PHPUnit (unit + functional)
+composer quality    # PHP-CS-Fixer, Psalm, PHPStan, Rector
+composer csfix      # apply code-style fixes
 ```
 
-> **Local toolchain:** the pinned Psalm (`vimeo/psalm ^4.30`) runs on **PHP ≤ 8.3** —
-> run it under 8.3 if your CLI is newer (e.g. `/path/to/php8.3 vendor/bin/psalm`). On
-> PHP > 8.3, PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`. CI runs the full gate on
-> the supported versions, so `composer quality` there is authoritative.
+- PHP 8.0+, strict types, PSR-4. Type hints and tests required for new functionality.
+- All code must pass PHP-CS-Fixer, Psalm, PHPStan and Rector (CI is authoritative).
 
-### Code Standards
-
-- PHP 8.0+, strict types, PSR-4 autoloading
-- All code must pass PHP-CS-Fixer, Psalm, PHPStan, and Rector
-- Type hints required for all methods
-- Tests required for new functionality
+> **Local toolchain note:** the pinned Psalm (`vimeo/psalm ^4.30`) runs on **PHP ≤ 8.3** —
+> run it under 8.3 if your CLI is newer. On PHP > 8.3, PHP-CS-Fixer needs
+> `PHP_CS_FIXER_IGNORE_ENV=1`.
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions of all kinds—bug fixes, ideas, and improvements.
+Contributions of all kinds are welcome — bug fixes, ideas, and improvements.
 
-- 🐛 [Report issues](https://github.com/Chemaclass/EdifactParser/issues)
-- 🔧 [Submit a pull request](https://github.com/Chemaclass/EdifactParser/pulls)
+- 🐛 [Report an issue](https://github.com/Chemaclass/EdifactParser/issues)
+- 🔧 [Open a pull request](https://github.com/Chemaclass/EdifactParser/pulls)
 
 📋 See the [contributing guide](.github/CONTRIBUTING.md) to get started.
