@@ -509,8 +509,7 @@
 }
 
 <span class="tc">// Register alongside the 26 built-ins</span>
-<span class="tv">$factory</span> = SegmentFactory::<span class="tf">withSegments</span>([
-    ...SegmentFactory::<span class="tp">DEFAULT_SEGMENTS</span>,
+<span class="tv">$factory</span> = SegmentFactory::<span class="tf">withAdditionalSegments</span>([
     <span class="ts">'EQD'</span> =&gt; EQDEquipmentDetails::<span class="tk">class</span>,
 ]);</pre>
     </div>

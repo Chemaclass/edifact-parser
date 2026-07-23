@@ -85,6 +85,18 @@ final class SegmentFactory implements SegmentFactoryInterface
         return new self(self::DEFAULT_SEGMENTS);
     }
 
+    /**
+     * The default segments plus the given ones. A custom class registered under a
+     * default tag overrides the default. Use this to add custom segments without
+     * having to re-declare the whole default map.
+     *
+     * @param  array<string,string>  $segments
+     */
+    public static function withAdditionalSegments(array $segments): self
+    {
+        return new self($segments + self::DEFAULT_SEGMENTS);
+    }
+
     public function createSegmentFromArray(array $rawArray): SegmentInterface
     {
         $tag = $rawArray[0] ?? null;
