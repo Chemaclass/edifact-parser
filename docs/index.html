@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDIFACT Parser — PHP toolkit for UN/EDIFACT</title>
+<meta name="description" content="A complete PHP toolkit for UN/EDIFACT — read, write, validate, and stream EDI interchanges with a typed, object-oriented API.">
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --bg-elev: #ffffff;
+    --bg-code: #0f1523;
+    --fg: #1a2233;
+    --fg-muted: #5b6577;
+    --border: #e4e8f0;
+    --accent: #4f46e5;
+    --accent-2: #7c5cff;
+    --accent-soft: #eef0ff;
+    --tag: #b45309;
+    --tag-bg: #fef3c7;
+    --val: #0369a1;
+    --val-bg: #e0f2fe;
+    --ok: #059669;
+    --shadow: 0 1px 2px rgba(20,30,60,.06), 0 8px 24px rgba(20,30,60,.06);
+    --radius: 14px;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0e17;
+      --bg-elev: #121826;
+      --bg-code: #0b1120;
+      --fg: #e6eaf2;
+      --fg-muted: #97a1b5;
+      --border: #232b3d;
+      --accent: #8b83ff;
+      --accent-2: #b39dff;
+      --accent-soft: #1a1d3a;
+      --tag: #fbbf24;
+      --tag-bg: #3a2c08;
+      --val: #7dd3fc;
+      --val-bg: #0c2a3f;
+      --ok: #34d399;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a0e17; --bg-elev: #121826; --bg-code: #0b1120; --fg: #e6eaf2;
+    --fg-muted: #97a1b5; --border: #232b3d; --accent: #8b83ff; --accent-2: #b39dff;
+    --accent-soft: #1a1d3a; --tag: #fbbf24; --tag-bg: #3a2c08; --val: #7dd3fc;
+    --val-bg: #0c2a3f; --ok: #34d399;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.4);
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f8fb; --bg-elev: #ffffff; --bg-code: #0f1523; --fg: #1a2233;
+    --fg-muted: #5b6577; --border: #e4e8f0; --accent: #4f46e5; --accent-2: #7c5cff;
+    --accent-soft: #eef0ff; --tag: #b45309; --tag-bg: #fef3c7; --val: #0369a1;
+    --val-bg: #e0f2fe; --ok: #059669;
+    --shadow: 0 1px 2px rgba(20,30,60,.06), 0 8px 24px rgba(20,30,60,.06);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--sans); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 0 20px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3 { line-height: 1.2; letter-spacing: -0.02em; }
+  code { font-family: var(--mono); }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: saturate(180%) blur(12px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 18px; height: 58px; }
+  .brand { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.02em; }
+  .brand .box { font-size: 18px; }
+  nav .links { margin-left: auto; display: flex; gap: 20px; align-items: center; }
+  nav .links a { color: var(--fg-muted); font-size: 14px; font-weight: 500; }
+  nav .links a:hover { color: var(--fg); text-decoration: none; }
+  .theme-btn {
+    background: none; border: 1px solid var(--border); color: var(--fg-muted);
+    width: 34px; height: 34px; border-radius: 9px; cursor: pointer; font-size: 15px;
+    display: grid; place-items: center;
+  }
+  .theme-btn:hover { color: var(--fg); border-color: var(--accent); }
+  @media (max-width: 720px) { nav .links a:not(.ghstar) { display: none; } }
+
+  /* Hero */
+  .hero { padding: 72px 0 48px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -50% 0 auto 0; height: 460px;
+    background: radial-gradient(60% 60% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero .badge-pill {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
+    color: var(--accent); background: var(--accent-soft); padding: 6px 14px; border-radius: 100px;
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); margin-bottom: 22px;
+  }
+  .hero h1 { font-size: clamp(34px, 6vw, 56px); margin: 0 0 18px; font-weight: 800; }
+  .hero h1 .grad {
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lead { font-size: clamp(17px, 2.4vw, 20px); color: var(--fg-muted); max-width: 620px; margin: 0 auto 30px; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 11px;
+    font-weight: 600; font-size: 15px; border: 1px solid transparent; cursor: pointer;
+  }
+  .btn-primary { background: linear-gradient(120deg, var(--accent), var(--accent-2)); color: #fff; }
+  .btn-primary:hover { text-decoration: none; filter: brightness(1.08); }
+  .btn-ghost { background: var(--bg-elev); border-color: var(--border); color: var(--fg); }
+  .btn-ghost:hover { text-decoration: none; border-color: var(--accent); }
+  .install {
+    display: inline-flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 14px;
+    background: var(--bg-code); color: #e6eaf2; padding: 12px 16px; border-radius: 11px;
+    box-shadow: var(--shadow);
+  }
+  .install .dollar { color: #6b7688; user-select: none; }
+  .install button {
+    background: none; border: 1px solid #2a3348; color: #8b94a8; border-radius: 7px;
+    padding: 4px 8px; cursor: pointer; font-size: 12px;
+  }
+  .install button:hover { color: #fff; border-color: var(--accent); }
+
+  /* Sections */
+  section { padding: 56px 0; }
+  section.alt { background: var(--bg-elev); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 10px; }
+  .sec-title { font-size: clamp(26px, 4vw, 36px); margin: 0 0 14px; font-weight: 800; }
+  .sec-sub { color: var(--fg-muted); font-size: 17px; max-width: 640px; margin: 0 0 34px; }
+  .center { text-align: center; }
+  .center .sec-sub { margin-left: auto; margin-right: auto; }
+
+  /* Segment decoder */
+  .decoder { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); overflow-x: auto; }
+  .seg-line { font-family: var(--mono); font-size: clamp(15px, 2.6vw, 22px); font-weight: 600; white-space: nowrap; margin-bottom: 26px; letter-spacing: 0.5px; }
+  .seg-part { padding: 3px 5px; border-radius: 6px; cursor: default; transition: transform .12s ease; position: relative; }
+  .seg-part:hover { transform: translateY(-2px); }
+  .seg-tag { background: var(--tag-bg); color: var(--tag); }
+  .seg-sep { color: var(--fg-muted); opacity: .5; }
+  .seg-val { background: var(--val-bg); color: var(--val); }
+  .decoder-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .leg-item { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+  .leg-key { font-family: var(--mono); font-weight: 700; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+  .leg-item span.d { color: var(--fg-muted); }
+  .leg-item b { color: var(--fg); }
+
+  /* Envelope tree */
+  .tree { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-elev); box-shadow: var(--shadow); overflow: hidden; }
+  .env {
+    border-radius: 12px; margin: 0; position: relative;
+  }
+  .env-hd {
+    display: flex; align-items: center; gap: 12px; padding: 13px 18px; cursor: pointer; user-select: none;
+    font-weight: 600; font-size: 15px;
+  }
+  .env-hd .chev { transition: transform .2s ease; color: var(--fg-muted); font-size: 12px; width: 12px; }
+  .env.open > .env-hd .chev { transform: rotate(90deg); }
+  .env-hd .tagchip {
+    font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .env-hd .meta { color: var(--fg-muted); font-weight: 400; font-size: 13px; margin-left: auto; }
+  .env-body { display: none; padding: 0 14px 14px 40px; }
+  .env.open > .env-body { display: block; }
+
+  .lvl-interchange { border-left: 3px solid var(--accent); }
+  .lvl-message { border: 1px solid var(--border); border-radius: 10px; margin: 10px 0; background: var(--bg); }
+  .lvl-message > .env-hd .tagchip { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+
+  .seg-row {
+    display: flex; align-items: center; gap: 10px; padding: 6px 10px; font-family: var(--mono); font-size: 13px;
+    border-radius: 8px;
+  }
+  .seg-row:hover { background: var(--accent-soft); }
+  .seg-row .rtag { font-weight: 700; color: var(--tag); min-width: 42px; }
+  .seg-row .rname { font-family: var(--sans); color: var(--fg-muted); font-size: 12.5px; }
+  .seg-row .rraw { color: var(--fg-muted); opacity: .8; margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
+  .tree-hint { padding: 12px 18px; font-size: 13px; color: var(--fg-muted); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+
+  /* Pillars */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+  .pillar {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow); transition: transform .15s ease, border-color .15s ease;
+  }
+  .pillar:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+  .pillar .ic { font-size: 26px; margin-bottom: 12px; }
+  .pillar h3 { margin: 0 0 8px; font-size: 18px; }
+  .pillar p { margin: 0; color: var(--fg-muted); font-size: 14.5px; }
+
+  /* Code tabs */
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: -1px; }
+  .tab {
+    background: none; border: 1px solid transparent; border-bottom: none; color: var(--fg-muted);
+    padding: 10px 18px; border-radius: 10px 10px 0 0; cursor: pointer; font-weight: 600; font-size: 14px;
+    font-family: var(--sans);
+  }
+  .tab.active { background: var(--bg-code); color: #fff; border-color: var(--border); }
+  .code-panel { background: var(--bg-code); border: 1px solid var(--border); border-radius: 0 12px 12px 12px; overflow: hidden; box-shadow: var(--shadow); }
+  .code-panel pre { margin: 0; padding: 22px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #d6dcec; }
+  .code-panel .cap { padding: 12px 20px; border-bottom: 1px solid #1e2740; color: #8b94a8; font-size: 13px; font-family: var(--sans); }
+  .hidden { display: none; }
+  .tk { color: #c792ea; } .ts { color: #c3e88d; } .tc { color: #5f6b85; font-style: italic; }
+  .tf { color: #82aaff; } .tv { color: #f78c6c; } .tp { color: #ffcb6b; }
+
+  /* Segment grid */
+  .seg-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .seg-group { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .seg-group h4 { margin: 0 0 14px; font-size: 14px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-family: var(--mono); font-size: 12.5px; font-weight: 700; padding: 5px 10px; border-radius: 7px; background: var(--tag-bg); color: var(--tag); }
+
+  /* Footer */
+  footer { padding: 44px 0; border-top: 1px solid var(--border); text-align: center; color: var(--fg-muted); font-size: 14px; }
+  footer .flinks { display: flex; gap: 22px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+  footer a { color: var(--fg-muted); }
+  footer a:hover { color: var(--accent); }
+  .stack-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .stack-badges span { font-size: 12px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 100px; color: var(--fg-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand"><span class="box">📦</span> EDIFACT Parser</span>
+    <div class="links">
+      <a href="#what">What</a>
+      <a href="#structure">Structure</a>
+      <a href="#why">Why</a>
+      <a href="#how">How</a>
+      <a class="ghstar" href="https://github.com/Chemaclass/EdifactParser">GitHub ↗</a>
+      <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge-pill">PHP 8.0+ · strictly typed · MIT</span>
+    <h1>The complete <span class="grad">EDIFACT toolkit</span><br>for PHP</h1>
+    <p class="lead">Read, write, validate, and stream UN/EDIFACT interchanges with a typed,
+      object-oriented API — no magic array indices, no unsupported message types.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#how">See how it works →</a>
+      <a class="btn btn-ghost" href="https://github.com/Chemaclass/EdifactParser">⭐ Star on GitHub</a>
+    </div>
+    <div class="install">
+      <span class="dollar">$</span>
+      <span id="installCmd">composer require chemaclass/edifact-parser</span>
+      <button id="copyBtn">Copy</button>
+    </div>
+  </div>
+</header>
+
+<!-- WHAT -->
+<section id="what" class="alt">
+  <div class="wrap">
+    <p class="eyebrow">What is EDIFACT?</p>
+    <h2 class="sec-title">A worldwide language for business documents</h2>
+    <p class="sec-sub"><b>UN/EDIFACT</b> — <i>Electronic Data Interchange For Administration, Commerce and
+      Transport</i> — is the international standard behind orders, invoices, despatch advices and
+      transport instructions. A file is plain text: lines called <b>segments</b>, each a tag plus
+      <b>+</b>-separated elements. Hover a piece below to decode it.</p>
+
+    <div class="decoder">
+      <div class="seg-line" id="segLine">
+        <span class="seg-part seg-tag" data-k="tag">NAD</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="sub">CN</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e2">0410106314:160:Z12</span><span class="seg-sep">+</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e4">Person Name</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e5">Street Nr 2</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e6">City2</span><span class="seg-sep">+</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e8">12345</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e9">DE</span><span class="seg-sep">'</span>
+      </div>
+      <div class="decoder-legend">
+        <div class="leg-item"><span class="leg-key seg-tag">NAD</span><span class="d"><b>Segment tag</b> — Name &amp; Address. Maps to <code>NADNameAddress</code>.</span></div>
+        <div class="leg-item"><span class="leg-key seg-val">CN</span><span class="d"><b>Party qualifier</b> — <code>CN</code> = Consignee. <code>$nad->partyQualifier()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">Person Name</span><span class="d"><b>Name</b> — <code>$nad->name()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">Street Nr 2</span><span class="d"><b>Street</b> — <code>$nad->street()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">City2</span><span class="d"><b>City</b> — <code>$nad->city()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">DE</span><span class="d"><b>Country</b> — ISO 3166-1. <code>$nad->countryCode()</code></span></div>
+      </div>
+    </div>
+    <p class="sec-sub" style="margin-top:22px">The library turns that raw line into a typed object: no more
+      counting <code>+</code> signs to find field&nbsp;9. Empty elements (<code>++</code>) are preserved so
+      positions never drift.</p>
+  </div>
+</section>
+
+<!-- STRUCTURE -->
+<section id="structure">
+  <div class="wrap">
+    <p class="eyebrow">The envelope</p>
+    <h2 class="sec-title">Every interchange is a nested envelope</h2>
+    <p class="sec-sub">Segments nest into a strict hierarchy. This library models all of it —
+      interchange → functional groups → messages → segments — with duplicate-preserving access.
+      Below is a <b>real parsed sample</b> (click to expand).</p>
+
+    <div class="tree" id="tree">
+      <div class="tree-hint">🖱️ Click any level to expand or collapse.</div>
+      <!-- Interchange -->
+      <div class="env lvl-interchange open">
+        <div class="env-hd">
+          <span class="chev">▶</span>
+          <span class="tagchip">UNB … UNZ</span>
+          <span>Interchange envelope</span>
+          <span class="meta">sender 9457386 → recipient 73130012 · UNOC charset · 2 messages</span>
+        </div>
+        <div class="env-body">
+          <div class="seg-row"><span class="rtag">UNB</span><span class="rname">Interchange header</span><span class="rraw">UNOC:3 · ref 1424</span></div>
+
+          <!-- Message 1 -->
+          <div class="env lvl-message">
+            <div class="env-hd">
+              <span class="chev">▶</span>
+              <span class="tagchip">UNH … UNT</span>
+              <span>Message #1 — IFTMIN</span>
+              <span class="meta">18 segments</span>
+            </div>
+            <div class="env-body">
+              <div class="seg-row"><span class="rtag">UNH</span><span class="rname">Message header</span><span class="rraw">IFTMIN:S:93A:UN</span></div>
+              <div class="seg-row"><span class="rtag">BGM</span><span class="rname">Beginning of message</span><span class="rraw">220 · doc 56677786689</span></div>
+              <div class="seg-row"><span class="rtag">DTM</span><span class="rname">Date/time</span><span class="rraw">10 · 2019-10-11</span></div>
+              <div class="seg-row"><span class="rtag">RFF</span><span class="rname">Reference</span><span class="rraw">CU:ValidationSet1</span></div>
+              <div class="seg-row"><span class="rtag">TDT</span><span class="rname">Transport details</span><span class="rraw">20</span></div>
+              <div class="seg-row"><span class="rtag">NAD</span><span class="rname">Name &amp; address · CZ</span><span class="rraw">Company Centre · City1 · DE</span></div>
+              <div class="seg-row"><span class="rtag">NAD</span><span class="rname">Name &amp; address · CN</span><span class="rraw">Person Name · City2 · DE</span></div>
+              <div class="seg-row"><span class="rtag">GID</span><span class="rname">Goods item details</span><span class="rraw">1</span></div>
+              <div class="seg-row"><span class="rtag">MEA</span><span class="rname">Measurement</span><span class="rraw">WT · KGM 0.62</span></div>
+              <div class="seg-row"><span class="rtag">PCI</span><span class="rname">Package ID</span><span class="rraw">18 · 56677786689</span></div>
+              <div class="seg-row"><span class="rtag">UNT</span><span class="rname">Message trailer</span><span class="rraw">18 segments · ref 1</span></div>
+            </div>
+          </div>
+
+          <!-- Message 2 -->
+          <div class="env lvl-message">
+            <div class="env-hd">
+              <span class="chev">▶</span>
+              <span class="tagchip">UNH … UNT</span>
+              <span>Message #2 — IFTMIN</span>
+              <span class="meta">19 segments</span>
+            </div>
+            <div class="env-body">
+              <div class="seg-row"><span class="rtag">UNH</span><span class="rname">Message header</span><span class="rraw">IFTMIN:S:93A:UN</span></div>
+              <div class="seg-row"><span class="rtag">BGM</span><span class="rname">Beginning of message</span><span class="rraw">340 · doc 05055700896</span></div>
+              <div class="seg-row"><span class="rtag">NAD</span><span class="rname">Name &amp; address · CZ</span><span class="rraw">Company Returns · City1 · DE</span></div>
+              <div class="seg-row"><span class="rtag">NAD</span><span class="rname">Name &amp; address · CN</span><span class="rraw">Person Name · City2 · DE</span></div>
+              <div class="seg-row"><span class="rtag">…</span><span class="rname">plus DTM, RFF, TDT, GID, MEA, PCI</span><span class="rraw"></span></div>
+              <div class="seg-row"><span class="rtag">UNT</span><span class="rname">Message trailer</span><span class="rraw">19 segments · ref 2</span></div>
+            </div>
+          </div>
+
+          <div class="seg-row"><span class="rtag">UNZ</span><span class="rname">Interchange trailer</span><span class="rraw">control count 2</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="sec-sub" style="margin-top:22px">Optional <code>UNG…UNE</code> functional groups sit between the
+      interchange and its messages — read them via <code>$result->functionalGroups()</code>. Trailer counts
+      (<code>UNT</code>, <code>UNZ</code>) are computed for you when <b>writing</b>.</p>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why" class="alt">
+  <div class="wrap center">
+    <p class="eyebrow">Why this library</p>
+    <h2 class="sec-title">One toolkit, the whole round-trip</h2>
+    <p class="sec-sub">Most parsers only read. This one models the full lifecycle of an interchange.</p>
+  </div>
+  <div class="wrap">
+    <div class="pillars">
+      <div class="pillar"><div class="ic">📥</div><h3>Parse anything</h3><p>Unknown tags degrade gracefully to raw values — no message type is unsupported. The parser never throws on unknown segments.</p></div>
+      <div class="pillar"><div class="ic">📤</div><h3>Write it back</h3><p>Serialize segments to valid <code>.edi</code>, or assemble a full <code>UNB…UNZ</code> interchange with auto-computed control counts.</p></div>
+      <div class="pillar"><div class="ic">✅</div><h3>Validate</h3><p>Pluggable rule sets for required segments, cardinality and relative order. Ready-made sets for ORDERS, INVOIC, DESADV, IFTMIN.</p></div>
+      <div class="pillar"><div class="ic">🌊</div><h3>Stream</h3><p>Parse multi-gigabyte files in bounded memory — one message at a time, honouring a leading <code>UNA</code> service advice.</p></div>
+      <div class="pillar"><div class="ic">🧱</div><h3>Full envelope model</h3><p>Interchange → groups → messages, with duplicate-preserving access and typed metadata on every envelope segment.</p></div>
+      <div class="pillar"><div class="ic">🏷️</div><h3>26 typed segments</h3><p>Domain accessors and qualifier constants out of the box — and trivially extensible with your own segment classes.</p></div>
+      <div class="pillar"><div class="ic">🔎</div><h3>Fluent query API</h3><p>Chain filters, transforms and pagination over every segment; a statistics analyzer aggregates counts and totals.</p></div>
+      <div class="pillar"><div class="ic">🌍</div><h3>Charset-aware</h3><p><code>UNOA</code>…<code>UNOY</code> decoding to UTF-8, strict types, PSR-4, fully covered by PHPUnit, PHPStan, Psalm &amp; Rector.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2 class="sec-title">From raw <code>.edi</code> to typed objects</h2>
+    <p class="sec-sub">Pick a task. Every example is real, runnable code.</p>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-t="parse">Parse</button>
+      <button class="tab" data-t="read">Read</button>
+      <button class="tab" data-t="query">Query</button>
+      <button class="tab" data-t="write">Write</button>
+      <button class="tab" data-t="validate">Validate</button>
+      <button class="tab" data-t="extend">Extend</button>
+    </div>
+
+    <div class="code-panel">
+      <div class="cap" id="cap">Parse a file or string into a typed <code>ParserResult</code>.</div>
+
+      <pre class="code hidden" data-p="parse"><span class="tk">use</span> EdifactParser\EdifactParser;
+
+<span class="tv">$result</span> = EdifactParser::<span class="tf">createWithDefaultSegments</span>()
+    -&gt;<span class="tf">parseFile</span>(<span class="ts">'/path/to/order.edi'</span>); <span class="tc">// or -&gt;parse($ediString)</span>
+
+<span class="tk">foreach</span> (<span class="tv">$result</span>-&gt;<span class="tf">transactionMessages</span>() <span class="tk">as</span> <span class="tv">$message</span>) {
+    <span class="tk">echo</span> <span class="tv">$message</span>-&gt;<span class="tf">messageType</span>();   <span class="tc">// 'IFTMIN', 'ORDERS', 'INVOIC', …</span>
+}
+
+<span class="tc">// Unknown segments never throw — read them via ->rawValues()</span>
+<span class="tv">$result</span>-&gt;<span class="tf">functionalGroups</span>();  <span class="tc">// UNG…UNE groups, if any</span>
+<span class="tv">$result</span>-&gt;<span class="tf">globalSegments</span>();     <span class="tc">// file-level UNA/UNB/UNZ</span></pre>
+
+      <pre class="code hidden" data-p="read"><span class="tc">// Typed accessors — no magic array indices</span>
+<span class="tv">$nad</span> = <span class="tv">$message</span>-&gt;<span class="tf">segmentByTagAndSubId</span>(<span class="ts">'NAD'</span>, <span class="ts">'CN'</span>);
+<span class="tv">$nad</span>?-&gt;<span class="tf">name</span>();          <span class="tc">// 'Person Name'</span>
+<span class="tv">$nad</span>?-&gt;<span class="tf">city</span>();          <span class="tc">// 'City2'</span>
+<span class="tv">$nad</span>?-&gt;<span class="tf">countryCode</span>();   <span class="tc">// 'DE'  (ISO 3166-1)</span>
+
+<span class="tc">// Numeric &amp; date conversion built in</span>
+<span class="tv">$qty</span>?-&gt;<span class="tf">quantityAsFloat</span>();   <span class="tc">// float</span>
+<span class="tv">$pri</span>?-&gt;<span class="tf">priceAsFloat</span>();      <span class="tc">// float</span>
+<span class="tv">$dtm</span>?-&gt;<span class="tf">asDateTime</span>();        <span class="tc">// DateTimeImmutable|null</span>
+
+<span class="tc">// Line items group each LIN with its QTY/PRI/PIA details</span>
+<span class="tk">foreach</span> (<span class="tv">$message</span>-&gt;<span class="tf">lineItems</span>() <span class="tk">as</span> <span class="tv">$item</span>) {
+    <span class="tv">$item</span>-&gt;<span class="tf">segmentByTagAndSubId</span>(<span class="ts">'QTY'</span>, <span class="ts">'21'</span>)?-&gt;<span class="tf">quantityAsFloat</span>();
+}</pre>
+
+      <pre class="code hidden" data-p="query"><span class="tk">use</span> EdifactParser\Segments\Qualifier\NADQualifier;
+
+<span class="tc">// Chain filters, transforms and pagination over every segment</span>
+<span class="tv">$message</span>-&gt;<span class="tf">query</span>()
+    -&gt;<span class="tf">withTag</span>(<span class="ts">'NAD'</span>)
+    -&gt;<span class="tf">where</span>(<span class="tk">fn</span>(<span class="tv">$s</span>) =&gt; <span class="tv">$s</span>-&gt;<span class="tf">partyQualifier</span>() === NADQualifier::<span class="tp">CONSIGNEE</span>)
+    -&gt;<span class="tf">limit</span>(<span class="tv">10</span>)
+    -&gt;<span class="tf">get</span>();
+
+<span class="tv">$message</span>-&gt;<span class="tf">query</span>()-&gt;<span class="tf">withTag</span>(<span class="ts">'NAD'</span>)-&gt;<span class="tf">map</span>(<span class="tk">fn</span>(<span class="tv">$s</span>) =&gt; <span class="tv">$s</span>-&gt;<span class="tf">name</span>());
+<span class="tv">$message</span>-&gt;<span class="tf">query</span>()-&gt;<span class="tf">withTag</span>(<span class="ts">'UNS'</span>)-&gt;<span class="tf">exists</span>();   <span class="tc">// bool</span>
+<span class="tv">$message</span>-&gt;<span class="tf">query</span>()-&gt;<span class="tf">ofType</span>(NADNameAddress::<span class="tk">class</span>)-&gt;<span class="tf">count</span>();</pre>
+
+      <pre class="code hidden" data-p="write"><span class="tk">use</span> EdifactParser\Writer\InterchangeBuilder;
+<span class="tk">use</span> EdifactParser\Writer\MessageBuilder;
+<span class="tk">use</span> EdifactParser\Segments\NADNameAddress;
+<span class="tk">use</span> EdifactParser\Segments\Qualifier\NADQualifier;
+
+<span class="tv">$nad</span> = NADNameAddress::<span class="tf">builder</span>()
+    -&gt;<span class="tf">withQualifier</span>(NADQualifier::<span class="tp">BUYER</span>)
+    -&gt;<span class="tf">withName</span>(<span class="ts">'ACME Corporation'</span>)
+    -&gt;<span class="tf">withCountryCode</span>(<span class="ts">'US'</span>)
+    -&gt;<span class="tf">build</span>();
+
+<span class="tc">// UNT segment counts and UNZ control count filled in automatically</span>
+<span class="tv">$edi</span> = InterchangeBuilder::<span class="tf">create</span>(<span class="ts">'SENDER'</span>, <span class="ts">'RECIPIENT'</span>, <span class="ts">'REF1'</span>)
+    -&gt;<span class="tf">addMessage</span>(MessageBuilder::<span class="tf">create</span>(<span class="ts">'1'</span>, <span class="ts">'ORDERS'</span>)-&gt;<span class="tf">addSegment</span>(<span class="tv">$nad</span>))
+    -&gt;<span class="tf">toString</span>();     <span class="tc">// ready-to-send EDIFACT string</span></pre>
+
+      <pre class="code hidden" data-p="validate"><span class="tk">use</span> EdifactParser\Validation\MessageRuleSet;
+<span class="tk">use</span> EdifactParser\Validation\MessageValidator;
+
+<span class="tv">$rules</span> = MessageRuleSet::<span class="tf">forType</span>(<span class="ts">'ORDERS'</span>)
+    -&gt;<span class="tf">require</span>(<span class="ts">'UNH'</span>, <span class="ts">'BGM'</span>, <span class="ts">'UNT'</span>)   <span class="tc">// mandatory segments</span>
+    -&gt;<span class="tf">occurs</span>(<span class="ts">'NAD'</span>, <span class="tv">1</span>, <span class="tv">5</span>)             <span class="tc">// between 1 and 5</span>
+    -&gt;<span class="tf">inSequence</span>(<span class="ts">'UNH'</span>, <span class="ts">'BGM'</span>, <span class="ts">'UNT'</span>);  <span class="tc">// relative order</span>
+
+<span class="tv">$validator</span> = <span class="tk">new</span> <span class="tf">MessageValidator</span>();
+
+<span class="tk">foreach</span> (<span class="tv">$validator</span>-&gt;<span class="tf">validate</span>(<span class="tv">$message</span>, <span class="tv">$rules</span>) <span class="tk">as</span> <span class="tv">$violation</span>) {
+    <span class="tk">echo</span> <span class="ts">"{<span class="tv">$violation</span>-&gt;segmentTag()}: {<span class="tv">$violation</span>-&gt;message()}\n"</span>;
+}
+<span class="tv">$validator</span>-&gt;<span class="tf">isValid</span>(<span class="tv">$message</span>, <span class="tv">$rules</span>);   <span class="tc">// bool — never throws</span></pre>
+
+      <pre class="code hidden" data-p="extend"><span class="tk">use</span> EdifactParser\Segments\AbstractSegment;
+
+<span class="tc">/** @psalm-immutable */</span>
+<span class="tk">final class</span> <span class="tf">EQDEquipmentDetails</span> <span class="tk">extends</span> AbstractSegment
+{
+    <span class="tk">public function</span> <span class="tf">tag</span>(): <span class="tk">string</span> { <span class="tk">return</span> <span class="ts">'EQD'</span>; }
+
+    <span class="tc">// EQD+CN+ABCU1234567+22G1</span>
+    <span class="tk">public function</span> <span class="tf">equipmentId</span>(): <span class="tk">string</span>
+    {
+        <span class="tk">return</span> <span class="tv">$this</span>-&gt;<span class="tf">firstComponent</span>(<span class="tv">2</span>); <span class="tc">// 'ABCU1234567'</span>
+    }
+}
+
+<span class="tc">// Register alongside the 26 built-ins</span>
+<span class="tv">$factory</span> = SegmentFactory::<span class="tf">withSegments</span>([
+    ...SegmentFactory::<span class="tp">DEFAULT_SEGMENTS</span>,
+    <span class="ts">'EQD'</span> =&gt; EQDEquipmentDetails::<span class="tk">class</span>,
+]);</pre>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTS -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Batteries included</p>
+    <h2 class="sec-title">26 typed segments out of the box</h2>
+    <p class="sec-sub">Each with domain accessors. Any other tag parses as an <code>UnknownSegment</code>
+      you can still read — then add a typed class in a few lines.</p>
+    <div class="seg-groups">
+      <div class="seg-group">
+        <h4>Envelope / service</h4>
+        <div class="chips"><span class="chip">UNB</span><span class="chip">UNG</span><span class="chip">UNH</span><span class="chip">UNS</span><span class="chip">UNT</span><span class="chip">UNE</span><span class="chip">UNZ</span></div>
+      </div>
+      <div class="seg-group">
+        <h4>Header</h4>
+        <div class="chips"><span class="chip">BGM</span><span class="chip">DTM</span><span class="chip">RFF</span><span class="chip">NAD</span><span class="chip">CUX</span><span class="chip">TDT</span><span class="chip">LOC</span><span class="chip">FTX</span></div>
+      </div>
+      <div class="seg-group">
+        <h4>Detail / summary</h4>
+        <div class="chips"><span class="chip">LIN</span><span class="chip">PIA</span><span class="chip">IMD</span><span class="chip">QTY</span><span class="chip">PRI</span><span class="chip">MEA</span><span class="chip">PAC</span><span class="chip">GID</span><span class="chip">MOA</span><span class="chip">PCI</span><span class="chip">CNT</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="flinks">
+      <a href="https://github.com/Chemaclass/EdifactParser">GitHub</a>
+      <a href="https://packagist.org/packages/chemaclass/edifact-parser">Packagist</a>
+      <a href="https://github.com/Chemaclass/EdifactParser/blob/main/README.md">Docs</a>
+      <a href="https://github.com/Chemaclass/EdifactParser/blob/main/docu/README.md">EDIFACT primer</a>
+      <a href="https://github.com/Chemaclass/EdifactParser/issues">Issues</a>
+    </div>
+    <div>Open-source under the MIT license · <code>composer require chemaclass/edifact-parser</code></div>
+    <div class="stack-badges">
+      <span>PHP 8.0+</span><span>PSR-4</span><span>PHPStan</span><span>Psalm</span><span>Rector</span><span>PHPUnit</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Theme toggle
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    var stored = localStorage.getItem('edi-theme');
+    if (stored) root.setAttribute('data-theme', stored);
+    btn.addEventListener('click', function () {
+      var isDark = getComputedStyle(root).getPropertyValue('--bg').trim() === '#0a0e17'
+        || root.getAttribute('data-theme') === 'dark';
+      var next = isDark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('edi-theme', next);
+    });
+  })();
+
+  // Copy install
+  (function () {
+    var btn = document.getElementById('copyBtn');
+    var cmd = document.getElementById('installCmd').textContent;
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(cmd).then(function () {
+        var old = btn.textContent; btn.textContent = '✓ Copied';
+        setTimeout(function () { btn.textContent = old; }, 1400);
+      });
+    });
+  })();
+
+  // Envelope tree expand/collapse
+  document.querySelectorAll('.env > .env-hd').forEach(function (hd) {
+    hd.addEventListener('click', function () { hd.parentElement.classList.toggle('open'); });
+  });
+
+  // Code tabs
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panes = document.querySelectorAll('.code[data-p]');
+    var caps = {
+      parse: 'Parse a file or string into a typed <code>ParserResult</code>.',
+      read: 'Typed accessors replace magic array indices; numbers and dates convert for you.',
+      query: 'Chain filters, transforms and pagination over every segment — duplicates included.',
+      write: 'Build segments fluently, then assemble a full interchange with auto-computed counts.',
+      validate: 'Check a message against pluggable rules. The validator never throws.',
+      extend: 'Add your own typed segment in a few lines and register it alongside the built-ins.'
+    };
+    var cap = document.getElementById('cap');
+    function show(name) {
+      tabs.forEach(function (t) { t.classList.toggle('active', t.dataset.t === name); });
+      panes.forEach(function (p) { p.classList.toggle('hidden', p.dataset.p !== name); });
+      cap.innerHTML = caps[name];
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.t); }); });
+    show('parse');
+  })();
+</script>
+</body>
+</html>
