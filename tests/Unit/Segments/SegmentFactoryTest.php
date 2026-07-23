@@ -55,6 +55,34 @@ final class SegmentFactoryTest extends TestCase
     /**
      * @test
      */
+    public function with_additional_segments_keeps_defaults(): void
+    {
+        $factory = SegmentFactory::withAdditionalSegments([
+            'ZZZ' => UNHMessageHeader::class,
+        ]);
+
+        // custom tag is registered
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->createSegmentFromArray(['ZZZ']));
+        // defaults are still there
+        self::assertInstanceOf(NADNameAddress::class, $factory->createSegmentFromArray(['NAD']));
+        self::assertInstanceOf(DTMDateTimePeriod::class, $factory->createSegmentFromArray(['DTM']));
+    }
+
+    /**
+     * @test
+     */
+    public function with_additional_segments_overrides_a_default(): void
+    {
+        $factory = SegmentFactory::withAdditionalSegments([
+            'NAD' => UNHMessageHeader::class,
+        ]);
+
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->createSegmentFromArray(['NAD']));
+    }
+
+    /**
+     * @test
+     */
     public function exception_when_tag_too_large(): void
     {
         $this->expectException(InvalidArgumentException::class);

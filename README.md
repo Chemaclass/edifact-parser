@@ -459,13 +459,16 @@ use EdifactParser\EdifactParser;
 use EdifactParser\Segments\SegmentFactory;
 use YourApp\Segments\EQDEquipmentDetails;
 
-$factory = SegmentFactory::withSegments([
-    ...SegmentFactory::DEFAULT_SEGMENTS, // keep the 26 built-ins
-    'EQD' => EQDEquipmentDetails::class, // add yours
+$factory = SegmentFactory::withAdditionalSegments([
+    'EQD' => EQDEquipmentDetails::class, // added on top of the 26 built-ins
 ]);
 
 $parser = new EdifactParser($factory);
 ```
+
+> `withAdditionalSegments()` keeps every default and merges your tags on top —
+> registering a custom class under a default tag overrides that default. Use
+> `withSegments()` instead when you want an explicit, closed set of segments.
 
 ### Custom grouping rules
 
