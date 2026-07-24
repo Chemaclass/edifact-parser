@@ -26,6 +26,30 @@ final class CNTControlTest extends TestCase
     /**
      * @test
      */
+    public function typed_accessors(): void
+    {
+        $segment = new CNTControl(['CNT', ['7', '0.62', 'KGM']]);
+
+        self::assertSame('7', $segment->controlQualifier());
+        self::assertSame('0.62', $segment->controlValue());
+        self::assertSame('KGM', $segment->measureUnit());
+    }
+
+    /**
+     * @test
+     */
+    public function measure_unit_is_empty_when_absent(): void
+    {
+        $segment = new CNTControl(['CNT', ['2', '2']]);
+
+        self::assertSame('2', $segment->controlQualifier());
+        self::assertSame('2', $segment->controlValue());
+        self::assertSame('', $segment->measureUnit());
+    }
+
+    /**
+     * @test
+     */
     public function missing_sub_id(): void
     {
         $segment = new CNTControl(['CNT']);

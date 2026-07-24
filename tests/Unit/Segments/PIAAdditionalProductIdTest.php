@@ -21,4 +21,16 @@ class PIAAdditionalProductIdTest extends TestCase
         self::assertEquals('22', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function typed_accessors(): void
+    {
+        $segment = new PIAAdditionalProductId(['PIA', '5', ['ABC123', 'SA']]);
+
+        self::assertSame('5', $segment->productIdFunctionQualifier());
+        self::assertSame('ABC123', $segment->itemNumber());
+        self::assertSame('SA', $segment->itemTypeCode());
+    }
 }

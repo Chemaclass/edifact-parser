@@ -21,4 +21,15 @@ final class PCIPackageIdTest extends TestCase
         self::assertEquals('18', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function typed_accessors(): void
+    {
+        $segment = new PCIPackageId(['PCI', '18', '05055700896']);
+
+        self::assertSame('18', $segment->markingInstructionsCode());
+        self::assertSame('05055700896', $segment->marksAndLabels());
+    }
 }
