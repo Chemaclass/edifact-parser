@@ -53,6 +53,10 @@ final class RFFQualifier
     /** Reference version number */
     public const REFERENCE_VERSION = 'VN';
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

@@ -16,6 +16,7 @@ use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\Segments\UNZInterchangeTrailer;
 use EdifactParser\TransactionMessage;
@@ -23,6 +24,45 @@ use PHPUnit\Framework\TestCase;
 
 final class TransactionMessageTest extends TestCase
 {
+    /**
+     * @test
+     */
+    public function query_and_count_fall_back_to_the_keyed_map_when_built_without_an_ordered_list(): void
+    {
+        $unh = new UNHMessageHeader(['UNH', '1', ['ORDERS', 'D', '96A', 'UN']]);
+        $nad = new NADNameAddress(['NAD', 'CN']);
+
+        // Built directly from the keyed map (no ordered $segments list).
+        $message = new TransactionMessage([
+            'UNH' => ['1' => $unh],
+            'NAD' => ['CN' => $nad],
+        ]);
+
+        self::assertCount(2, $message->query()->get());
+        self::assertSame(2, $message->count());
+        self::assertSame('ORDERS', $message->messageType());
+    }
+
+    /**
+     * @test
+     */
+    public function message_type_is_null_without_a_unh_segment(): void
+    {
+        $message = new TransactionMessage(['NAD' => ['CN' => new NADNameAddress(['NAD', 'CN'])]]);
+
+        self::assertNull($message->messageType());
+    }
+
+    /**
+     * @test
+     */
+    public function message_type_is_null_when_the_unh_is_not_a_typed_header(): void
+    {
+        $message = new TransactionMessage(['UNH' => ['1' => new UnknownSegment(['UNH', '1'])]]);
+
+        self::assertNull($message->messageType());
+    }
+
     /**
      * @test
      */

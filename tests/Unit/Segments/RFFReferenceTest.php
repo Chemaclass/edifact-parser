@@ -21,4 +21,15 @@ class RFFReferenceTest extends TestCase
         self::assertEquals('ADE', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function typed_accessors(): void
+    {
+        $segment = new RFFReference(['RFF', ['ON', 'ORDER-42']]);
+
+        self::assertSame('ON', $segment->qualifier());
+        self::assertSame('ORDER-42', $segment->referenceNumber());
+    }
 }

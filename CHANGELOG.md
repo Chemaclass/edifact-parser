@@ -23,6 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PCIPackageId`: `markingInstructionsCode()`, `marksAndLabels()`.
   - `PIAAdditionalProductId`: `productIdFunctionQualifier()`, `itemNumber()`, `itemTypeCode()`.
 
+#### Changed
+- `SegmentFactory` now rejects a non-existent segment class with a clean
+  `InvalidArgumentException` instead of emitting a PHP warning.
+- `EdifactParser::parseFile()` no longer emits a PHP warning when the file exists
+  but cannot be read; it throws `InvalidFile` as before.
+
+#### Tests
+- The library now has **100% line, method and class test coverage**. Reaching it
+  removed a few unreachable defensive branches (single-level context recursion)
+  and tightened the segment-factory class check.
+
 ## [6.2.1] - 2026-07-23
 
 #### Fixed

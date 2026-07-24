@@ -20,6 +20,14 @@ final class InterchangeBuilderTest extends TestCase
     /**
      * @test
      */
+    public function message_builder_exposes_its_reference(): void
+    {
+        self::assertSame('REF-42', MessageBuilder::create('REF-42', 'ORDERS')->reference());
+    }
+
+    /**
+     * @test
+     */
     public function builds_and_serializes_an_interchange_that_parses_back(): void
     {
         $edi = InterchangeBuilder::create('SENDER', 'RECIPIENT', 'REF1')

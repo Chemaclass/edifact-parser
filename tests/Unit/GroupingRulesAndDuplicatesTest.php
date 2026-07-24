@@ -46,4 +46,27 @@ final class GroupingRulesAndDuplicatesTest extends TestCase
         $customMessage = $custom->parse($edi)->transactionMessages()[0];
         self::assertCount(0, $customMessage->contextSegments());
     }
+
+    /**
+     * @test
+     */
+    public function with_child_tags_returns_a_clone_with_the_new_child_tags(): void
+    {
+        $rules = GroupingRules::default()->withChildTags(['COM', 'CTA']);
+
+        self::assertTrue($rules->isChildTag('COM'));
+        self::assertTrue($rules->isChildTag('CTA'));
+        self::assertFalse($rules->isChildTag('PIA')); // dropped from the default child list
+    }
+
+    /**
+     * @test
+     */
+    public function with_break_line_item_tags_returns_a_clone_with_the_new_break_tags(): void
+    {
+        $rules = GroupingRules::default()->withBreakLineItemTags(['UNS']);
+
+        self::assertTrue($rules->isBreakLineItemTag('UNS'));
+        self::assertFalse($rules->isBreakLineItemTag('CNT')); // dropped from the default break list
+    }
 }

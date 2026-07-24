@@ -47,6 +47,10 @@ final class NADQualifier
     /** Warehouse keeper */
     public const WAREHOUSE_KEEPER = 'WH';
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

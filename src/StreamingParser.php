@@ -78,9 +78,11 @@ final class StreamingParser
 
         while (!feof($handle)) {
             $chunk = fread($handle, self::CHUNK_BYTES);
+            // @codeCoverageIgnoreStart
             if ($chunk === false) {
                 break;
             }
+            // @codeCoverageIgnoreEnd
 
             $buffer .= $chunk;
 

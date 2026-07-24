@@ -269,11 +269,5 @@ final class TransactionMessage implements Countable
             }
         }
         unset($segments);
-
-        foreach ($context->children() as $child) {
-            if ($child instanceof ContextSegment) {
-                self::applyContext($child, $grouped, $lineItems);
-            }
-        }
     }
 }

@@ -27,20 +27,11 @@ final class ContextStackParser
             $tag = $segment->tag();
 
             if ($this->rules->isContextTag($tag)) {
+                // Contexts are single-level: a new context tag closes the previous one
+                // and starts a fresh top-level context that later child tags attach to.
                 $context = new ContextSegment($segment);
-
-                // Pop previous context since this is a new one at the same level
-                if ($stack !== []) {
-                    array_pop($stack);
-                }
-
-                if ($stack === []) { // @phpstan-ignore-line
-                    $result[] = $context;
-                } else {
-                    $stack[array_key_last($stack)]->addChild($context);
-                }
-
-                $stack[] = $context;
+                $result[] = $context;
+                $stack = [$context];
                 continue;
             }
 

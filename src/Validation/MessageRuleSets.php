@@ -12,6 +12,9 @@ namespace EdifactParser\Validation;
  */
 final class MessageRuleSets
 {
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
     private function __construct()
     {
     }

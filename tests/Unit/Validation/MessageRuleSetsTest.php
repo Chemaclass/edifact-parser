@@ -38,4 +38,15 @@ final class MessageRuleSetsTest extends TestCase
         self::assertSame('BGM', $violations[0]->segmentTag());
         self::assertSame('required', $violations[0]->rule());
     }
+
+    /**
+     * @test
+     */
+    public function predefined_rule_sets_carry_their_message_type(): void
+    {
+        self::assertSame('ORDERS', MessageRuleSets::orders()->messageType());
+        self::assertSame('INVOIC', MessageRuleSets::invoic()->messageType());
+        self::assertSame('DESADV', MessageRuleSets::desadv()->messageType());
+        self::assertSame('IFTMIN', MessageRuleSets::iftmin()->messageType());
+    }
 }
