@@ -395,7 +395,7 @@
       <div class="pillar"><div class="ic">✅</div><h3>Validate</h3><p>Pluggable rule sets for required segments, cardinality and relative order. Ready-made sets for ORDERS, INVOIC, DESADV, IFTMIN.</p></div>
       <div class="pillar"><div class="ic">🌊</div><h3>Stream</h3><p>Parse multi-gigabyte files in bounded memory — one message at a time, honouring a leading <code>UNA</code> service advice.</p></div>
       <div class="pillar"><div class="ic">🧱</div><h3>Full envelope model</h3><p>Interchange → groups → messages, with duplicate-preserving access and typed metadata on every envelope segment.</p></div>
-      <div class="pillar"><div class="ic">🏷️</div><h3>26 typed segments</h3><p>Domain accessors and qualifier constants out of the box — and trivially extensible with your own segment classes.</p></div>
+      <div class="pillar"><div class="ic">🏷️</div><h3>32 typed segments</h3><p>Domain accessors and qualifier constants out of the box — and trivially extensible with your own segment classes.</p></div>
       <div class="pillar"><div class="ic">🔎</div><h3>Fluent query API</h3><p>Chain filters, transforms and pagination over every segment; a statistics analyzer aggregates counts and totals.</p></div>
       <div class="pillar"><div class="ic">🌍</div><h3>Charset-aware</h3><p><code>UNOA</code>…<code>UNOY</code> decoding to UTF-8, strict types, PSR-4, fully covered by PHPUnit, PHPStan, Psalm &amp; Rector.</p></div>
     </div>
@@ -508,7 +508,7 @@
     }
 }
 
-<span class="tc">// Register alongside the 26 built-ins</span>
+<span class="tc">// Register alongside the 32 built-ins</span>
 <span class="tv">$factory</span> = SegmentFactory::<span class="tf">withAdditionalSegments</span>([
     <span class="ts">'EQD'</span> =&gt; EQDEquipmentDetails::<span class="tk">class</span>,
 ]);</pre>
@@ -520,7 +520,7 @@
 <section class="alt">
   <div class="wrap">
     <p class="eyebrow">Batteries included</p>
-    <h2 class="sec-title">26 typed segments out of the box</h2>
+    <h2 class="sec-title">32 typed segments out of the box</h2>
     <p class="sec-sub">Each with domain accessors. Any other tag parses as an <code>UnknownSegment</code>
       you can still read — then add a typed class in a few lines.</p>
     <div class="seg-groups">
@@ -531,6 +531,10 @@
       <div class="seg-group">
         <h4>Header</h4>
         <div class="chips"><span class="chip">BGM</span><span class="chip">DTM</span><span class="chip">RFF</span><span class="chip">NAD</span><span class="chip">CUX</span><span class="chip">TDT</span><span class="chip">LOC</span><span class="chip">FTX</span></div>
+      </div>
+      <div class="seg-group">
+        <h4>Party / terms</h4>
+        <div class="chips"><span class="chip">CTA</span><span class="chip">COM</span><span class="chip">PAT</span><span class="chip">PCD</span><span class="chip">TAX</span><span class="chip">TOD</span></div>
       </div>
       <div class="seg-group">
         <h4>Detail / summary</h4>

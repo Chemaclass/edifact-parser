@@ -22,7 +22,7 @@ interchanges with a typed, object-oriented API.
 - 🌊 **Stream** — parse multi-gigabyte files in bounded memory (one message at a time).
 - 🧱 **Model the full envelope** — interchange → functional groups (`UNG/UNE`) → messages,
   with duplicate-preserving access and typed metadata on every envelope segment.
-- 🏷️ **26 typed segments** out of the box with domain accessors, plus qualifier constants —
+- 🏷️ **32 typed segments** out of the box with domain accessors, plus qualifier constants —
   and trivially [extensible](#-extending) with your own.
 - 🔎 **Fluent query API** and a **statistics analyzer** for extracting data.
 - 🌍 **Charset-aware** (`UNOA`…`UNOY`), **strictly typed** (PHP 8.0+, PSR-4), and fully
@@ -315,10 +315,11 @@ $name = Charset::toUtf8($nad->name(), $unb->syntaxIdentifier());
 
 ### Built-in segments
 
-26 segments are typed and registered by default:
+32 segments are typed and registered by default:
 
 - **Envelope / service:** `UNB`, `UNG`, `UNH`, `UNS`, `UNT`, `UNE`, `UNZ`
 - **Header:** `BGM`, `DTM`, `RFF`, `NAD`, `CUX`, `TDT`, `LOC`, `FTX`
+- **Party / terms:** `CTA`, `COM`, `PAT`, `PCD`, `TAX`, `TOD`
 - **Detail / summary:** `LIN`, `PIA`, `IMD`, `QTY`, `PRI`, `MEA`, `PAC`, `GID`, `MOA`, `PCI`, `CNT`
 
 Any other tag parses as an `UnknownSegment` (readable via `rawValues()`); add your own typed
@@ -460,7 +461,7 @@ use EdifactParser\Segments\SegmentFactory;
 use YourApp\Segments\EQDEquipmentDetails;
 
 $factory = SegmentFactory::withAdditionalSegments([
-    'EQD' => EQDEquipmentDetails::class, // added on top of the 26 built-ins
+    'EQD' => EQDEquipmentDetails::class, // added on top of the 32 built-ins
 ]);
 
 $parser = new EdifactParser($factory);

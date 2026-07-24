@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SegmentFactory::withAdditionalSegments()` registers custom segments on top of
   the defaults, so you no longer have to spread `DEFAULT_SEGMENTS` yourself. A
   custom class under a default tag overrides that default.
+- Six new default segments, typed and registered out of the box (26 -> 32):
+  `CTA` (contact), `COM` (communication), `TAX` (duty/tax/fee), `PCD`
+  (percentage), `PAT` (payment terms), `TOD` (terms of delivery). Only
+  version-stable elements are typed; the factory override remains the path for
+  dialect-specific accessors.
 - Typed accessors for previously raw-only default segments:
   - `CNTControl`: `controlQualifier()`, `controlValue()`, `measureUnit()`.
   - `CUXCurrencyDetails`: `usageQualifier()`, `currencyCode()`, `rateQualifier()`.
