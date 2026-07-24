@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SegmentFactory::withAdditionalSegments()` registers custom segments on top of
   the defaults, so you no longer have to spread `DEFAULT_SEGMENTS` yourself. A
   custom class under a default tag overrides that default.
+- Typed accessors for previously raw-only default segments:
+  - `CNTControl`: `controlQualifier()`, `controlValue()`, `measureUnit()`.
+  - `CUXCurrencyDetails`: `usageQualifier()`, `currencyCode()`, `rateQualifier()`.
+  - `MEADimensions`: `measurementPurpose()`, `measuredAttribute()`, `unitCode()`, `value()`.
+  - `PCIPackageId`: `markingInstructionsCode()`, `marksAndLabels()`.
+  - `PIAAdditionalProductId`: `productIdFunctionQualifier()`, `itemNumber()`, `itemTypeCode()`.
 
 ## [6.2.1] - 2026-07-23
 

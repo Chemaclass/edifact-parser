@@ -21,4 +21,30 @@ final class MEADimensionsTest extends TestCase
         self::assertEquals('WT', $segment->subId());
         self::assertEquals($rawValues, $segment->rawValues());
     }
+
+    /**
+     * @test
+     */
+    public function typed_accessors(): void
+    {
+        $segment = new MEADimensions(['MEA', 'WT', 'G', ['KGM', '0.62']]);
+
+        self::assertSame('WT', $segment->measurementPurpose());
+        self::assertSame('G', $segment->measuredAttribute());
+        self::assertSame('KGM', $segment->unitCode());
+        self::assertSame('0.62', $segment->value());
+    }
+
+    /**
+     * @test
+     */
+    public function measured_attribute_is_empty_when_omitted(): void
+    {
+        $segment = new MEADimensions(['MEA', 'VOL', '', ['MTQ', '0']]);
+
+        self::assertSame('VOL', $segment->measurementPurpose());
+        self::assertSame('', $segment->measuredAttribute());
+        self::assertSame('MTQ', $segment->unitCode());
+        self::assertSame('0', $segment->value());
+    }
 }
