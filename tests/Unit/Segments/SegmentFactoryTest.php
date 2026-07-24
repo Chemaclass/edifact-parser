@@ -117,4 +117,35 @@ final class SegmentFactoryTest extends TestCase
         self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['XX']));
         self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray([]));
     }
+
+    /**
+     * @test
+     */
+    public function envelope_and_business_bundles_partition_the_defaults(): void
+    {
+        // No tag appears in both bundles.
+        self::assertSame(
+            [],
+            array_intersect_key(SegmentFactory::ENVELOPE_SEGMENTS, SegmentFactory::BUSINESS_SEGMENTS),
+        );
+
+        // Their union is exactly the default set.
+        self::assertEqualsCanonicalizing(
+            array_keys(SegmentFactory::DEFAULT_SEGMENTS),
+            array_keys(SegmentFactory::ENVELOPE_SEGMENTS + SegmentFactory::BUSINESS_SEGMENTS),
+        );
+        self::assertCount(7, SegmentFactory::ENVELOPE_SEGMENTS);
+        self::assertCount(32, SegmentFactory::DEFAULT_SEGMENTS);
+    }
+
+    /**
+     * @test
+     */
+    public function an_envelope_only_factory_leaves_business_tags_unknown(): void
+    {
+        $factory = SegmentFactory::withSegments(SegmentFactory::ENVELOPE_SEGMENTS);
+
+        self::assertInstanceOf(UNHMessageHeader::class, $factory->createSegmentFromArray(['UNH']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['NAD']));
+    }
 }

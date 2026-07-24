@@ -15,41 +15,64 @@ use function strlen;
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
 {
-    /** @var array<string,string> */
-    public const DEFAULT_SEGMENTS = [
-        'UNH' => UNHMessageHeader::class,
+    /**
+     * Service/control segments that frame every interchange (the UN* envelope).
+     * Compose them with your own tags for a lean parser that still understands the
+     * interchange structure, e.g. `withSegments(ENVELOPE_SEGMENTS + ['NAD' => ...])`.
+     *
+     * @var array<string,string>
+     */
+    public const ENVELOPE_SEGMENTS = [
         'UNB' => UNBInterchangeHeader::class,
-        'BGM' => BGMBeginningOfMessage::class,
-        'DTM' => DTMDateTimePeriod::class,
-        'NAD' => NADNameAddress::class,
-        'MEA' => MEADimensions::class,
-        'CNT' => CNTControl::class,
-        'PCI' => PCIPackageId::class,
-        'UNT' => UNTMessageFooter::class,
-        'RFF' => RFFReference::class,
-        'CUX' => CUXCurrencyDetails::class,
-        'LIN' => LINLineItem::class,
-        'QTY' => QTYQuantity::class,
-        'PRI' => PRIPrice::class,
-        'PIA' => PIAAdditionalProductId::class,
-        'UNS' => UNSSectionControl::class,
-        'MOA' => MOAMonetaryAmount::class,
         'UNG' => UNGFunctionalGroupHeader::class,
+        'UNH' => UNHMessageHeader::class,
+        'UNS' => UNSSectionControl::class,
+        'UNT' => UNTMessageFooter::class,
         'UNE' => UNEFunctionalGroupTrailer::class,
         'UNZ' => UNZInterchangeTrailer::class,
-        'FTX' => FTXFreeText::class,
-        'LOC' => LOCPlace::class,
-        'TDT' => TDTTransportDetails::class,
-        'IMD' => IMDItemDescription::class,
-        'PAC' => PACPackage::class,
-        'GID' => GIDGoodsItemDetails::class,
+    ];
+
+    /**
+     * The business-content segments (header, party/terms, detail and summary) carried
+     * inside the envelope. Compose with {@see ENVELOPE_SEGMENTS} for a full parser.
+     *
+     * @var array<string,string>
+     */
+    public const BUSINESS_SEGMENTS = [
+        'BGM' => BGMBeginningOfMessage::class,
+        'DTM' => DTMDateTimePeriod::class,
+        'RFF' => RFFReference::class,
+        'NAD' => NADNameAddress::class,
         'CTA' => CTAContactInformation::class,
         'COM' => COMCommunicationContact::class,
-        'TAX' => TAXDutyTaxFee::class,
-        'PCD' => PCDPercentageDetails::class,
+        'CUX' => CUXCurrencyDetails::class,
         'PAT' => PATPaymentTerms::class,
+        'PCD' => PCDPercentageDetails::class,
+        'TAX' => TAXDutyTaxFee::class,
         'TOD' => TODTermsOfDelivery::class,
+        'TDT' => TDTTransportDetails::class,
+        'LOC' => LOCPlace::class,
+        'FTX' => FTXFreeText::class,
+        'LIN' => LINLineItem::class,
+        'PIA' => PIAAdditionalProductId::class,
+        'IMD' => IMDItemDescription::class,
+        'QTY' => QTYQuantity::class,
+        'PRI' => PRIPrice::class,
+        'MEA' => MEADimensions::class,
+        'PAC' => PACPackage::class,
+        'GID' => GIDGoodsItemDetails::class,
+        'MOA' => MOAMonetaryAmount::class,
+        'PCI' => PCIPackageId::class,
+        'CNT' => CNTControl::class,
     ];
+
+    /**
+     * The full set of segments typed and registered out of the box: the envelope
+     * plus all business content.
+     *
+     * @var array<string,string>
+     */
+    public const DEFAULT_SEGMENTS = self::ENVELOPE_SEGMENTS + self::BUSINESS_SEGMENTS;
 
     private const TAG_LENGTH = 3;
 
