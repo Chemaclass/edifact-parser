@@ -471,6 +471,26 @@ $parser = new EdifactParser($factory);
 > registering a custom class under a default tag overrides that default. Use
 > `withSegments()` instead when you want an explicit, closed set of segments.
 
+### Composable segment bundles
+
+The defaults are exposed as two composable bundles so you can build a lean factory
+that only types the tags you care about — everything else still parses as a readable
+`UnknownSegment`:
+
+- `SegmentFactory::ENVELOPE_SEGMENTS` — the UN* service/control segments (7).
+- `SegmentFactory::BUSINESS_SEGMENTS` — header, party/terms, detail and summary (25).
+- `SegmentFactory::DEFAULT_SEGMENTS` — the union of both (32).
+
+```php
+// Envelope structure + just the segments you extract:
+$factory = SegmentFactory::withSegments(
+    SegmentFactory::ENVELOPE_SEGMENTS + [
+        'NAD' => NADNameAddress::class,
+        'LIN' => LINLineItem::class,
+    ],
+);
+```
+
 ### Custom grouping rules
 
 Context hierarchies and line-item boundaries are driven by `GroupingRules`. Pass a

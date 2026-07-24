@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Added
+- Composable segment bundles on `SegmentFactory`: `ENVELOPE_SEGMENTS` (the UN*
+  service/control segments) and `BUSINESS_SEGMENTS` (header/party/detail/summary).
+  `DEFAULT_SEGMENTS` is now their union, so you can build a lean factory with, for
+  example, `withSegments(SegmentFactory::ENVELOPE_SEGMENTS + ['NAD' => ...])`.
+
 ## [6.3.0] - 2026-07-24
 
 #### Added
