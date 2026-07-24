@@ -43,7 +43,7 @@ final class EdifactParserTest extends TestCase
 
         $path = tempnam(sys_get_temp_dir(), 'edi');
         self::assertIsString($path);
-        chmod($path, 0o000);
+        chmod($path, 0000);
 
         try {
             $this->expectException(InvalidFile::class);
@@ -51,7 +51,7 @@ final class EdifactParserTest extends TestCase
 
             EdifactParser::createWithDefaultSegments()->parseFile($path);
         } finally {
-            chmod($path, 0o600);
+            chmod($path, 0600);
             unlink($path);
         }
     }

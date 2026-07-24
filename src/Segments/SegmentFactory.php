@@ -7,8 +7,8 @@ namespace EdifactParser\Segments;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
-use function class_exists;
-use function is_a;
+use function class_implements;
+use function in_array;
 use function is_string;
 use function strlen;
 
@@ -125,6 +125,10 @@ final class SegmentFactory implements SegmentFactoryInterface
 
     private function isSegment(string $className): bool
     {
-        return class_exists($className) && is_a($className, SegmentInterface::class, true);
+        // The '@' suppresses the "class does not exist" warning for an unknown class,
+        // which class_implements() reports as `false` — handled below.
+        $interfaces = @class_implements($className);
+
+        return $interfaces !== false && in_array(SegmentInterface::class, $interfaces, true);
     }
 }

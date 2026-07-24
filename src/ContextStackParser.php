@@ -21,7 +21,7 @@ final class ContextStackParser
     public function parse(SegmentInterface ...$segments): array
     {
         $result = [];
-        $stack = [];
+        $current = null;
 
         foreach ($segments as $segment) {
             $tag = $segment->tag();
@@ -29,19 +29,18 @@ final class ContextStackParser
             if ($this->rules->isContextTag($tag)) {
                 // Contexts are single-level: a new context tag closes the previous one
                 // and starts a fresh top-level context that later child tags attach to.
-                $context = new ContextSegment($segment);
-                $result[] = $context;
-                $stack = [$context];
+                $current = new ContextSegment($segment);
+                $result[] = $current;
                 continue;
             }
 
-            if ($this->rules->isChildTag($tag) && $stack !== []) {
-                $stack[array_key_last($stack)]->addChild($segment);
+            if ($current !== null && $this->rules->isChildTag($tag)) {
+                $current->addChild($segment);
                 continue;
             }
 
             if ($tag === 'UNT') {
-                $stack = [];
+                $current = null;
             }
         }
 
