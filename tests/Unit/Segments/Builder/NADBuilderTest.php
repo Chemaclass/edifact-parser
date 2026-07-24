@@ -92,4 +92,18 @@ final class NADBuilderTest extends TestCase
         self::assertEquals(['987654', '160', 'Z12'], $segment->partyIdentification());
         self::assertEquals('987654', $segment->partyId());
     }
+
+    /**
+     * @test
+     */
+    public function with_party_identification_sets_the_raw_composite(): void
+    {
+        $builder = new NADBuilder();
+        self::assertSame($builder, $builder->withPartyIdentification(['987654', '160', 'Z12']));
+
+        $segment = $builder->withQualifier(NADQualifier::BUYER)->build();
+
+        self::assertEquals(['987654', '160', 'Z12'], $segment->partyIdentification());
+        self::assertEquals('987654', $segment->partyId());
+    }
 }

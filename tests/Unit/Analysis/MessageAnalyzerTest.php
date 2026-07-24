@@ -7,6 +7,9 @@ namespace EdifactParser\Tests\Unit\Analysis;
 use EDI\Parser;
 use EdifactParser\Analysis\MessageAnalyzer;
 use EdifactParser\SegmentList;
+use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\Segments\UNHMessageHeader;
+use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\TransactionMessage;
 use PHPUnit\Framework\TestCase;
 
@@ -358,6 +361,41 @@ EDI
         self::assertEquals([], $analyzer->getCurrencies());
         self::assertEquals(0.0, $analyzer->calculateTotalAmount());
         self::assertEquals(0.0, $analyzer->calculateTotalQuantity());
+    }
+
+    /**
+     * @test
+     */
+    public function falls_back_to_raw_values_when_segments_are_not_their_typed_classes(): void
+    {
+        // A factory that maps only the envelope leaves NAD/CUX/QTY/MOA as UnknownSegment,
+        // exercising the analyzer's raw-value fallback branches.
+        $factory = SegmentFactory::withSegments([
+            'UNH' => UNHMessageHeader::class,
+            'UNT' => UNTMessageFooter::class,
+        ]);
+
+        $parser = (new Parser())->loadString(
+            <<<EDI
+UNH+1+ORDERS:D:96A:UN'
+NAD+CN+123456'
+QTY+21:5'
+MOA+79:100'
+UNT+5+1'
+EDI
+        );
+        $segments = (new SegmentList($factory))->fromRaw($parser->get());
+        $message = TransactionMessage::groupSegmentsByMessage(\EdifactParser\GroupingRules::default(), ...$segments)
+            ->transactionMessages()[0];
+
+        $analyzer = new MessageAnalyzer($message);
+
+        // getPartyQualifiers reads rawValues[1] of the untyped NAD.
+        self::assertSame(['CN'], $analyzer->getPartyQualifiers());
+        // calculateTotalQuantity's filter falls back to subId() for the untyped QTY.
+        self::assertSame(0.0, $analyzer->calculateTotalQuantity('21'));
+        // moaQualifier + moaAmount fall back to rawValues for the untyped MOA.
+        self::assertSame(100.0, $analyzer->calculateTotalAmount('79'));
     }
 
     private function parseMessage(string $edifactContent): TransactionMessage

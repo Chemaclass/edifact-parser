@@ -53,6 +53,10 @@ final class DTMQualifier
     /** Validity period end */
     public const VALIDITY_END = '158';
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

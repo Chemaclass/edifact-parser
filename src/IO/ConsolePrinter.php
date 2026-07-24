@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace EdifactParser\IO;
 
 use EdifactParser\ContextSegment;
-use EdifactParser\Segments\NullSegment;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\TransactionMessage;
 
-use function array_key_first;
 use function json_encode;
 use function sprintf;
 use function str_pad;
@@ -48,12 +46,14 @@ final class ConsolePrinter implements PrinterInterface
      */
     private function printSegmentWithContext(array $segments): void
     {
-        $key = array_key_first($segments);
-        $first = $segments[$key] ?? new NullSegment();
-
-        echo sprintf("%s:\n", $first->tag());
+        $headerPrinted = false;
 
         foreach ($segments as $segment) {
+            if (!$headerPrinted) {
+                echo sprintf("%s:\n", $segment->tag());
+                $headerPrinted = true;
+            }
+
             $this->printSingleSegmentWithContext($segment);
         }
     }

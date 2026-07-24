@@ -68,4 +68,18 @@ final class UnknownSegmentTest extends TestCase
             (new UnknownSegment($rawValues))->subId()
         );
     }
+
+    /**
+     * @test
+     */
+    public function sub_id_falls_back_to_class_hash_when_values_are_not_json_encodable(): void
+    {
+        // Invalid UTF-8 makes json_encode() fail, so the hash falls back to the class name.
+        $rawValues = ['unknown', [["\xB1\x31"]]];
+
+        self::assertEquals(
+            md5(UnknownSegment::class),
+            (new UnknownSegment($rawValues))->subId()
+        );
+    }
 }

@@ -44,6 +44,10 @@ final class PRIQualifier
     /** Recommended retail price */
     public const RECOMMENDED_RETAIL = 'RRP';
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

@@ -41,6 +41,10 @@ final class QTYQualifier
     /** Free goods quantity */
     public const FREE_GOODS = '192';
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

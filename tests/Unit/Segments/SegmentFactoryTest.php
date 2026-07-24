@@ -97,4 +97,24 @@ final class SegmentFactoryTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         SegmentFactory::withSegments(['NON' => NONFakeSegment::class]);
     }
+
+    /**
+     * @test
+     */
+    public function exception_when_class_does_not_exist(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        SegmentFactory::withSegments(['ZZZ' => 'EdifactParser\\This\\Class\\DoesNotExist']);
+    }
+
+    /**
+     * @test
+     */
+    public function unknown_segment_for_a_tag_that_is_not_three_chars(): void
+    {
+        $factory = SegmentFactory::withDefaultSegments();
+
+        self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray(['XX']));
+        self::assertInstanceOf(UnknownSegment::class, $factory->createSegmentFromArray([]));
+    }
 }

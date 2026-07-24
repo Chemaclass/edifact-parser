@@ -11,6 +11,7 @@ use EdifactParser\Segments\FTXFreeText;
 use EdifactParser\Segments\GIDGoodsItemDetails;
 use EdifactParser\Segments\IMDItemDescription;
 use EdifactParser\Segments\LOCPlace;
+use EdifactParser\Segments\NullSegment;
 use EdifactParser\Segments\PACPackage;
 use EdifactParser\Segments\PATPaymentTerms;
 use EdifactParser\Segments\PCDPercentageDetails;
@@ -18,6 +19,7 @@ use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\TAXDutyTaxFee;
 use EdifactParser\Segments\TDTTransportDetails;
 use EdifactParser\Segments\TODTermsOfDelivery;
+use EdifactParser\Segments\UNEFunctionalGroupTrailer;
 use PHPUnit\Framework\TestCase;
 
 final class AdditionalSegmentsTest extends TestCase
@@ -108,6 +110,91 @@ final class AdditionalSegmentsTest extends TestCase
         self::assertInstanceOf(GIDGoodsItemDetails::class, $gid);
         self::assertSame('1', $gid->goodsItemNumber());
         self::assertSame('1', $gid->numberOfPackages());
+    }
+
+    /**
+     * @test
+     */
+    public function detail_segment_accessors(): void
+    {
+        $tdt = new TDTTransportDetails(['TDT', '20', 'VOY-1', ['30'], '', ['CARRIER-ID']]);
+        self::assertSame('20', $tdt->transportStageQualifier());
+        self::assertSame('VOY-1', $tdt->conveyanceReference());
+        self::assertSame('30', $tdt->modeOfTransport());
+        self::assertSame('CARRIER-ID', $tdt->carrierId());
+
+        $gid = new GIDGoodsItemDetails(['GID', '1', ['5', 'CT']]);
+        self::assertSame('1', $gid->goodsItemNumber());
+        self::assertSame('5', $gid->numberOfPackages());
+        self::assertSame('CT', $gid->packageTypeCode());
+
+        $imd = new IMDItemDescription(['IMD', 'C', '35', ['BLUE', '', '', 'Blue']]);
+        self::assertSame('C', $imd->descriptionFormatCode());
+        self::assertSame('35', $imd->itemCharacteristicCode());
+        self::assertSame('BLUE', $imd->itemDescriptionCode());
+        self::assertSame('Blue', $imd->itemDescription());
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider tagOnlyExpectations
+     *
+     * @param class-string $class
+     */
+    public function every_default_segment_reports_its_tag(string $tag, string $class): void
+    {
+        /** @var \EdifactParser\Segments\SegmentInterface $segment */
+        $segment = new $class([$tag]);
+
+        self::assertSame($tag, $segment->tag());
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: class-string}>
+     */
+    public static function tagOnlyExpectations(): array
+    {
+        return [
+            'FTX' => ['FTX', FTXFreeText::class],
+            'LOC' => ['LOC', LOCPlace::class],
+            'PAC' => ['PAC', PACPackage::class],
+            'PAT' => ['PAT', PATPaymentTerms::class],
+            'PCD' => ['PCD', PCDPercentageDetails::class],
+            'TAX' => ['TAX', TAXDutyTaxFee::class],
+            'TOD' => ['TOD', TODTermsOfDelivery::class],
+            'IMD' => ['IMD', IMDItemDescription::class],
+        ];
+    }
+
+    /**
+     * @test
+     */
+    public function une_group_reference(): void
+    {
+        $une = new UNEFunctionalGroupTrailer(['UNE', '3', 'GRP-1']);
+
+        self::assertSame('3', $une->controlCount());
+        self::assertSame('GRP-1', $une->groupReference());
+    }
+
+    /**
+     * @test
+     */
+    public function null_segment_has_an_empty_tag(): void
+    {
+        self::assertSame('', (new NullSegment())->tag());
+    }
+
+    /**
+     * @test
+     */
+    public function parsed_sub_id_splits_a_plain_string_element(): void
+    {
+        // rawValues[1] is a plain string, so parsedSubId splits it on ':'.
+        $segment = new FTXFreeText(['FTX', 'AAI:SUB']);
+
+        self::assertSame(['AAI', 'SUB'], $segment->parsedSubId());
     }
 
     /**

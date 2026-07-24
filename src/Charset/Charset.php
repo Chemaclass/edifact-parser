@@ -30,6 +30,10 @@ final class Charset
         'UNOY' => 'UTF-8',        // UTF-8
     ];
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

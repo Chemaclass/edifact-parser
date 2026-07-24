@@ -103,3 +103,46 @@ jobs:
 
       - name: Run the functional test suite
         run: vendor/bin/phpunit --testsuite functional
+
+  coverage:
+    name: Coverage (100%)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: pcov
+          tools: composer
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-ansi --no-progress
+
+      - name: Run the whole suite with coverage
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+
+      - name: Enforce 100% line coverage
+        run: |
+          php -r '
+            $xml = simplexml_load_file("coverage.xml");
+            $m = $xml->project->metrics;
+            $elements = (int) $m["elements"];
+            $covered = (int) $m["coveredelements"];
+            printf("Coverage: %d/%d elements\n", $covered, $elements);
+            if ($covered !== $elements) {
+              fwrite(STDERR, "Coverage is below 100%\n");
+              exit(1);
+            }
+          '

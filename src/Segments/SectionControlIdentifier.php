@@ -16,6 +16,10 @@ final class SectionControlIdentifier
     /** Boundary between the detail and summary sections */
     public const BetweenMessageDetailsAndSummary = 'S';
 
+    /**
+     * @codeCoverageIgnore Prevents instantiation of this constants/utility holder
+     */
+
     private function __construct()
     {
     }

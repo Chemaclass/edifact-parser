@@ -51,7 +51,7 @@ final class EdifactParser
             throw InvalidFile::withErrors(["File not found: {$filePath}"]);
         }
 
-        $content = file_get_contents($filePath);
+        $content = @file_get_contents($filePath);
         if ($content === false) {
             throw InvalidFile::withErrors(["Unable to read file: {$filePath}"]);
         }

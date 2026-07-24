@@ -125,12 +125,10 @@ final class SegmentFactory implements SegmentFactoryInterface
 
     private function isSegment(string $className): bool
     {
-        $interfaces = class_implements($className);
+        // The '@' suppresses the "class does not exist" warning for an unknown class,
+        // which class_implements() reports as `false` — handled below.
+        $interfaces = @class_implements($className);
 
-        if ($interfaces === false) {
-            return false;
-        }
-
-        return in_array(SegmentInterface::class, $interfaces, true);
+        return $interfaces !== false && in_array(SegmentInterface::class, $interfaces, true);
     }
 }
