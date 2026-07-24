@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2026-07-24
+
 #### Added
 - `SegmentFactory::withAdditionalSegments()` registers custom segments on top of
   the defaults, so you no longer have to spread `DEFAULT_SEGMENTS` yourself. A
