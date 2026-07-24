@@ -10,12 +10,12 @@ use EdifactParser\LineItem;
 use EdifactParser\ParserResult;
 use EdifactParser\SegmentList;
 use EdifactParser\Segments\CNTControl;
+use EdifactParser\Segments\COMCommunicationContact;
 use EdifactParser\Segments\LINLineItem;
 use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\QTYQuantity;
 use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
-use EdifactParser\Segments\UnknownSegment;
 use EdifactParser\Segments\UNTMessageFooter;
 use EdifactParser\Segments\UNZInterchangeTrailer;
 use EdifactParser\TransactionMessage;
@@ -407,7 +407,7 @@ EDI;
         $expected = [
             new ContextSegment(
                 new NADNameAddress(['NAD', 'CN']),
-                [new UnknownSegment(['COM', ['123', 'TE']])],
+                [new COMCommunicationContact(['COM', ['123', 'TE']])],
             ),
             new ContextSegment(
                 new LINLineItem(['LIN', '1']),
@@ -420,7 +420,7 @@ EDI;
         $nadContext = $firstMessage->segmentByTagAndSubId('NAD', 'CN');
         self::assertInstanceOf(ContextSegment::class, $nadContext);
         self::assertEquals([
-            new UnknownSegment(['COM', ['123', 'TE']]),
+            new COMCommunicationContact(['COM', ['123', 'TE']]),
         ], $nadContext->children());
 
         $linContext = $firstMessage->segmentByTagAndSubId('LIN', '1');

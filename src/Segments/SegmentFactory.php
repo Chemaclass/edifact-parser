@@ -43,6 +43,12 @@ final class SegmentFactory implements SegmentFactoryInterface
         'IMD' => IMDItemDescription::class,
         'PAC' => PACPackage::class,
         'GID' => GIDGoodsItemDetails::class,
+        'CTA' => CTAContactInformation::class,
+        'COM' => COMCommunicationContact::class,
+        'TAX' => TAXDutyTaxFee::class,
+        'PCD' => PCDPercentageDetails::class,
+        'PAT' => PATPaymentTerms::class,
+        'TOD' => TODTermsOfDelivery::class,
     ];
 
     private const TAG_LENGTH = 3;
