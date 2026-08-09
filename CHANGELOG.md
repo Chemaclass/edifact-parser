@@ -99,6 +99,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `segmentByTagAndSubId()`, and the same on `LineItem`) now hand back the typed segment.
 
 #### Changed
+- The published package is **72% smaller** (2.87 MB → 0.80 MB). A `.gitattributes` marks
+  tests, docs, examples, CI config and dev tooling `export-ignore`, so `composer require`
+  no longer downloads them, and the stale 2.1 MB `composer.phar` that had been committed by
+  accident is removed. Nothing that ships changes: `src`, `bin`, `schema`, the composer
+  files and the root documentation are all still there.
+- Removed the unused `symfony/var-dumper` dev dependency.
+- The dev container installs Composer 2 instead of a URL-pinned 1.10.13 from 2020, and
+  `docker-compose.yml` uses the current Compose schema — the old file was rejected outright
+  by `docker compose`.
 - **BC break:** the default tokenizer changed from `sabas/edifact` to `NativeTokenizer`.
   Output is identical for ASCII input; non-ASCII is now preserved rather than stripped,
   and malformed input that used to be silently accepted now raises `InvalidFile`. Pass

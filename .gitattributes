@@ -1,0 +1,22 @@
+# Keep the installed package to what a consumer actually needs. Without this every
+# `composer require` downloads the tests, docs, CI config and dev tooling too.
+/.github            export-ignore
+/devops             export-ignore
+/docs               export-ignore
+/docu               export-ignore
+/example            export-ignore
+/tests              export-ignore
+/tools              export-ignore
+/.gitattributes     export-ignore
+/.gitignore         export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/docker-compose.yml export-ignore
+/phpstan.neon       export-ignore
+/phpunit.xml        export-ignore
+/psalm.xml          export-ignore
+/rector.php         export-ignore
+
+# Normalise line endings so EDI fixtures are byte-identical everywhere.
+* text=auto eol=lf
+*.edi text eol=lf
+*.png binary

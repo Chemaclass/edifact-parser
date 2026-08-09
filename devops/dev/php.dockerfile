@@ -5,7 +5,8 @@ RUN apt-get update && \
 RUN pecl install -o -f xdebug \
     && rm -rf /tmp/pear \
     && docker-php-ext-enable xdebug
-RUN curl https://getcomposer.org/download/1.10.13/composer.phar > /usr/local/bin/composer
-RUN chmod 755 /usr/local/bin/composer
+# Composer 2 from the official image — 1.10.13 (2020) cannot install from Packagist's
+# current metadata, and pinning a phar by URL goes stale silently.
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 RUN useradd -m dev
 WORKDIR /srv/edifact-parser
