@@ -77,6 +77,7 @@
         "csrun": "./vendor/bin/php-cs-fixer fix --dry-run",
         "rector": "./vendor/bin/rector",
         "rector:dry": "./vendor/bin/rector --dry-run",
+        "verify-package": "sh tools/verify-package.sh",
         "bench": "php tools/benchmark.php",
         "bench:json": "php tools/benchmark.php --json"
     },

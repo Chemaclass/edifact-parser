@@ -213,3 +213,20 @@ jobs:
           ./bin/edifact segments --tag=NAD > /dev/null
           ./bin/edifact inspect example/edifact-sample.edi > /dev/null
           cat example/edifact-sample.edi | ./bin/edifact parse > /dev/null
+
+  package:
+    name: Published package
+    # .gitattributes decides what ships, and nothing else in the suite looks at the
+    # published artefact — excluding src/ or schema/ by accident would pass every other job.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+          tools: composer
+
+      - name: Build the dist, install it, and use it
+        run: sh tools/verify-package.sh
