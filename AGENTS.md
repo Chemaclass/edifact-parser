@@ -96,6 +96,11 @@ TransactionMessage organizes segments three ways:
   required-segment, cardinality and `inSequence()` conformance checks; never throws
 - **Duplicate-preserving access**: `query()` and `TransactionMessage::segments()` keep
   every segment in order (dups included); keyed views index by tag+subId (last wins)
+- **Keyed views hold the typed segment, never a `ContextSegment`** — so
+  `segmentByTagAndSubId('NAD', 'BY')->name()` and `instanceof NADNameAddress` both work.
+  Go from a segment to what was grouped under it with
+  `TransactionMessage::childrenOf()`/`contextFor()` (indexed by `spl_object_id`, and
+  accepting either the segment or the context object)
 - **Grouping config** (`GroupingRules`): injectable context/child/line-item-break tags
 - **Streaming** (`StreamingParser`): generator yielding one `TransactionMessage` at a time,
   bounded memory for large interchanges; honours a leading `UNA` (custom delimiters)
@@ -122,8 +127,6 @@ file. Keep them allocation- and call-free:
 - `MessageDataBuilder\Builder::addSegment()` — state transitions inlined on purpose.
 - `TransactionMessage::groupSegments()` — one pass; global (UNA/UNB/UNZ) segments are
   collected inside it rather than by a second filter pass.
-- `TransactionMessage::applyContexts()` — contexts indexed by `spl_object_id`, so swapping
-  them into the keyed views is linear rather than contexts × line items.
 - `StreamingParser::extractSegments()` — `strcspn`/`substr` runs, never a per-character loop.
 - `TransactionMessage` memoizes its ordered segment list and tag counts; `ParserResult`
   memoizes the merged segment map.

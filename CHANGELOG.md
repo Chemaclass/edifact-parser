@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Fixed
+- **Typed accessors work on keyed lookups again.** `NAD`, `LIN` and `DOC` open a context
+  by default, and the context object replaced the segment in the keyed views — so
+  `$message->segmentByTagAndSubId('NAD', 'BY')->name()` was a fatal
+  `Call to undefined method EdifactParser\ContextSegment::name()`, and
+  `instanceof NADNameAddress` was false. This is what the README Quick Start has always
+  shown, and it could not work. Keyed views (`allSegments()`, `segmentsByTag()`,
+  `segmentByTagAndSubId()`, and the same on `LineItem`) now hand back the typed segment.
+
+#### Added
+- `TransactionMessage::childrenOf()` and `contextFor()` — go from a segment to what was
+  grouped under it. Both accept either the segment or the `ContextSegment` itself, and
+  resolve in O(1). `contextSegments()` is unchanged.
+
+#### Changed
+- **BC break:** `children()` can no longer be called on the result of a keyed lookup,
+  because that result is now the typed segment. Use `$message->childrenOf($segment)`, or
+  keep walking `contextSegments()` as before.
+
 ## [6.5.0] - 2026-08-09
 
 #### Added

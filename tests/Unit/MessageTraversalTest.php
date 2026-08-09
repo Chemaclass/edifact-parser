@@ -8,6 +8,8 @@ use EdifactParser\ContextSegment;
 use EdifactParser\EdifactParser;
 use EdifactParser\GroupingRules;
 use EdifactParser\ParserResult;
+use EdifactParser\Segments\LINLineItem;
+use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Serializer\EdifactSerializer;
 use EdifactParser\TransactionMessage;
@@ -198,12 +200,40 @@ final class MessageTraversalTest extends TestCase
     /**
      * @test
      */
-    public function contexts_replace_their_segment_in_both_keyed_views(): void
+    public function keyed_views_return_the_typed_segment_and_contexts_are_looked_up(): void
     {
         $message = $this->parse()->transactionMessages()[0];
 
-        self::assertInstanceOf(ContextSegment::class, $message->segmentByTagAndSubId('NAD', 'BY'));
-        self::assertInstanceOf(ContextSegment::class, $message->lineItemById(1)?->segmentByTagAndSubId('LIN', '1'));
+        $buyer = $message->segmentByTagAndSubId('NAD', 'BY');
+        self::assertInstanceOf(NADNameAddress::class, $buyer);
+        // The typed accessors are the point: this used to be a ContextSegment and fatal.
+        self::assertSame('BY', $buyer->partyQualifier());
+        self::assertSame('BUYER', $buyer->partyId());
+
+        $lineItem = $message->lineItemById(1)?->segmentByTagAndSubId('LIN', '1');
+        self::assertInstanceOf(LINLineItem::class, $lineItem);
+
+        self::assertInstanceOf(ContextSegment::class, $message->contextFor($buyer));
+        self::assertSame(['CTA'], array_map(
+            static fn (SegmentInterface $child) => $child->tag(),
+            $message->childrenOf($buyer),
+        ));
+        self::assertSame(['QTY'], array_map(
+            static fn (SegmentInterface $child) => $child->tag(),
+            $message->childrenOf($lineItem),
+        ));
+    }
+
+    /**
+     * @test
+     */
+    public function contexts_resolve_from_either_the_segment_or_the_context_itself(): void
+    {
+        $message = $this->parse()->transactionMessages()[0];
+        $context = $message->contextSegments()[0];
+
+        self::assertSame($context, $message->contextFor($context));
+        self::assertSame($context->children(), $message->childrenOf($context));
     }
 
     /**
