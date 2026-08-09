@@ -33,6 +33,7 @@ interchanges with a typed, object-oriented API.
 ## Table of Contents
 
 - [Installation](#-installation)
+- [Command line](#-command-line)
 - [Quick Start](#-quick-start)
 - [Parsing](#-parsing) · [Streaming large files](#streaming-large-files)
 - [Reading data](#-reading-data) · [Typed accessors](#typed-accessors) · [Dumping a message](#dumping-a-message) · [Query API](#fluent-query-api) · [Line items](#line-items) · [Context hierarchy](#hierarchical-context-segments) · [Envelope metadata](#interchange--envelope-metadata) · [Functional groups](#functional-groups-ungune) · [Statistics](#statistics--analysis) · [Qualifier constants](#qualifier-constants) · [Character sets](#character-sets) · [Built-in segments](#built-in-segments)
@@ -149,6 +150,33 @@ foreach (StreamingParser::createWithDefaultSegments()->parseFile('/path/to/large
     process($message); // only one message is held in memory at a time
 }
 ```
+
+---
+
+## 🖥️ Command line
+
+`composer require` installs an `edifact` binary. It answers "what is in this file?" without
+writing a script — and it is built for automation as much as for people:
+
+```bash
+edifact parse order.edi                 # the parsed interchange as JSON
+edifact inspect order.edi               # type, counts by tag, line items
+edifact validate order.edi              # rule set picked from the message type
+edifact validate order.edi --rules=ORDERS
+edifact segments                        # every tag the parser knows
+edifact segments --tag=NAD              # its accessors and return types
+edifact parse order.edi --pretty        # readable JSON
+
+cat order.edi | edifact inspect         # reads stdin when no path is given
+```
+
+Contract, so output can be consumed without guessing:
+
+- **data on stdout, diagnostics on stderr** — never interleaved, so `| jq` always works
+- **exit codes**: `0` success/valid, `1` invalid input, `2` usage error
+- JSON by default; `--pretty` is purely cosmetic
+
+No console framework is pulled in — a parsing library should not put one in your `vendor/`.
 
 ---
 

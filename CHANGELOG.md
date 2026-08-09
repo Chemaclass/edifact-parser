@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **`edifact` CLI.** `parse`, `inspect`, `validate` and `segments`, installed as a composer
+  binary. JSON on stdout, diagnostics on stderr, documented exit codes (0 success,
+  1 invalid, 2 usage), reads stdin when no path is given, `--pretty` for humans. No console
+  framework is added as a dependency.
 - **Runtime introspection.** `SegmentFactory::registeredTags()`, `classForTag()` and
   `describeTag()` expose what the factory can build without opening the source; the first
   two load no classes. `Segments\SegmentDescriptor` derives a segment's accessors and
