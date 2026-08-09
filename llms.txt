@@ -1,0 +1,50 @@
+# chemaclass/edifact-parser
+
+> A PHP toolkit for UN/EDIFACT: parse, write, validate and stream EDI interchanges with a
+> typed, object-oriented API. PHP 8.0+, PSR-4, no required runtime dependency beyond
+> `sabas/edifact` and `webmozart/assert`.
+
+Install with `composer require chemaclass/edifact-parser`. Entry point is
+`EdifactParser::createWithDefaultSegments()->parse($string)` or `->parseFile($path)`,
+which returns a `ParserResult`.
+
+Every snippet in these documents exists as a runnable file under `example/`, and CI runs
+them — so they cannot silently rot.
+
+## Docs
+
+- [Parsing](docs/llms/parsing.md): EdifactParser, ParserResult, tokenizers, streaming
+- [Reading data](docs/llms/reading.md): typed accessors, keyed lookups, query API, line items, contexts
+- [Writing](docs/llms/writing.md): segment builders, serializer, full interchange assembly
+- [Validation](docs/llms/validation.md): rule sets, violations, diagnostics
+- [Extending](docs/llms/extending.md): custom segments, grouping rules, tokenizers, introspection
+- [CLI](docs/llms/cli.md): the `edifact` binary, output contract, exit codes
+
+## Gotchas
+
+Things that are not guessable from the signatures, and that have bitten people:
+
+- **Keyed lookups return the typed segment, not a context.** `segmentByTagAndSubId('NAD','BY')`
+  is a `NADNameAddress`, so accessors and `instanceof` work. To reach what was grouped under
+  it, use `$message->childrenOf($segment)` or `contextFor($segment)`. (Before 7.0 this
+  returned a `ContextSegment` and every typed accessor was a fatal error.)
+- **Numeric-looking subIds are int array keys.** PHP normalizes `'1'` and `'21'`, so keyed
+  maps are `array<string, array<array-key, SegmentInterface>>` and `segmentByTagAndSubId()`
+  accepts `string|int`.
+- **Unknown tags never throw.** They become `UnknownSegment`, still readable via
+  `rawValues()`. Absence of a segment is `null`, not an exception — always null-check.
+- **Keyed views keep the last duplicate.** Two segments sharing tag+subId collapse in
+  `allSegments()`/`segmentsByTag()`. Use `query()` or `segments()` when duplicates matter;
+  both preserve order and every occurrence.
+- **`NativeTokenizer` is the default since 7.0.** `SabasTokenizer` is still available but
+  strips every byte in `\x80-\xFF`, destroying non-ASCII data.
+- **Match on diagnostic codes, never on messages.** `DiagnosticCode` values are public API;
+  the human-readable text is not.
+- **Grouping is heuristic, not directory-driven.** `GroupingRules` approximates segment
+  groups with a configurable parent/child tag list; it is not the UNTDID structure.
+
+## Optional
+
+- [README](README.md): the same material for human readers, with more prose
+- [AGENTS.md](AGENTS.md): conventions for working *on* this repo, not with it
+- [schema/message.schema.json](schema/message.schema.json): JSON Schema for `toArray()` output

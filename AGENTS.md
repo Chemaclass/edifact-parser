@@ -173,6 +173,11 @@ composer quality                # All checks (CS, Psalm, PHPStan, Rector)
 composer csfix                  # Fix code style
 ```
 
+**Documentation contract:** `llms.txt` + `docs/llms/*.md` are the agent-facing docs. Every
+snippet in them MUST have a runnable counterpart in `example/llms-*.php` asserting the same
+thing, and CI runs all examples with assertions on. If you change an API, update the doc AND
+its example — a snippet with no example is how the README Quick Start stayed broken for years.
+
 **Toolchain gotcha:** the pinned Psalm (`^5.26`) is happiest on **PHP ≤ 8.3** — run it under
 8.3 if your CLI is newer, and add `--threads=1` if it dies mid-run. On PHP > 8.3,
 PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`. PHPStan passing does not guarantee Psalm

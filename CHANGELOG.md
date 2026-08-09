@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **`llms.txt` and executable documentation.** A hierarchical `llms.txt` at the repo root
+  links to per-topic docs under `docs/llms/`, with a gotchas section for the things that
+  are not guessable from signatures. Every documented snippet exists as a runnable file
+  under `example/`, and a new CI job executes all of them with assertions enabled — the
+  README Quick Start was a fatal error for years because nothing ran it.
 - **`edifact` CLI.** `parse`, `inspect`, `validate` and `segments`, installed as a composer
   binary. JSON on stdout, diagnostics on stderr, documented exit codes (0 success,
   1 invalid, 2 usage), reads stdin when no path is given, `--pretty` for humans. No console

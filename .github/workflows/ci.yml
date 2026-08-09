@@ -179,3 +179,37 @@ jobs:
 
       - name: Compare
         run: php tools/benchmark-compare.php /tmp/base.json /tmp/head.json
+
+  examples:
+    name: Documentation examples
+    # Every snippet in llms.txt / docs/llms has a runnable counterpart under example/.
+    # Running them here is what stops the documentation from drifting: the README Quick
+    # Start was a fatal error for years because nothing executed it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+          ini-values: zend.assertions=1, assert.exception=1
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-ansi --no-progress
+
+      - name: Run every example
+        run: |
+          status=0
+          for file in example/*.php; do
+            echo "--- $file"
+            php "$file" > /dev/null || status=1
+          done
+          exit $status
+
+      - name: Exercise the CLI
+        run: |
+          ./bin/edifact segments --tag=NAD > /dev/null
+          ./bin/edifact inspect example/edifact-sample.edi > /dev/null
+          cat example/edifact-sample.edi | ./bin/edifact parse > /dev/null
