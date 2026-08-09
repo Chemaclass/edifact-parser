@@ -8,7 +8,7 @@ AI context for understanding this EDIFACT parser library architecture.
 
 1. **EdifactParser** (`src/EdifactParser.php`)
    - Entry point; tokenizing is pluggable via `Tokenizer\TokenizerInterface`
-     - `NativeTokenizer` (default) — regex-free single pass, ~2.2x faster, and lossless
+     - `NativeTokenizer` (default) — regex-free single pass, ~1.8x faster tokenizing, lossless
      - `SabasTokenizer` — wraps `sabas/edifact`, the 6.x default. Strips every byte in
        \x80-\xFF, so it destroys non-ASCII data. Kept for bug-for-bug compatibility.
      - Kept honest by `TokenizerEquivalenceTest`, which diffs `NativeTokenizer` against
@@ -160,6 +160,13 @@ TransactionMessage organizes segments three ways:
 Enforced, not just documented: `composer bench` measures each of these, and CI runs the
 same suite against the PR's base branch on the same runner, failing on a >1.5x regression.
 Do not edit `tools/benchmark.php` in a commit that also claims a performance delta.
+
+**The corpus must be valid EDIFACT.** Malformed input penalises whichever implementation
+detects it, which silently inflates the ratio in favour of the one that does not. A stray
+`?@` (a release before a non-delimiter) in the original corpus pushed `SabasTokenizer`
+through its unescaped-release `preg_match` on every element and made `NativeTokenizer` look
+2.2x faster; on clean data the honest figure is 1.8x. Quote ratios only from a corpus both
+sides accept, and say which corpus.
 
 These run once per segment of an interchange — hundreds of thousands of times on a large
 file. Keep them allocation- and call-free:

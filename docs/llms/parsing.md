@@ -42,7 +42,7 @@ $message->toJson();
 
 ## Tokenizers
 
-`NativeTokenizer` is the default: regex-free, ~2.2× faster at tokenizing, and it preserves
+`NativeTokenizer` is the default: regex-free, ~1.8× faster at tokenizing, and it preserves
 non-ASCII bytes.
 
 ```php

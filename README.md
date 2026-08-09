@@ -122,7 +122,7 @@ A **message** starts at `UNH` and ends at `UNT`; an **interchange** wraps messag
 ### Choosing a tokenizer
 
 Turning raw text into segments is pluggable. **`NativeTokenizer` is the default** — a
-regex-free single-pass scanner, ~2.2× faster at tokenizing (~1.5× on `parse()` overall),
+regex-free single-pass scanner, ~1.8× faster at tokenizing (~1.3× on `parse()` overall),
 and it never rewrites the bytes it reads:
 
 ```php
