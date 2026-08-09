@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<segments>
+    <segment id="QTY" name="quantity" desc="To specify a pertinent quantity.">
+        <composite_data_element id="C186" required="true" name="quantityDetails"><data_element id="6063" required="true" name="quantityQualifier" type="an" maxlength="3"></data_element><data_element id="6060" required="true" name="quantity" type="n" maxlength="15"></data_element><data_element id="6411" name="measureUnitQualifier" type="an" maxlength="3"></data_element></composite_data_element>
+    </segment>
+    <segment id="RFF" name="reference" desc="To specify a reference.">
+        <composite_data_element id="C506" required="true" name="reference"><data_element id="1153" required="true" name="referenceQualifier" type="an" maxlength="3"></data_element><data_element id="1154" name="referenceNumber" type="an" maxlength="35"></data_element></composite_data_element>
+    </segment>
+    <segment id="TST" name="test segment" desc="Exercises simple elements and an optional composite.">
+        <data_element id="9001" required="true" name="mandatorySimple" type="an" maxlength="5"/>
+        <data_element id="9002" name="optionalAlphabetic" type="a" maxlength="10"/>
+        <composite_data_element id="C900" name="optionalComposite"><data_element id="9003" required="true" name="mandatoryInsideOptional" type="an" maxlength="3"></data_element></composite_data_element>
+        <composite_data_element id="C901" required="true" name="requiredComposite"><data_element id="9004" required="true" name="inRequiredComposite" type="an" maxlength="3"></data_element></composite_data_element>
+        <composite_data_element id="C902" name="emptySelfClosing"/>
+    </segment>
+</segments>

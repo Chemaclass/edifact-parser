@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16d37beec674e1b6d2b3bbc85d98133d",
+    "content-hash": "23037ebbcf4abe57bba6ae4e51a34c45",
     "packages": [
         {
             "name": "sabas/edifact",
@@ -1386,6 +1386,45 @@
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
             "time": "2022-02-21T01:04:05+00:00"
+        },
+        {
+            "name": "php-edifact/edifact-mapping",
+            "version": "0.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-edifact/edifact-mapping.git",
+                "reference": "c875cda084bcfa6d885652756077464c12d78c72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-edifact/edifact-mapping/zipball/c875cda084bcfa6d885652756077464c12d78c72",
+                "reference": "c875cda084bcfa6d885652756077464c12d78c72",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EDI\\Mapping\\": "src/Mapping/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "description": "XML mappings from UNTDID",
+            "homepage": "https://github.com/php-edifact/edifact-mapping",
+            "keywords": [
+                "UNECE",
+                "edi",
+                "edifact",
+                "mapping",
+                "message"
+            ],
+            "support": {
+                "issues": "https://github.com/php-edifact/edifact-mapping/issues",
+                "source": "https://github.com/php-edifact/edifact-mapping/tree/0.5.2"
+            },
+            "time": "2025-11-20T10:05:22+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

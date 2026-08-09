@@ -97,6 +97,15 @@ TransactionMessage organizes segments three ways:
   back to an `.edi` string (inverse of parsing)
 - **Interchange assembly** (`Writer\InterchangeBuilder` + `Writer\MessageBuilder`): build a full
   UNB…UNZ with auto UNT/UNZ counts, then `toString()`
+- **Directory data** (`Directory\XmlDirectory` + `DirectoryInterface`, `SegmentDefinition`,
+  `Composite`, `DataElement`): UNTDID segment definitions and code lists, read with XMLReader
+  and cached. `php-edifact/edifact-mapping` is a `suggest` — the parser must keep working
+  without it, so every entry point returns null rather than throwing when data is absent.
+  Unit tests run against a small committed fixture in `tests/fixtures/directory` so the suite
+  does not need the 150 MB package; one test loads the real D96A when present
+- **Directory validation** (`Validation\DirectoryValidator`): element/composite requirements,
+  representation, lengths, and opt-in code lists. Complements `MessageValidator`, which works
+  at message level
 - **Predefined rule sets** (`Validation\MessageRuleSets`): `orders()`/`invoic()`/`desadv()`/`iftmin()`
 - **Charset** (`Charset\Charset`): map UNB syntax id → encoding, decode values to UTF-8
 - **Diagnostics** (`Diagnostics\Diagnostic` + `DiagnosticCode`): one type for parse and
