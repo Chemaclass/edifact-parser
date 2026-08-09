@@ -42,6 +42,9 @@ final class TransactionMessage implements Countable, IteratorAggregate
     /** @var array<string, int>|null */
     private ?array $countByTag = null;
 
+    /** @var array<int, ContextSegment>|null Contexts by the object id of the segment that opened them */
+    private ?array $contextsBySegmentId = null;
+
     /**
      * @param  array<string, array<array-key, SegmentInterface>>  $groupedSegments
      * @param  array<array-key, LineItem>  $lineItems
@@ -153,6 +156,38 @@ final class TransactionMessage implements Countable, IteratorAggregate
     public function contextSegments(): array
     {
         return $this->contextSegments;
+    }
+
+    /**
+     * The context a segment opened, or null when it opened none. Keyed lookups return
+     * the typed segment — `segmentByTagAndSubId('NAD', 'BY')` is a `NADNameAddress`, so
+     * its accessors and `instanceof` work — and this is how you get from there to the
+     * children that were grouped under it.
+     */
+    public function contextFor(SegmentInterface $segment): ?ContextSegment
+    {
+        if ($this->contextsBySegmentId === null) {
+            $index = [];
+            foreach ($this->contextSegments as $context) {
+                // Indexed under both forms, so the lookup works whether you hold the
+                // segment from a keyed view or the context from contextSegments().
+                $index[spl_object_id($context->segment())] = $context;
+                $index[spl_object_id($context)] = $context;
+            }
+            $this->contextsBySegmentId = $index;
+        }
+
+        return $this->contextsBySegmentId[spl_object_id($segment)] ?? null;
+    }
+
+    /**
+     * The children grouped under a segment, empty when it opened no context.
+     *
+     * @return list<ContextSegment|SegmentInterface>
+     */
+    public function childrenOf(SegmentInterface $segment): array
+    {
+        return $this->contextFor($segment)?->children() ?? [];
     }
 
     public function lineItemById(string|int $lineItemId): ?LineItem
@@ -327,55 +362,16 @@ final class TransactionMessage implements Countable, IteratorAggregate
             $builder->addSegment($segment);
         }
 
-        $groupedSegments = $builder->buildSegments();
-        $lineItemsData = $builder->buildLineItemData();
+        $lineItems = array_map(
+            static fn (array $data) => new LineItem($data),
+            $builder->buildLineItemData(),
+        );
 
-        $contexts = (new ContextStackParser($rules))->parseAll($segments);
-        self::applyContexts($contexts, $groupedSegments, $lineItemsData);
-
-        $lineItems = array_map(static fn (array $data) => new LineItem($data), $lineItemsData);
-
-        return new self($groupedSegments, $lineItems, $contexts, $segments);
-    }
-
-    /**
-     * Swaps every segment that opened a context for the context itself, so the keyed
-     * views expose the children too. Indexing the contexts by object identity keeps
-     * this linear — a scan per context would be quadratic in the number of line items.
-     *
-     * @param list<ContextSegment> $contexts
-     * @param array<string, array<array-key, SegmentInterface>> $grouped
-     * @param array<array-key, array<string, array<array-key, SegmentInterface>>> $lineItems
-     */
-    private static function applyContexts(array $contexts, array &$grouped, array &$lineItems): void
-    {
-        if ($contexts === []) {
-            return;
-        }
-
-        $contextsBySegmentId = [];
-        foreach ($contexts as $context) {
-            $contextsBySegmentId[spl_object_id($context->segment())] = $context;
-        }
-
-        foreach ($grouped as $tag => $bySubId) {
-            foreach ($bySubId as $subId => $segment) {
-                $context = $contextsBySegmentId[spl_object_id($segment)] ?? null;
-                if ($context !== null) {
-                    $grouped[$tag][$subId] = $context;
-                }
-            }
-        }
-
-        foreach ($lineItems as $key => $byTag) {
-            foreach ($byTag as $tag => $bySubId) {
-                foreach ($bySubId as $subId => $segment) {
-                    $context = $contextsBySegmentId[spl_object_id($segment)] ?? null;
-                    if ($context !== null) {
-                        $lineItems[$key][$tag][$subId] = $context;
-                    }
-                }
-            }
-        }
+        return new self(
+            $builder->buildSegments(),
+            $lineItems,
+            (new ContextStackParser($rules))->parseAll($segments),
+            $segments,
+        );
     }
 }

@@ -263,9 +263,16 @@ foreach ($message->contextSegments() as $context) {
 }
 ```
 
-> A context segment replaces the segment it wraps in the keyed views, so
-> `segmentByTagAndSubId('NAD', 'BY')` may return a `ContextSegment`. It reads through to
-> the wrapped segment for `tag()`, `subId()`, `rawValues()` and `toArray()`.
+Keyed lookups always hand back the **typed** segment, so you can go the other way too —
+read a segment normally, then ask the message what was grouped under it:
+
+```php
+$buyer = $message->segmentByTagAndSubId('NAD', 'BY'); // NADNameAddress
+$buyer?->name();                                       // typed accessors work
+
+$message->childrenOf($buyer);  // list<SegmentInterface> — the CTA/COM under this NAD
+$message->contextFor($buyer);  // ?ContextSegment — the same, as a context object
+```
 
 ### Interchange & envelope metadata
 

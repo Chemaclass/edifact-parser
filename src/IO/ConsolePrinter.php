@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EdifactParser\IO;
 
-use EdifactParser\ContextSegment;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\TransactionMessage;
 
@@ -35,16 +34,16 @@ final class ConsolePrinter implements PrinterInterface
             if ($segments === []) {
                 continue;
             }
-            $this->printSegmentWithContext($segments);
+            $this->printSegmentWithContext($message, $segments);
         }
     }
 
     /**
      * Prints segments and inline context if present.
      *
-     * @param  array<string, SegmentInterface>  $segments
+     * @param  array<array-key, SegmentInterface>  $segments
      */
-    private function printSegmentWithContext(array $segments): void
+    private function printSegmentWithContext(TransactionMessage $message, array $segments): void
     {
         $headerPrinted = false;
 
@@ -54,24 +53,26 @@ final class ConsolePrinter implements PrinterInterface
                 $headerPrinted = true;
             }
 
-            $this->printSingleSegmentWithContext($segment);
+            $this->printSingleSegmentWithContext($message, $segment);
         }
     }
 
     /**
-     * Handles printing of a segment or context segment inline with its children.
+     * Handles printing of a segment inline with the children grouped under it. Keyed
+     * lookups hand back the typed segment, so the children come from the message.
      */
-    private function printSingleSegmentWithContext(SegmentInterface $segment, string $indent = '  '): void
-    {
+    private function printSingleSegmentWithContext(
+        TransactionMessage $message,
+        SegmentInterface $segment,
+        string $indent = '  ',
+    ): void {
         $subId = $segment->subId();
         $values = json_encode($segment->rawValues(), JSON_THROW_ON_ERROR);
 
         echo sprintf("%s%s |> %s\n", $indent, str_pad($subId, 3), $values);
 
-        if ($segment instanceof ContextSegment) {
-            foreach ($segment->children() as $child) {
-                $this->printSingleSegmentWithContext($child, $indent . '  ');
-            }
+        foreach ($message->childrenOf($segment) as $child) {
+            $this->printSingleSegmentWithContext($message, $child, $indent . '  ');
         }
     }
 }

@@ -30,6 +30,13 @@ final class ConsolePrinterTest extends TestCase
         self::assertStringContainsString("NAD:\n", $output);
         // Segment body rendered as "<subId> |> <json>".
         self::assertStringContainsString('|>', $output);
+
+        // The children grouped under NAD:CN are printed nested under it. Keyed lookups
+        // return the typed segment, so the printer resolves the context via the message.
+        self::assertMatchesRegularExpression(
+            '/^  CN  \|>.*\n    IC  \|> \["CTA"/m',
+            $output,
+        );
     }
 
     /**

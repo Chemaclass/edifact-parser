@@ -400,22 +400,12 @@ EDI;
         $firstMessage = reset($messages);
 
         $firstLineItem = new LineItem([
-            'LIN' => [
-                '1' => new ContextSegment(
-                    new LINLineItem(['LIN', 1]),
-                    [new QTYQuantity(['QTY', [25, 5]])],
-                ),
-            ],
+            'LIN' => ['1' => new LINLineItem(['LIN', '1'])],
             'QTY' => ['25' => new QTYQuantity(['QTY', [25, 5]])],
         ]);
 
         $secondLineItem = new LineItem([
-            'LIN' => [
-                '2' => new ContextSegment(
-                    new LINLineItem(['LIN', 2]),
-                    [new QTYQuantity(['QTY', [23, 10]])],
-                ),
-            ],
+            'LIN' => ['2' => new LINLineItem(['LIN', '2'])],
             'QTY' => ['23' => new QTYQuantity(['QTY', [23, 10]])],
         ]);
 
@@ -457,17 +447,37 @@ EDI;
 
         self::assertEquals($expected, $firstMessage->contextSegments());
 
-        $nadContext = $firstMessage->segmentByTagAndSubId('NAD', 'CN');
-        self::assertInstanceOf(ContextSegment::class, $nadContext);
+        // Keyed lookups hand back the typed segment, so its accessors keep working…
+        $nad = $firstMessage->segmentByTagAndSubId('NAD', 'CN');
+        self::assertInstanceOf(NADNameAddress::class, $nad);
+        self::assertSame('CN', $nad->partyQualifier());
+
+        // …and the children grouped under it are one call away.
         self::assertEquals([
             new COMCommunicationContact(['COM', ['123', 'TE']]),
-        ], $nadContext->children());
+        ], $firstMessage->childrenOf($nad));
 
-        $linContext = $firstMessage->segmentByTagAndSubId('LIN', '1');
-        self::assertInstanceOf(ContextSegment::class, $linContext);
+        $lin = $firstMessage->segmentByTagAndSubId('LIN', '1');
+        self::assertInstanceOf(LINLineItem::class, $lin);
         self::assertEquals([
             new QTYQuantity(['QTY', ['21', '5']]),
-        ], $linContext->children());
+        ], $firstMessage->childrenOf($lin));
+
+        self::assertEquals(
+            new ContextSegment($nad, [new COMCommunicationContact(['COM', ['123', 'TE']])]),
+            $firstMessage->contextFor($nad),
+        );
+    }
+
+    public function test_a_segment_without_a_context_has_none(): void
+    {
+        $messages = $this->parse("UNA:+.? 'UNH+1+anything'NAD+CN'UNT+3+1'")->transactionMessages();
+        $firstMessage = reset($messages);
+
+        $unh = $firstMessage->segmentByTagAndSubId('UNH', '1');
+        self::assertNotNull($unh);
+        self::assertNull($firstMessage->contextFor($unh));
+        self::assertSame([], $firstMessage->childrenOf($unh));
     }
 
     private function parse(string $fileContent): ParserResult
