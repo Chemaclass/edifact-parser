@@ -1,5 +1,5 @@
 parameters:
     level: 5
-    phpVersion: 80100
+    phpVersion: 80000
     paths:
         - %currentWorkingDirectory%/src/

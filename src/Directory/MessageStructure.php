@@ -73,7 +73,9 @@ final class MessageStructure
             }
 
             $groups[$part->id()] = $part;
-            $groups = [...$groups, ...self::collectGroups($part->parts())];
+            // array_merge, not spread: unpacking string-keyed arrays needs PHP 8.1 and the
+            // package supports 8.0.
+            $groups = array_merge($groups, self::collectGroups($part->parts()));
         }
 
         return $groups;
