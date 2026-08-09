@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **Generated segment classes.** `tools/generate-segments.php` emits typed classes from a
+  UN/EDIFACT directory, accessors named from the official element names. 102 are committed
+  for D96A, available through `SegmentFactory::withDirectorySegments()` — 134 tags instead
+  of 32. `DEFAULT_SEGMENTS` is deliberately unchanged, and a hand-written class always wins
+  for the tags it covers. Nothing is autoloaded until a tag is seen, so factory boot is
+  unaffected.
 - **Directory-driven validation.** `Directory\XmlDirectory` reads the UN/EDIFACT UNTDID
   directories (segment definitions and code lists) published by `php-edifact/edifact-mapping`,
   or any folder laid out the same way. `Validation\DirectoryValidator` checks each segment

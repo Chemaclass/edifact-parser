@@ -51,6 +51,25 @@ $parser = new EdifactParser($factory);
 - `SegmentFactory::ENVELOPE_SEGMENTS` (7) and `BUSINESS_SEGMENTS` (25) compose:
   `withSegments(SegmentFactory::ENVELOPE_SEGMENTS + ['NAD' => NADNameAddress::class])`.
 
+## Directory segments
+
+The 32 hand-written segments are the defaults. The rest of a UN/EDIFACT directory is
+generated from the published definitions and available opt-in — 134 tags in total:
+
+```php
+$factory = SegmentFactory::withDirectorySegments();
+$parser = new EdifactParser($factory);
+
+$eqd = $message->segmentByTagAndSubId('EQD', 'CN');   // Generated\EQDEquipmentDetails
+$eqd?->equipmentIdentificationNumber();
+```
+
+The hand-written classes always win for the tags they cover: their accessor names are
+better than the official element names, and their signatures are public API. Nothing is
+autoloaded until a tag is actually seen, so the larger map costs nothing to build.
+
+Regenerate with `php tools/generate-segments.php D96A` (needs `php-edifact/edifact-mapping`).
+
 ## Grouping rules
 
 Which tags open a context, attach as children, or close a line-item section.

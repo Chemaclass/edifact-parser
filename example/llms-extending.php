@@ -10,6 +10,8 @@ use EdifactParser\EdifactParser;
 use EdifactParser\GroupingRules;
 use EdifactParser\Segments\AbstractSegment;
 use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\Generated\EQDEquipmentDetails as GeneratedEQD;
+use EdifactParser\Segments\GeneratedSegments;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Tokenizer\TokenizerInterface;
 
@@ -97,5 +99,17 @@ assert(count($defaults->registeredTags()) === 32);
 assert($defaults->classForTag('NAD') === NADNameAddress::class);
 assert($defaults->classForTag('ZZZ') === null);
 assert(array_key_exists('quantityAsFloat', $defaults->describeTag('QTY')?->accessors() ?? []));
+
+// --- Directory segments -----------------------------------------------------
+$withDirectory = SegmentFactory::withDirectorySegments();
+assert(count($withDirectory->registeredTags()) === 32 + count(GeneratedSegments::SEGMENTS));
+assert($withDirectory->classForTag('NAD') === NADNameAddress::class);   // hand-written wins
+
+$eqdMessage = (new EdifactParser($withDirectory))
+    ->parse("UNH+1+IFTMIN:S:93A:UN'EQD+CN+ABCU1234567+4510:102:5'UNT+3+1'")
+    ->transactionMessages()[0];
+$generated = $eqdMessage->segmentByTagAndSubId('EQD', 'CN');
+assert($generated instanceof GeneratedEQD);
+assert($generated->equipmentIdentificationNumber() === 'ABCU1234567');
 
 echo "docs/llms/extending.md OK\n";
