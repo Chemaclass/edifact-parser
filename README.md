@@ -559,6 +559,29 @@ $parser = new EdifactParser($factory);
 > registering a custom class under a default tag overrides that default. Use
 > `withSegments()` instead when you want an explicit, closed set of segments.
 
+### Introspection
+
+Ask the factory what it knows, instead of reading the source:
+
+```php
+$factory = SegmentFactory::withDefaultSegments();
+
+$factory->registeredTags();        // ['BGM', 'CNT', 'COM', … ] — 32 tags, sorted
+$factory->classForTag('NAD');      // EdifactParser\Segments\NADNameAddress
+$factory->classForTag('ZZZ');      // null — would become an UnknownSegment
+
+$factory->describeTag('QTY')?->accessors();
+// ['measureUnit' => 'string', 'qualifier' => 'string',
+//  'quantity' => 'string', 'quantityAsFloat' => 'float']
+```
+
+Descriptors are derived by reflection, so they cannot drift from the code.
+`registeredTags()` and `classForTag()` read the map only — no class is loaded.
+
+The shape of `toArray()`/`toJson()` is published as a JSON Schema at
+[`schema/message.schema.json`](schema/message.schema.json), and a test asserts the schema
+still matches what a parsed message actually produces.
+
 ### Composable segment bundles
 
 The defaults are exposed as two composable bundles so you can build a lean factory
