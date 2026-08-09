@@ -108,6 +108,29 @@ A **message** starts at `UNH` and ends at `UNT`; an **interchange** wraps messag
 `UNB` and `UNZ`, optionally grouped by `UNG`/`UNE`. Invalid input throws
 [`InvalidFile`](#error-handling).
 
+### Choosing a tokenizer
+
+Turning raw text into segments is pluggable. The default delegates to `sabas/edifact` and is
+unchanged; `NativeTokenizer` is a regex-free single-pass scanner that is **~2.2× faster at
+tokenizing (~1.5× on `parse()` overall)** and, unlike the default, **preserves non-ASCII
+bytes** instead of stripping them:
+
+```php
+use EdifactParser\Tokenizer\NativeTokenizer;
+
+$parser = EdifactParser::createWithDefaultSegments(tokenizer: new NativeTokenizer());
+$stream = StreamingParser::createWithDefaultSegments(tokenizer: new NativeTokenizer());
+
+// or with a custom factory
+new EdifactParser(SegmentFactory::withDefaultSegments(), tokenizer: new NativeTokenizer());
+```
+
+Both produce identical output for ASCII input — verified segment-for-segment against the
+default across the test fixtures and a generated corpus. They differ deliberately on
+non-ASCII: the default deletes those bytes (`Müller` → `Mller`), the native one keeps them.
+
+---
+
 ### Streaming large files
 
 Stream messages one at a time in **bounded memory** — ideal for large interchanges. A

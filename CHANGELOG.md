@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Added
+- **Pluggable tokenizing** via `Tokenizer\TokenizerInterface`. `Tokenizer\SabasTokenizer`
+  wraps `sabas/edifact` and stays the default, so existing behaviour is unchanged.
+  `Tokenizer\NativeTokenizer` is a regex-free single-pass alternative: **2.2× faster at
+  tokenizing and 1.5× on `parse()`** for a 2.6 MB / 149k-segment interchange, and it
+  **preserves non-ASCII data** that the default silently strips. Pass one with
+  `new EdifactParser($factory, tokenizer: new NativeTokenizer())` or the `tokenizer:`
+  argument on either parser's `createWithDefaultSegments()`.
+  The two are verified segment-for-segment identical on ASCII input across the fixtures
+  and a generated corpus.
+
 #### Fixed
 - **Typed accessors work on keyed lookups again.** `NAD`, `LIN` and `DOC` open a context
   by default, and the context object replaced the segment in the keyed views — so
