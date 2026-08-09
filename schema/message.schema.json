@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Chemaclass/edifact-parser/schema/message.schema.json",
+  "title": "EdifactParser message",
+  "description": "The shape produced by TransactionMessage::toArray()/toJson(). Segment entries match the shape produced by SegmentArray::fromSegment().",
+  "type": "object",
+  "required": ["type", "segments"],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "description": "Message type from the UNH segment, or null when the message has no UNH.",
+      "type": ["string", "null"],
+      "examples": ["ORDERS", "INVOIC", "DESADV", "IFTMIN"]
+    },
+    "segments": {
+      "description": "Every segment in document order, duplicates preserved.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/segment" }
+    }
+  },
+  "$defs": {
+    "segment": {
+      "type": "object",
+      "required": ["tag", "subId", "rawValues"],
+      "additionalProperties": false,
+      "properties": {
+        "tag": {
+          "description": "Three-character segment tag.",
+          "type": "string",
+          "examples": ["UNH", "NAD", "LIN", "QTY"]
+        },
+        "subId": {
+          "description": "Identifier distinguishing repeated segments with the same tag. Composite ids are joined with ':'.",
+          "type": "string",
+          "examples": ["BY", "21", "21:C62"]
+        },
+        "rawValues": {
+          "description": "The segment's elements. Element 0 is the tag; each other entry is either a simple value or a list of components.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/element" }
+        },
+        "children": {
+          "description": "Present only on context segments: the segments grouped under this one.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/segment" }
+        }
+      }
+    },
+    "element": {
+      "description": "A simple element (string) or a composite (list of components).",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    }
+  }
+}

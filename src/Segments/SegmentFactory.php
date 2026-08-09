@@ -7,8 +7,11 @@ namespace EdifactParser\Segments;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
+use function array_keys;
+use function array_map;
 use function is_a;
 use function is_string;
+use function sort;
 
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
@@ -126,6 +129,44 @@ final class SegmentFactory implements SegmentFactoryInterface
         self::assertValidSegments($segments);
 
         return new self($segments + self::DEFAULT_SEGMENTS, validate: false);
+    }
+
+    /**
+     * Every tag this factory can build, sorted. Reading the map's keys autoloads nothing,
+     * so this stays cheap even with every directory segment registered.
+     *
+     * @return list<string>
+     */
+    public function registeredTags(): array
+    {
+        $tags = array_map('strval', array_keys($this->segments));
+        sort($tags);
+
+        return $tags;
+    }
+
+    /**
+     * The class registered for a tag, or null when the tag would become an
+     * {@see UnknownSegment}. Returns the name only — nothing is autoloaded.
+     *
+     * @return class-string<SegmentInterface>|null
+     */
+    public function classForTag(string $tag): ?string
+    {
+        return $this->segments[$tag] ?? null;
+    }
+
+    /**
+     * What the segment registered for this tag can tell you, or null when the tag is not
+     * registered. This one does load the class, since it reflects over it.
+     *
+     * @psalm-suppress ImpureMethodCall reflection reads the class; the factory is untouched
+     */
+    public function describeTag(string $tag): ?SegmentDescriptor
+    {
+        $className = $this->classForTag($tag);
+
+        return $className === null ? null : SegmentDescriptor::forClass($className);
     }
 
     public function createSegmentFromArray(array $rawArray): SegmentInterface

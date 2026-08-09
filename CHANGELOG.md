@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **Runtime introspection.** `SegmentFactory::registeredTags()`, `classForTag()` and
+  `describeTag()` expose what the factory can build without opening the source; the first
+  two load no classes. `Segments\SegmentDescriptor` derives a segment's accessors and
+  return types by reflection, so it cannot drift from the code. The `toArray()`/`toJson()`
+  shape is published as a JSON Schema at `schema/message.schema.json`, with a test
+  asserting it still matches real output.
 - **Structured diagnostics.** `Diagnostics\Diagnostic` carries a stable
   `Diagnostics\DiagnosticCode`, a severity, and the position of the problem (segment index,
   tag, element path) instead of only an English sentence. `InvalidFile::getDiagnostics()`

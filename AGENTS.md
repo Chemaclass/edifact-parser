@@ -113,6 +113,11 @@ TransactionMessage organizes segments three ways:
   Go from a segment to what was grouped under it with
   `TransactionMessage::childrenOf()`/`contextFor()` (indexed by `spl_object_id`, and
   accepting either the segment or the context object)
+- **Introspection** (`SegmentFactory::registeredTags()/classForTag()/describeTag()`,
+  `Segments\SegmentDescriptor`): enumerate tags and accessors at runtime. `registeredTags()`
+  and `classForTag()` must never autoload segment classes — see Hot Paths. Descriptors are
+  reflection-derived; do not hand-maintain them. `schema/message.schema.json` publishes the
+  `toArray()` shape and is asserted against real output by a test
 - **Grouping config** (`GroupingRules`): injectable context/child/line-item-break tags
 - **Streaming** (`StreamingParser`): generator yielding one `TransactionMessage` at a time,
   bounded memory for large interchanges; honours a leading `UNA` (custom delimiters)
