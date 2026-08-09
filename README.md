@@ -738,6 +738,7 @@ composer test       # PHPUnit (unit + functional)
 composer quality    # PHP-CS-Fixer, Psalm, PHPStan, Rector
 composer csfix      # apply code-style fixes
 composer bench      # benchmark the hot paths (corpus generated at runtime)
+composer verify-package  # build the dist, install it elsewhere, and use it
 ```
 
 CI runs the benchmarks on every pull request, measuring the base branch and the head

@@ -205,6 +205,11 @@ snippet in them MUST have a runnable counterpart in `example/llms-*.php` asserti
 thing, and CI runs all examples with assertions on. If you change an API, update the doc AND
 its example — a snippet with no example is how the README Quick Start stayed broken for years.
 
+**Packaging:** `.gitattributes` decides what ships, and it is the only thing that does.
+`composer verify-package` builds the dist with `git archive`, installs it into a throwaway
+project and uses it — including the CLI, whose autoloader resolution differs when installed
+as a dependency. CI runs it. Add an `export-ignore` and this is what catches an over-exclusion.
+
 **Toolchain gotcha:** the pinned Psalm (`^5.26`) is happiest on **PHP ≤ 8.3** — run it under
 8.3 if your CLI is newer, and add `--threads=1` if it dies mid-run. On PHP > 8.3,
 PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`. PHPStan passing does not guarantee Psalm
