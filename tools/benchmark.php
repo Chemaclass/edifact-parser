@@ -49,7 +49,7 @@ function corpus(): array
         $lines[] = "DTM+137:20240101:102'";
         $lines[] = "NAD+BY+BUYER{$message}::9+++Some Street 1+Berlin++10115+DE'";
         $lines[] = "CTA+IC+:John Doe'";
-        $lines[] = "COM+john?@example.com:EM'";
+        $lines[] = "COM+john@example.com:EM'";
         $lines[] = "NAD+SU+SUPPLIER{$message}::9+++Other Street 2+Munich++80331+DE'";
         $lines[] = "CUX+2:EUR:9'";
 
