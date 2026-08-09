@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EdifactParser\Exception;
 
+use EdifactParser\Diagnostics\Diagnostic;
+use EdifactParser\Diagnostics\DiagnosticCode;
 use Exception;
 
 use function is_scalar;
@@ -11,6 +13,9 @@ use function json_encode;
 
 final class InvalidFile extends Exception
 {
+    /** @var list<Diagnostic> */
+    private array $diagnostics = [];
+
     /**
      * @param array<int|string, mixed> $errors
      * @param array<string, mixed> $context
@@ -35,6 +40,47 @@ final class InvalidFile extends Exception
     public static function withErrors(array $errors): self
     {
         return new self($errors);
+    }
+
+    /**
+     * Preferred over {@see self::withErrors()}: the diagnostics keep their codes and
+     * positions, and `getErrors()` still returns the plain messages for older callers.
+     *
+     * @param list<Diagnostic> $diagnostics
+     */
+    public static function withDiagnostics(array $diagnostics): self
+    {
+        $exception = new self(array_map(
+            static fn (Diagnostic $diagnostic): string => (string) $diagnostic,
+            $diagnostics,
+        ));
+        $exception->diagnostics = $diagnostics;
+
+        return $exception;
+    }
+
+    /**
+     * Structured view of the same failures. Built from the plain error strings when the
+     * exception was raised without diagnostics, so this is never empty on a thrown
+     * InvalidFile.
+     *
+     * @return list<Diagnostic>
+     */
+    public function getDiagnostics(): array
+    {
+        if ($this->diagnostics !== []) {
+            return $this->diagnostics;
+        }
+
+        $diagnostics = [];
+        foreach ($this->errors as $error) {
+            $diagnostics[] = Diagnostic::error(
+                DiagnosticCode::TOKENIZE_FAILED,
+                is_scalar($error) ? (string) $error : (string) json_encode($error),
+            );
+        }
+
+        return $diagnostics;
     }
 
     /**

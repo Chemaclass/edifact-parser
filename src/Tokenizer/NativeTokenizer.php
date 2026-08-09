@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tokenizer;
 
+use EdifactParser\Diagnostics\Diagnostic;
+use EdifactParser\Diagnostics\DiagnosticCode;
 use EdifactParser\Exception\InvalidFile;
 
+use function count;
+use function is_string;
 use function rtrim;
 use function strcspn;
 use function strlen;
@@ -148,7 +152,16 @@ final class NativeTokenizer implements TokenizerInterface
         }
 
         if ($segment !== [] || $components !== [] || rtrim($value, self::BLANKS) !== '') {
-            throw InvalidFile::withErrors(['This file contains some segments without terminators']);
+            $tag = $segment[0] ?? null;
+
+            throw InvalidFile::withDiagnostics([
+                Diagnostic::error(
+                    DiagnosticCode::SEGMENT_UNTERMINATED,
+                    'This file contains some segments without terminators',
+                    count($segments),
+                    is_string($tag) ? $tag : null,
+                ),
+            ]);
         }
 
         return $segments;
