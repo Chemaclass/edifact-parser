@@ -63,12 +63,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the repo. CI benchmarks the PR's base branch and its head on the same runner and fails
   when a metric regresses beyond 1.5× — ratios measured back to back, since absolute
   timings on shared hardware are meaningless.
-- **Pluggable tokenizing** via `Tokenizer\TokenizerInterface`. `Tokenizer\SabasTokenizer`
-  wraps `sabas/edifact` and stays the default, so existing behaviour is unchanged.
-  `Tokenizer\NativeTokenizer` is a regex-free single-pass alternative: **2.2× faster at
+- **Pluggable tokenizing** via `Tokenizer\TokenizerInterface`.
+  `Tokenizer\NativeTokenizer` is the default: a regex-free single pass, **2.2× faster at
   tokenizing and 1.5× on `parse()`** for a 2.6 MB / 149k-segment interchange, and it
-  **preserves non-ASCII data** that the default silently strips. Pass one with
-  `new EdifactParser($factory, tokenizer: new NativeTokenizer())` or the `tokenizer:`
+  **preserves non-ASCII data**. `Tokenizer\SabasTokenizer` wraps `sabas/edifact` — the 6.x
+  default — and remains available for bug-for-bug compatibility. Choose one with
+  `new EdifactParser($factory, tokenizer: new SabasTokenizer())` or the `tokenizer:`
   argument on either parser's `createWithDefaultSegments()`.
   The two are verified segment-for-segment identical on ASCII input across the fixtures
   and a generated corpus.

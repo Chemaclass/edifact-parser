@@ -23,7 +23,14 @@ interchanges with a typed, object-oriented API.
 - 🧱 **Model the full envelope** — interchange → functional groups (`UNG/UNE`) → messages,
   with duplicate-preserving access and typed metadata on every envelope segment.
 - 🏷️ **32 typed segments** out of the box with domain accessors, plus qualifier constants —
-  and trivially [extensible](#-extending) with your own.
+  or **134** with the directory bundle, and trivially [extensible](#-extending) with your own.
+- 📐 **Directory-aware** — validate elements, lengths, representations and code lists against
+  the real UN/EDIFACT directories, and group messages into their actual nested segment
+  groups (`SG1…SGn`) rather than a heuristic.
+- 🖥️ **CLI included** — `edifact parse|inspect|validate|segments`, JSON on stdout, documented
+  exit codes.
+- 🩺 **Structured diagnostics** — stable codes and positions across parsing and validation,
+  so failures are matched on, not string-searched.
 - 🔎 **Fluent query API** and a **statistics analyzer** for extracting data. Results,
   messages, line items and queries are all `Countable` and `iterable`, and any of them
   dumps to plain arrays or JSON.
@@ -32,7 +39,7 @@ interchanges with a typed, object-oriented API.
 
 ## Table of Contents
 
-- [Installation](#-installation)
+- [Installation](#-installation) · [Upgrading from 6.x](UPGRADING.md)
 - [Command line](#-command-line)
 - [Quick Start](#-quick-start)
 - [Parsing](#-parsing) · [Streaming large files](#streaming-large-files)
@@ -431,7 +438,8 @@ $name = Charset::toUtf8($nad->name(), $unb->syntaxIdentifier());
 
 ### Built-in segments
 
-32 segments are typed and registered by default:
+32 segments are typed and registered by default (134 with
+`SegmentFactory::withDirectorySegments()`):
 
 - **Envelope / service:** `UNB`, `UNG`, `UNH`, `UNS`, `UNT`, `UNE`, `UNZ`
 - **Header:** `BGM`, `DTM`, `RFF`, `NAD`, `CUX`, `TDT`, `LOC`, `FTX`
