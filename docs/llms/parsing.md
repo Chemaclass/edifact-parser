@@ -54,6 +54,33 @@ use EdifactParser\Segments\SegmentFactory;
 new EdifactParser(SegmentFactory::withDefaultSegments(), tokenizer: new SabasTokenizer());
 ```
 
+## Syntax version 4
+
+`UNA` position 5 carries the repetition separator in syntax 4 (default `*`) and is reserved
+in syntax 3. It is honoured when the interchange declares one, so syntax 3 is untouched.
+
+```php
+use EdifactParser\Serializer\UnaSeparators;
+
+$una = UnaSeparators::fromUnaSegment("UNA:+.?*'");
+$una?->repetition();               // '*'
+$una?->hasRepetitionSeparator();   // true
+
+UnaSeparators::syntax4()->toUnaSegment();   // "UNA:+.?*'"
+```
+
+A repeated element becomes a list of its repeats, each a string or a list of components:
+
+```
+UNA:+.?*'RFF+CU:A*CU:B'   =>   ['RFF', [['CU','A'], ['CU','B']]]
+UNA:+.?*'FTX+AAI+a*b*c'   =>   ['FTX', 'AAI', ['a','b','c']]
+UNA:+.? 'FTX+AAI+a*b*c'   =>   ['FTX', 'AAI', 'a*b*c']       // syntax 3: not a delimiter
+```
+
+Note the residual ambiguity for repeated *simple* values: `a*b` and a composite `a:b` both
+yield `['a','b']`. Telling them apart needs the directory definition of the element, which
+is tracked separately.
+
 ## Streaming
 
 One message in memory at a time, for arbitrarily large files. A leading `UNA` is honoured.

@@ -10,6 +10,8 @@ use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\StreamingParser;
+use EdifactParser\Serializer\UnaSeparators;
+use EdifactParser\Tokenizer\NativeTokenizer;
 use EdifactParser\Tokenizer\SabasTokenizer;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -70,5 +72,18 @@ try {
     assert($e->getErrors() !== []);
     assert($e->getDiagnostics()[0]->code() === 'segment.unterminated');
 }
+
+// --- Syntax version 4 -------------------------------------------------------
+$una = UnaSeparators::fromUnaSegment("UNA:+.?*'");
+assert($una !== null);
+assert($una->repetition() === '*');
+assert($una->hasRepetitionSeparator() === true);
+assert(UnaSeparators::syntax4()->toUnaSegment() === "UNA:+.?*'");
+assert(UnaSeparators::default()->hasRepetitionSeparator() === false);
+
+$v4 = (new NativeTokenizer())->tokenize("UNA:+.?*'RFF+CU:A*CU:B'");
+assert($v4 === [['RFF', [['CU', 'A'], ['CU', 'B']]]]);
+assert((new NativeTokenizer())->tokenize("UNA:+.?*'FTX+AAI+a*b*c'") === [['FTX', 'AAI', ['a', 'b', 'c']]]);
+assert((new NativeTokenizer())->tokenize("UNA:+.? 'FTX+AAI+a*b*c'") === [['FTX', 'AAI', 'a*b*c']]);
 
 echo "docs/llms/parsing.md OK\n";

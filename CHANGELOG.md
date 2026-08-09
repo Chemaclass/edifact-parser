@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **EDIFACT syntax version 4: the repetition separator.** `UNA` position 5 is read and
+  honoured (default `*`), released occurrences (`?*`) are data, and repeated elements are
+  split into a list of repeats. `UnaSeparators` gains `fromUnaSegment()`, `syntax4()`,
+  `repetition()`, `hasRepetitionSeparator()`, `withRepetition()` and `decimal()`, and
+  escapes the separator on write. Syntax 3 is untouched: position 5 is reserved there, so
+  the character stays ordinary data.
 - **`llms.txt` and executable documentation.** A hierarchical `llms.txt` at the repo root
   links to per-topic docs under `docs/llms/`, with a gotchas section for the things that
   are not guessable from signatures. Every documented snippet exists as a runnable file
