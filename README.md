@@ -24,7 +24,9 @@ interchanges with a typed, object-oriented API.
   with duplicate-preserving access and typed metadata on every envelope segment.
 - 🏷️ **32 typed segments** out of the box with domain accessors, plus qualifier constants —
   and trivially [extensible](#-extending) with your own.
-- 🔎 **Fluent query API** and a **statistics analyzer** for extracting data.
+- 🔎 **Fluent query API** and a **statistics analyzer** for extracting data. Results,
+  messages, line items and queries are all `Countable` and `iterable`, and any of them
+  dumps to plain arrays or JSON.
 - 🌍 **Charset-aware** (`UNOA`…`UNOY`), **strictly typed** (PHP 8.0+, PSR-4), and fully
   covered by PHPUnit, PHPStan, Psalm, Rector and PHP-CS-Fixer.
 
@@ -33,7 +35,7 @@ interchanges with a typed, object-oriented API.
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
 - [Parsing](#-parsing) · [Streaming large files](#streaming-large-files)
-- [Reading data](#-reading-data) · [Typed accessors](#typed-accessors) · [Query API](#fluent-query-api) · [Line items](#line-items) · [Context hierarchy](#hierarchical-context-segments) · [Envelope metadata](#interchange--envelope-metadata) · [Functional groups](#functional-groups-ungune) · [Statistics](#statistics--analysis) · [Qualifier constants](#qualifier-constants) · [Character sets](#character-sets) · [Built-in segments](#built-in-segments)
+- [Reading data](#-reading-data) · [Typed accessors](#typed-accessors) · [Dumping a message](#dumping-a-message) · [Query API](#fluent-query-api) · [Line items](#line-items) · [Context hierarchy](#hierarchical-context-segments) · [Envelope metadata](#interchange--envelope-metadata) · [Functional groups](#functional-groups-ungune) · [Statistics](#statistics--analysis) · [Qualifier constants](#qualifier-constants) · [Character sets](#character-sets) · [Built-in segments](#built-in-segments)
 - [Writing EDIFACT](#-writing-edifact)
 - [Validation](#-validation)
 - [Extending](#-extending)
@@ -95,6 +97,11 @@ $result = EdifactParser::createWithDefaultSegments()->parse($ediString);
 $result->transactionMessages();  // list<TransactionMessage> — the UNH…UNT blocks
 $result->functionalGroups();     // list<FunctionalGroup>     — UNG…UNE groups, if any
 $result->globalSegments();       // TransactionMessage        — file-level UNA/UNB/UNZ
+
+$result->firstMessage();             // ?TransactionMessage
+$result->messagesOfType('INVOIC');   // list<TransactionMessage> — an interchange may mix types
+count($result);                      // number of messages
+foreach ($result as $message) { … }  // iterate the messages directly
 ```
 
 A **message** starts at `UNH` and ends at `UNT`; an **interchange** wraps messages between
@@ -159,6 +166,27 @@ $nad = $message->segmentByTagAndSubId('NAD', 'BY'); // ?SegmentInterface
 $allNad = $message->segmentsByTag('NAD');
 
 $nad?->name(); // always null-check — not every segment exists in every message
+
+// Presence and counts, answered from an index built once per message
+$message->has('QTY');       // bool
+$message->countByTag();     // ['UNH' => 1, 'NAD' => 2, 'LIN' => 40, …]
+count($message);            // total segments, duplicates included
+
+// A message is iterable in document order, so it goes straight into anything
+// expecting iterable<SegmentInterface>
+foreach ($message as $segment) { … }
+```
+
+### Dumping a message
+
+`toArray()` / `toJson()` render a whole message — or a single segment — as plain data,
+with context children nested. Useful for logs, snapshot tests and diffing interchanges:
+
+```php
+$message->toArray();  // ['type' => 'ORDERS', 'segments' => [['tag' => 'UNH', 'subId' => '1', …], …]]
+$message->toJson();   // pretty-printed JSON of the same structure
+
+$segment->toArray();  // ['tag' => 'NAD', 'subId' => 'BY', 'rawValues' => [...]]
 ```
 
 ### Fluent query API
@@ -170,6 +198,7 @@ included):
 // Filter
 $message->query()->withTag('NAD')->withSubId('CN')->get();
 $message->query()->withTags(['NAD', 'LIN'])->get();
+$message->query()->withoutTags(['UNH', 'UNT'])->get();
 $message->query()->ofType(NADNameAddress::class)->get();
 $message->query()->withTag('PRI')->where(fn($s) => $s->priceAsFloat() > 1000)->get();
 
@@ -181,9 +210,15 @@ $message->query()
 
 // Transform / inspect
 $message->query()->withTag('NAD')->map(fn($s) => $s->name());
+$message->query()->withTag('MOA')->reduce(fn(float $t, $s) => $t + $s->amountAsFloat(), 0.0);
+$message->query()->withTags(['QTY', 'PRI'])->groupByTag();  // ['QTY' => [...], 'PRI' => [...]]
+$message->query()->countByTag();              // ['NAD' => 2, 'LIN' => 40, …]
 $message->query()->withTag('NAD')->first();   // ?SegmentInterface
 $message->query()->withTag('NAD')->count();
 $message->query()->withTag('UNS')->exists();  // bool
+
+// A query is countable and iterable — no ->get() needed to loop
+foreach ($message->query()->withTag('NAD') as $nad) { … }
 ```
 
 > `query()` and `$message->segments()` return **every** segment in original order,
@@ -202,6 +237,9 @@ foreach ($message->lineItems() as $lineItem) {
 
     echo $lin?->itemNumber();      // product identifier
     echo $qty?->quantityAsFloat();
+
+    count($lineItem);                       // segments in this line item
+    foreach ($lineItem as $segment) { … }   // …or iterate them
 }
 ```
 
@@ -212,12 +250,22 @@ Context segments preserve parent → child relationships (e.g. `NAD → CTA → 
 ```php
 foreach ($message->contextSegments() as $context) {
     if ($context->tag() === 'NAD') {
-        foreach ($context->children() as $child) {
+        foreach ($context as $child) {          // …or ->children()
             // $child->tag(), $child->rawValues(), …
         }
+
+        $context->childByTag('CTA');    // ?SegmentInterface — the first one
+        $context->childrenByTag('COM'); // list<SegmentInterface> — all of them
+        $context->hasChildren();        // bool
+        count($context);                // number of children
+        $context->toArray();            // the segment with its children nested
     }
 }
 ```
+
+> A context segment replaces the segment it wraps in the keyed views, so
+> `segmentByTagAndSubId('NAD', 'BY')` may return a `ContextSegment`. It reads through to
+> the wrapped segment for `tag()`, `subId()`, `rawValues()` and `toArray()`.
 
 ### Interchange & envelope metadata
 
@@ -250,9 +298,11 @@ foreach ($result->functionalGroups() as $group) {
     $group->header()->groupReference();
     $group->trailer()?->controlCount();
 
-    foreach ($group->messages() as $message) {
+    foreach ($group as $message) {  // …or ->messages()
         // …
     }
+
+    count($group);                  // messages in the group
 }
 ```
 
@@ -362,6 +412,9 @@ echo $serializer->serializeSegment($nad);
 // NAD+BY+123456++ACME Corporation++Springfield+++US'
 
 $edi = $serializer->serialize([$unh, $bgm, $nad, $unt], includeUna: true);
+
+// A TransactionMessage is iterable, so it round-trips without unwrapping
+$edi = $serializer->serialize($message);
 
 // Custom delimiters
 new EdifactSerializer(new UnaSeparators(component: '#', element: '|'));
@@ -501,6 +554,7 @@ line-item section:
 use EdifactParser\EdifactParser;
 use EdifactParser\GroupingRules;
 use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\StreamingParser;
 
 $rules = GroupingRules::default()
     ->withContextTags(['NAD', 'LIN'])
@@ -508,7 +562,16 @@ $rules = GroupingRules::default()
     ->withBreakLineItemTags(['UNS', 'CNT', 'UNT']);
 
 $parser = new EdifactParser(SegmentFactory::withDefaultSegments(), $rules);
+
+// …or, when the default segments are all you need:
+$parser = EdifactParser::createWithDefaultSegments($rules);
+$stream = StreamingParser::createWithDefaultSegments($rules);
 ```
+
+`GroupingRules` also reads back what it is configured with — `contextTags()`,
+`childTags()`, `breakLineItemTags()` — and the defaults are exposed as
+`GroupingRules::DEFAULT_CONTEXT_TAGS`, `DEFAULT_CHILD_TAGS` and
+`DEFAULT_BREAK_LINE_ITEM_TAGS`.
 
 More examples in [`example/`](example): [extracting data](example/extracting-data.php),
 [query filtering](example/query-filtering.php),
@@ -522,6 +585,9 @@ More examples in [`example/`](example): [extracting data](example/extracting-dat
 ```php
 $segment->toArray(); // ['tag' => 'NAD', 'subId' => 'CN', 'rawValues' => [...]]
 $segment->toJson();  // pretty-printed JSON
+
+$message->toArray(); // ['type' => 'ORDERS', 'segments' => [...]] — contexts nested
+$message->toJson();
 ```
 
 ### Error handling

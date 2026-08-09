@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Added
+- `ParserResult`, `TransactionMessage`, `LineItem`, `FunctionalGroup` and `SegmentQuery`
+  are now `Countable` and `IteratorAggregate`, so `count($message)` and
+  `foreach ($result as $message)` work directly. A `TransactionMessage` iterates its
+  segments in document order, which means it can be handed straight to
+  `EdifactSerializer::serialize()`.
+- `TransactionMessage::has()`, `countByTag()`, `toArray()` and `toJson()` — a message can
+  now describe itself as plain data, with context children nested.
+- `ContextSegment::childByTag()`, `childrenByTag()`, `hasChildren()`, `toArray()` and
+  `toJson()`. A context segment replaces the segment it wraps in the keyed views, so it
+  previously blew up on `toArray()` where a plain segment worked.
+- `ParserResult::firstMessage()` and `messagesOfType()`.
+- `SegmentQuery::withoutTags()`, `reduce()`, `groupByTag()` and `countByTag()`.
+- `EdifactParser::createWithDefaultSegments()` and
+  `StreamingParser::createWithDefaultSegments()` accept optional `GroupingRules`, so custom
+  grouping no longer forces you to assemble the factory by hand.
+- `GroupingRules::contextTags()`, `childTags()`, `breakLineItemTags()` and the
+  `DEFAULT_*_TAGS` constants.
+- `TransactionMessage::groupSegments()` and `ContextStackParser::parseAll()` take an
+  `iterable` (a generator works), avoiding the argument unpacking of their variadic
+  counterparts, which are unchanged.
+- `Segments\SegmentArray` — the single conversion of segments to plain arrays that every
+  `toArray()`/`toJson()` now goes through.
+- `MessageDataBuilder\Builder::buildLineItemData()` for the raw line-item maps.
+- CI now runs the test suite on PHP 8.0 through 8.5.
+
+#### Fixed
+- A tag present both before the first `LIN` and after the summary `UNS` no longer loses the
+  later occurrences: header and summary sections are merged per tag instead of the first
+  section shadowing the whole tag.
+- `AbstractSegment::parsedSubId()` returns `list<string>` as documented; a composite element
+  carrying raw ints used to leak them through.
+- Keyed segment maps are typed `array<string, array<array-key, SegmentInterface>>` and
+  `segmentByTagAndSubId()` accepts `string|int`, matching PHP's normalization of
+  numeric-looking subIds ('1', '21') to int array keys.
+
+#### Performance
+Measured on a 2.6 MB interchange (400 messages, ~149k segments):
+- Applying context segments is linear instead of quadratic in the number of line items —
+  parsing one message with 4000 line items went from **198 ms to 20 ms**.
+- `StreamingParser` splits segments with `strcspn`/`substr` runs rather than one character
+  at a time, and reads 64 KiB chunks: **467 ms → 342 ms**.
+- `SegmentFactory::withDefaultSegments()` no longer validates (and therefore autoloads) all
+  32 segment classes on construction, and no longer asserts the type of every segment it
+  creates: **~15× faster** to build, with no class loading until a tag is actually seen.
+- `MessageValidator` and `MessageAnalyzer` read a tag-count index computed once per message
+  instead of re-querying per rule: **49 ms → 7 ms** and **66 ms → 16 ms**.
+- `EdifactSerializer` escapes with a precomputed `strtr()` table in one pass:
+  **189 ms → 63 ms**.
+- `GroupingRules` tag checks are hash lookups; global (UNA/UNB/UNZ) segments are collected
+  during the main grouping pass instead of a second filter pass; `TransactionMessage`
+  memoizes its ordered segment list and `ParserResult` its merged segment map.
+
+#### Changed
+- Updated dependencies: `sabas/edifact` ^1.3, `vimeo/psalm` ^5.26, `friendsofphp/php-cs-fixer`
+  ^3.95, `phpstan/phpstan` ^2.2, `rector/rector` ^2.6, and `symfony/var-dumper` widened to
+  `^5.4 || ^6.4 || ^7.0`.
+
 ## [6.4.0] - 2026-07-24
 
 #### Added

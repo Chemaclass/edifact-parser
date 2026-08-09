@@ -49,8 +49,16 @@ TransactionMessage organizes segments three ways:
 - AbstractSegment: Base implementation. Shared protected helpers segments delegate to:
   - `requiredSubId()` — subId from `rawValues[1][0]`, throws `MissingSubId` if absent
   - `component(int $index, int $group = 1)` — read a composite element, `''` if absent
-- ContextSegment: Decorator with `children()` for hierarchy
+- ContextSegment: Decorator with `children()` for hierarchy; also `childByTag()`,
+  `childrenByTag()`, `hasChildren()`, `toArray()/toJson()`, Countable + IteratorAggregate
 - HasRetrievableSegments: Trait for `segmentsByTag()`, `segmentByTagAndSubId()`, `query()`
+- SegmentArray: `fromSegment()`/`fromSegments()` — the one place segments become plain
+  arrays; every `toArray()` in the library goes through it
+
+**Keyed maps use `array-key`, not `string`**: PHP normalizes a numeric-looking subId
+('1', '21') to an int array key, so grouped maps are typed
+`array<string, array<array-key, SegmentInterface>>` and `segmentByTagAndSubId()` takes
+`string|int`.
 
 **SubId logic**:
 - Base `subId()` reads `rawValues()[1]`; string `'CN'` or array `['21', 'C62']` → joined as `'21:C62'`
@@ -64,8 +72,16 @@ TransactionMessage organizes segments three ways:
   `QTYQuantity::quantityAsFloat()`, `PRIPrice::priceAsFloat()`, `DTMDateTimePeriod::asDateTime()`
 - **Envelope metadata**: `UNBInterchangeHeader` (syntax id/version, sender/recipient,
   prep date/time, control ref), `UNZInterchangeTrailer`, `UNTMessageFooter`, `BGMBeginningOfMessage`
-- **`SegmentQuery`** (`$message->query()`): fluent `withTag/withTags/withSubId/where/ofType/
-  limit/skip/first/last/get/count/exists/isEmpty/map/each`
+- **`SegmentQuery`** (`$message->query()`): fluent `withTag/withTags/withoutTags/withSubId/
+  where/ofType/limit/skip/first/last/get/count/exists/isEmpty/map/reduce/groupByTag/
+  countByTag/each`; Countable + IteratorAggregate
+- **Collections**: `ParserResult` (messages), `TransactionMessage` (segments, in order),
+  `LineItem` (segments), `FunctionalGroup` (messages) are Countable + IteratorAggregate.
+  `ParserResult::firstMessage()/messagesOfType()`; `TransactionMessage::has()/countByTag()/
+  toArray()/toJson()`
+- **Bulk entry points that skip argument unpacking**: `TransactionMessage::groupSegments()`
+  and `ContextStackParser::parseAll()` take an `iterable`; the variadic
+  `groupSegmentsByMessage()`/`parse()` delegate to them
 - **`Analysis\MessageAnalyzer`**: counts, `getPartyQualifiers()`, `getCurrencies()`,
   `calculateTotalAmount()/Quantity()`, `getSummary()`
 - **Fluent builders** (`Segments\Builder\*`): `NADNameAddress::builder()` etc. → `build()`
@@ -90,8 +106,27 @@ TransactionMessage organizes segments three ways:
 
 - Add custom segments: Extend AbstractSegment, register in SegmentFactory
 - Modify context / line-item rules: pass a customized `GroupingRules` to the
-  `EdifactParser` constructor (no longer hardcoded consts)
+  `EdifactParser` constructor or to `createWithDefaultSegments()` (no longer hardcoded consts)
 - Custom builders: Implement BuilderInterface for different grouping logic
+
+## Hot Paths (do not regress)
+
+These run once per segment of an interchange — hundreds of thousands of times on a large
+file. Keep them allocation- and call-free:
+
+- `SegmentFactory::createSegmentFromArray()` — no per-instance validation; classes are
+  checked once on construction, and `withDefaultSegments()` skips even that (guarded by
+  `SegmentFactoryTest::every_default_class_implements_the_segment_interface`) so building a
+  factory does not autoload all 32 segment classes.
+- `GroupingRules::is*Tag()` — hash lookups over maps built in the constructor, not `in_array`.
+- `MessageDataBuilder\Builder::addSegment()` — state transitions inlined on purpose.
+- `TransactionMessage::groupSegments()` — one pass; global (UNA/UNB/UNZ) segments are
+  collected inside it rather than by a second filter pass.
+- `TransactionMessage::applyContexts()` — contexts indexed by `spl_object_id`, so swapping
+  them into the keyed views is linear rather than contexts × line items.
+- `StreamingParser::extractSegments()` — `strcspn`/`substr` runs, never a per-character loop.
+- `TransactionMessage` memoizes its ordered segment list and tag counts; `ParserResult`
+  memoizes the merged segment map.
 
 ## Conventions & Constraints
 
@@ -110,7 +145,8 @@ composer quality                # All checks (CS, Psalm, PHPStan, Rector)
 composer csfix                  # Fix code style
 ```
 
-**Toolchain gotcha:** the pinned Psalm (`^4.30`) only runs on **PHP ≤ 8.3** — run it under
-8.3 if your CLI is newer. On PHP > 8.3, PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`.
-PHPStan passing does not guarantee Psalm passes (Psalm is stricter about union returns
-from `rawValues()` accessors) — run both before pushing.
+**Toolchain gotcha:** the pinned Psalm (`^5.26`) is happiest on **PHP ≤ 8.3** — run it under
+8.3 if your CLI is newer, and add `--threads=1` if it dies mid-run. On PHP > 8.3,
+PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`. PHPStan passing does not guarantee Psalm
+passes (Psalm is stricter about union returns from `rawValues()` accessors) — run both
+before pushing. CI enforces **100% line coverage**, so every new method needs a test.
