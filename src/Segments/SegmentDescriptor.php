@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EdifactParser\Segments;
 
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionNamedType;
 
 use function in_array;
@@ -45,8 +44,14 @@ final class SegmentDescriptor
         $reflection = new ReflectionClass($className);
         $accessors = [];
 
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($method->isStatic() || in_array($method->getName(), self::STRUCTURAL_METHODS, true)) {
+        // isPublic() rather than the getMethods() filter constant: the constant's value
+        // is version-sensitive and psalm's PHP 8.0 stubs do not declare it.
+        foreach ($reflection->getMethods() as $method) {
+            if (!$method->isPublic() || $method->isStatic()) {
+                continue;
+            }
+
+            if (in_array($method->getName(), self::STRUCTURAL_METHODS, true)) {
                 continue;
             }
 
