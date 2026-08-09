@@ -44,6 +44,9 @@ interchanges with a typed, object-oriented API.
 - [Development](#-development)
 - [Contributing](#-contributing)
 
+For AI coding agents: [llms.txt](llms.txt) and [docs/llms/](docs/llms). Every snippet there
+is backed by a runnable file under [`example/`](example) that CI executes.
+
 ---
 
 ## 💾 Installation
