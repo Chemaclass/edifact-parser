@@ -118,6 +118,22 @@ final class SegmentFactory implements SegmentFactoryInterface
     }
 
     /**
+     * The defaults plus every remaining segment of a UN/EDIFACT directory, generated from
+     * the published definitions — 134 tags instead of 32.
+     *
+     * The hand-written defaults win: their accessors are better named than the official
+     * element names and their signatures are public API. This is opt-in precisely so
+     * {@see self::DEFAULT_SEGMENTS} keeps its meaning and its size.
+     *
+     * Nothing is autoloaded until a tag is actually seen, so the larger map costs nothing
+     * to build.
+     */
+    public static function withDirectorySegments(): self
+    {
+        return new self(self::DEFAULT_SEGMENTS + GeneratedSegments::SEGMENTS, validate: false);
+    }
+
+    /**
      * The default segments plus the given ones. A custom class registered under a
      * default tag overrides the default. Use this to add custom segments without
      * having to re-declare the whole default map.

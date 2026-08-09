@@ -97,6 +97,12 @@ TransactionMessage organizes segments three ways:
   back to an `.edi` string (inverse of parsing)
 - **Interchange assembly** (`Writer\InterchangeBuilder` + `Writer\MessageBuilder`): build a full
   UNB…UNZ with auto UNT/UNZ counts, then `toString()`
+- **Generated segments** (`tools/generate-segments.php` -> `Segments\Generated\*`,
+  `Segments\GeneratedSegments`): never edit generated files, regenerate. Component 0 of an
+  element MUST use `firstComponent()`, not `component(0, n)` — a single-value element
+  round-trips as a plain string. `DEFAULT_SEGMENTS` stays at 32; generated tags are opt-in
+  via `withDirectorySegments()`. Coverage comes from one reflection-driven test that calls
+  every generated accessor, not per-class tests
 - **Directory data** (`Directory\XmlDirectory` + `DirectoryInterface`, `SegmentDefinition`,
   `Composite`, `DataElement`): UNTDID segment definitions and code lists, read with XMLReader
   and cached. `php-edifact/edifact-mapping` is a `suggest` — the parser must keep working
