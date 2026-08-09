@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Validation;
 
+use EdifactParser\Diagnostics\Diagnostic;
 use EdifactParser\TransactionMessage;
 
 /**
@@ -58,6 +59,20 @@ final class MessageValidator
     public function isValid(TransactionMessage $message, MessageRuleSet $rules): bool
     {
         return $this->validate($message, $rules) === [];
+    }
+
+    /**
+     * The same violations as {@see self::validate()}, in the shared {@see Diagnostic}
+     * shape used for parse failures — stable codes, JSON-serialisable.
+     *
+     * @return list<Diagnostic>
+     */
+    public function diagnose(TransactionMessage $message, MessageRuleSet $rules): array
+    {
+        return array_map(
+            static fn (ValidationViolation $violation): Diagnostic => $violation->toDiagnostic(),
+            $this->validate($message, $rules),
+        );
     }
 
     private function checkSequence(TransactionMessage $message, MessageRuleSet $rules): ?ValidationViolation

@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **Structured diagnostics.** `Diagnostics\Diagnostic` carries a stable
+  `Diagnostics\DiagnosticCode`, a severity, and the position of the problem (segment index,
+  tag, element path) instead of only an English sentence. `InvalidFile::getDiagnostics()`
+  exposes them for parse failures — falling back to the plain error strings when the
+  exception was raised without them, so it is never empty. `ValidationViolation::code()`
+  and `toDiagnostic()`, plus `MessageValidator::diagnose()`, give validation the same
+  vocabulary. Codes are public API; messages are not.
 - **Benchmark suite and CI regression gate.** `composer bench` measures the paths
   `AGENTS.md` marks as hot, over a corpus generated at runtime so nothing large lives in
   the repo. CI benchmarks the PR's base branch and its head on the same runner and fails

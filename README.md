@@ -633,10 +633,38 @@ use EdifactParser\Exception\InvalidFile;
 try {
     $result = $parser->parseFile('invalid.edi');
 } catch (InvalidFile $e) {
-    $e->getErrors();   // parser errors
+    $e->getErrors();   // parser errors, as strings
     $e->getContext();  // extra context, formatted into getMessage()
 }
 ```
+
+### Structured diagnostics
+
+Matching on English prose is fragile, so parse failures and validation failures share one
+type with **stable codes** and, where known, a position:
+
+```php
+use EdifactParser\Diagnostics\DiagnosticCode;
+
+catch (InvalidFile $e) {
+    foreach ($e->getDiagnostics() as $d) {
+        $d->code();          // 'segment.unterminated' — stable, match on this
+        $d->severity();      // 'error' | 'warning'
+        $d->segmentIndex();  // 2
+        $d->tag();           // 'NAD'
+        $d->elementPath();   // 'C186/6060', when known
+        $d->toArray();       // JSON-serialisable
+        (string) $d;         // error [segment.unterminated] at segment 2 (NAD): …
+    }
+}
+
+// The validator speaks the same vocabulary
+$diagnostics = (new MessageValidator())->diagnose($message, MessageRuleSets::orders());
+$violation->code() === DiagnosticCode::SEGMENT_REQUIRED;
+```
+
+Codes are public API — see `DiagnosticCode` for the catalogue. Messages are not: they may
+be reworded at any time.
 
 ---
 

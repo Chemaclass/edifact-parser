@@ -99,6 +99,11 @@ TransactionMessage organizes segments three ways:
   UNB…UNZ with auto UNT/UNZ counts, then `toString()`
 - **Predefined rule sets** (`Validation\MessageRuleSets`): `orders()`/`invoic()`/`desadv()`/`iftmin()`
 - **Charset** (`Charset\Charset`): map UNB syntax id → encoding, decode values to UTF-8
+- **Diagnostics** (`Diagnostics\Diagnostic` + `DiagnosticCode`): one type for parse and
+  validation failures — stable code, severity, segment index, tag, element path,
+  `toArray()`/`toJson()`. Reached via `InvalidFile::getDiagnostics()`,
+  `MessageValidator::diagnose()` and `ValidationViolation::toDiagnostic()`. **Codes are
+  public API and must stay stable; messages are free to change** — never match on message text
 - **Validation** (`Validation\MessageValidator` + `MessageRuleSet` → `ValidationViolation`):
   required-segment, cardinality and `inSequence()` conformance checks; never throws
 - **Duplicate-preserving access**: `query()` and `TransactionMessage::segments()` keep
