@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+> Contains breaking changes — see [UPGRADING.md](UPGRADING.md) for what they are and
+> whether they affect you. Most applications need no changes.
+
 #### Added
 - **Directory-driven segment groups.** `Directory\MessageStructure` reads the nested segment
   groups a directory defines for a message type — ORDERS D96A has 54, several levels deep —
@@ -63,9 +66,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the repo. CI benchmarks the PR's base branch and its head on the same runner and fails
   when a metric regresses beyond 1.5× — ratios measured back to back, since absolute
   timings on shared hardware are meaningless.
+- **`TransactionMessage::childrenOf()` and `contextFor()`** — go from a segment to what was
+  grouped under it. Both accept either the segment or the `ContextSegment` itself, and
+  resolve in O(1). `contextSegments()` is unchanged.
 - **Pluggable tokenizing** via `Tokenizer\TokenizerInterface`.
-  `Tokenizer\NativeTokenizer` is the default: a regex-free single pass, **2.2× faster at
-  tokenizing and 1.5× on `parse()`** for a 2.6 MB / 149k-segment interchange, and it
+  `Tokenizer\NativeTokenizer` is the default: a regex-free single pass, **1.8× faster at
+  tokenizing and 1.3× on `parse()`** for a 2.6 MB / 151k-segment interchange, and it
   **preserves non-ASCII data**. `Tokenizer\SabasTokenizer` wraps `sabas/edifact` — the 6.x
   default — and remains available for bug-for-bug compatibility. Choose one with
   `new EdifactParser($factory, tokenizer: new SabasTokenizer())` or the `tokenizer:`
@@ -91,11 +97,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `instanceof NADNameAddress` was false. This is what the README Quick Start has always
   shown, and it could not work. Keyed views (`allSegments()`, `segmentsByTag()`,
   `segmentByTagAndSubId()`, and the same on `LineItem`) now hand back the typed segment.
-
-#### Added
-- `TransactionMessage::childrenOf()` and `contextFor()` — go from a segment to what was
-  grouped under it. Both accept either the segment or the `ContextSegment` itself, and
-  resolve in O(1). `contextSegments()` is unchanged.
 
 #### Changed
 - **BC break:** the default tokenizer changed from `sabas/edifact` to `NativeTokenizer`.
