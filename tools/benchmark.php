@@ -119,7 +119,11 @@ $benchmarks = [
             SegmentFactory::withDefaultSegments();
         }
     },
-    'parse-sabas' => static fn () => EdifactParser::createWithDefaultSegments()->parse($content),
+    // Both tokenizers are named explicitly: 'parse-default' would silently change meaning
+    // the moment the default changes, and the two rows would stop being comparable.
+    'parse-sabas' => static fn () => EdifactParser::createWithDefaultSegments(
+        tokenizer: new SabasTokenizer()
+    )->parse($content),
     'parse-native' => static fn () => EdifactParser::createWithDefaultSegments(
         tokenizer: new NativeTokenizer()
     )->parse($content),

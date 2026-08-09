@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace EdifactParser\Tests\Unit\Tokenizer;
 
+use EDI\Parser;
 use EdifactParser\Tokenizer\NativeTokenizer;
-use EdifactParser\Tokenizer\SabasTokenizer;
 use PHPUnit\Framework\TestCase;
 
 use function count;
 
 /**
- * The native tokenizer is only safe to offer if it agrees with the reference one. These
- * cases are ASCII-only on purpose: the two intentionally differ on non-ASCII input, where
+ * The native tokenizer is only safe as the default if it agrees with the one it replaced.
+ *
+ * The comparison is against `EDI\Parser` directly rather than through `SabasTokenizer`,
+ * because what is asserted here is the *tokenization*, not the error policy layered on top:
+ * several of these inputs are deliberately malformed and `SabasTokenizer` now rejects them.
+ * Its error behaviour is covered in SabasTokenizerTest.
+ *
+ * These cases are ASCII-only on purpose — the two intentionally differ on non-ASCII, where
  * sabas strips bytes and the native tokenizer preserves them.
  */
 final class TokenizerEquivalenceTest extends TestCase
@@ -25,7 +31,7 @@ final class TokenizerEquivalenceTest extends TestCase
     public function native_agrees_with_the_reference_tokenizer(string $edi): void
     {
         self::assertSame(
-            (new SabasTokenizer())->tokenize($edi),
+            (new Parser())->loadString($edi)->get(),
             (new NativeTokenizer())->tokenize($edi),
         );
     }
@@ -96,7 +102,7 @@ final class TokenizerEquivalenceTest extends TestCase
         $edi .= "UNT+202+1'UNZ+1+1'";
 
         self::assertSame(
-            (new SabasTokenizer())->tokenize($edi),
+            (new Parser())->loadString($edi)->get(),
             (new NativeTokenizer())->tokenize($edi),
         );
     }

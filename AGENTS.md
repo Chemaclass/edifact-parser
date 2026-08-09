@@ -8,10 +8,13 @@ AI context for understanding this EDIFACT parser library architecture.
 
 1. **EdifactParser** (`src/EdifactParser.php`)
    - Entry point; tokenizing is pluggable via `Tokenizer\TokenizerInterface`
-     - `SabasTokenizer` (default) wraps `sabas/edifact` — reference behaviour
-     - `NativeTokenizer` — regex-free single pass, ~2.2x faster, keeps non-ASCII bytes
-       that the default strips. Kept honest by `TokenizerEquivalenceTest`, which diffs the
-       two over fixtures plus a generated corpus; extend it before touching either.
+     - `NativeTokenizer` (default) — regex-free single pass, ~2.2x faster, and lossless
+     - `SabasTokenizer` — wraps `sabas/edifact`, the 6.x default. Strips every byte in
+       \x80-\xFF, so it destroys non-ASCII data. Kept for bug-for-bug compatibility.
+     - Kept honest by `TokenizerEquivalenceTest`, which diffs `NativeTokenizer` against
+       `EDI\Parser` over fixtures plus a generated corpus; extend it before touching either.
+       It compares raw tokenization, not error policy — some fixtures are deliberately
+       malformed and `SabasTokenizer` rejects them.
    - Delegates to SegmentFactory for typed segment objects
    - Returns ParserResult
 

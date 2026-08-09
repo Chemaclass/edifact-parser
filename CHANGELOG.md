@@ -24,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and a generated corpus.
 
 #### Fixed
+- **Non-ASCII data is no longer silently destroyed.** `NativeTokenizer` is now the default,
+  so `NAD+BY+++Müller GmbH` keeps its name instead of parsing as `Mller GmbH`. The old
+  behaviour came from `sabas/edifact` stripping every byte in `\x80-\xFF` — which made
+  `UNOC` (Latin-1) and `UNOY` (UTF-8) interchanges, i.e. most European traffic, unusable
+  for anything outside 7-bit ASCII, and made the bundled `Charset` helper unable to do its
+  job. `SabasTokenizer` remains available for bug-for-bug compatibility.
+- **Parser errors reach the caller.** `SabasTokenizer` read `errors()` before `get()`, but
+  `loadString()` only unwraps — the per-segment work, and therefore nearly every error,
+  happens in `get()`. Almost nothing was ever reported. Errors are now collected after
+  parsing, so malformed input raises `InvalidFile` instead of returning mangled data.
 - **Typed accessors work on keyed lookups again.** `NAD`, `LIN` and `DOC` open a context
   by default, and the context object replaced the segment in the keyed views — so
   `$message->segmentByTagAndSubId('NAD', 'BY')->name()` was a fatal
@@ -38,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   resolve in O(1). `contextSegments()` is unchanged.
 
 #### Changed
+- **BC break:** the default tokenizer changed from `sabas/edifact` to `NativeTokenizer`.
+  Output is identical for ASCII input; non-ASCII is now preserved rather than stripped,
+  and malformed input that used to be silently accepted now raises `InvalidFile`. Pass
+  `tokenizer: new SabasTokenizer()` to keep 6.x behaviour.
 - **BC break:** `children()` can no longer be called on the result of a keyed lookup,
   because that result is now the typed segment. Use `$message->childrenOf($segment)`, or
   keep walking `contextSegments()` as before.
