@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use ArrayIterator;
+use Countable;
 use EdifactParser\Segments\SegmentInterface;
+use IteratorAggregate;
+use Traversable;
 
+use function array_fill_keys;
 use function array_filter;
 use function array_slice;
 use function array_values;
 use function count;
-use function in_array;
 
-final class SegmentQuery
+/**
+ * An immutable, ordered and duplicate-preserving view over a set of segments.
+ * Every filter returns a new query, so a query can be reused as a base for several
+ * refinements.
+ *
+ * @implements IteratorAggregate<int, SegmentInterface>
+ */
+final class SegmentQuery implements Countable, IteratorAggregate
 {
     /**
      * @param list<SegmentInterface> $segments
@@ -31,7 +42,21 @@ final class SegmentQuery
      */
     public function withTags(array $tags): self
     {
-        return $this->where(static fn (SegmentInterface $s) => in_array($s->tag(), $tags, true));
+        $wanted = array_fill_keys($tags, true);
+
+        return $this->where(static fn (SegmentInterface $s) => isset($wanted[$s->tag()]));
+    }
+
+    /**
+     * The segments whose tag is *not* one of the given ones.
+     *
+     * @param list<string> $tags
+     */
+    public function withoutTags(array $tags): self
+    {
+        $excluded = array_fill_keys($tags, true);
+
+        return $this->where(static fn (SegmentInterface $s) => !isset($excluded[$s->tag()]));
     }
 
     public function withSubId(string $subId): self
@@ -75,6 +100,7 @@ final class SegmentQuery
     public function last(): ?SegmentInterface
     {
         $count = count($this->segments);
+
         return $count > 0 ? $this->segments[$count - 1] : null;
     }
 
@@ -93,12 +119,12 @@ final class SegmentQuery
 
     public function exists(): bool
     {
-        return count($this->segments) > 0;
+        return $this->segments !== [];
     }
 
     public function isEmpty(): bool
     {
-        return count($this->segments) === 0;
+        return $this->segments === [];
     }
 
     /**
@@ -116,6 +142,60 @@ final class SegmentQuery
     }
 
     /**
+     * Fold the segments into a single value — totals, concatenations, custom indexes.
+     *
+     * @template T
+     *
+     * @param callable(T, SegmentInterface): T $reducer
+     * @param T $initial
+     *
+     * @return T
+     */
+    public function reduce(callable $reducer, mixed $initial = null): mixed
+    {
+        $carry = $initial;
+
+        foreach ($this->segments as $segment) {
+            $carry = $reducer($carry, $segment);
+        }
+
+        return $carry;
+    }
+
+    /**
+     * The matching segments bucketed by tag, in first-seen order.
+     *
+     * @return array<string, list<SegmentInterface>>
+     */
+    public function groupByTag(): array
+    {
+        $grouped = [];
+
+        foreach ($this->segments as $segment) {
+            $grouped[$segment->tag()][] = $segment;
+        }
+
+        return $grouped;
+    }
+
+    /**
+     * How often each tag occurs among the matching segments, in first-seen order.
+     *
+     * @return array<string, int>
+     */
+    public function countByTag(): array
+    {
+        $counts = [];
+
+        foreach ($this->segments as $segment) {
+            $tag = $segment->tag();
+            $counts[$tag] = ($counts[$tag] ?? 0) + 1;
+        }
+
+        return $counts;
+    }
+
+    /**
      * @param callable(SegmentInterface): void $callback
      */
     public function each(callable $callback): void
@@ -123,5 +203,13 @@ final class SegmentQuery
         foreach ($this->segments as $segment) {
             $callback($segment);
         }
+    }
+
+    /**
+     * @return Traversable<int, SegmentInterface>
+     */
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->segments);
     }
 }

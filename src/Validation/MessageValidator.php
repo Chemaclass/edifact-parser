@@ -18,15 +18,17 @@ final class MessageValidator
     public function validate(TransactionMessage $message, MessageRuleSet $rules): array
     {
         $violations = [];
+        // One pass over the message, then every rule is a hash lookup.
+        $counts = $message->countByTag();
 
         foreach ($rules->requiredTags() as $tag) {
-            if ($message->query()->withTag($tag)->count() === 0) {
+            if (!isset($counts[$tag])) {
                 $violations[] = new ValidationViolation($tag, 'required', "Missing required segment '{$tag}'");
             }
         }
 
         foreach ($rules->cardinality() as $tag => $bounds) {
-            $count = $message->query()->withTag($tag)->count();
+            $count = $counts[$tag] ?? 0;
 
             if ($count < $bounds['min']) {
                 $violations[] = new ValidationViolation(
@@ -68,7 +70,7 @@ final class MessageValidator
         $rank = array_flip($sequence);
         $highest = -1;
 
-        foreach ($message->query()->get() as $segment) {
+        foreach ($message as $segment) {
             $tag = $segment->tag();
             if (!isset($rank[$tag])) {
                 continue;

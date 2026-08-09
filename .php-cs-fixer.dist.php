@@ -90,7 +90,9 @@ return (new Config())
         'phpdoc_add_missing_param_annotation' => true,
         'phpdoc_annotation_without_dot' => true,
         'phpdoc_indent' => true,
-        'phpdoc_line_span' => ['const' => 'single', 'property' => 'single', 'method' => 'multi'],
+        // 'class' => null keeps one-line class docblocks such as `/** @psalm-immutable */`
+        // as they are; php-cs-fixer would otherwise expand every one of them to three lines.
+        'phpdoc_line_span' => ['class' => null, 'const' => 'single', 'property' => 'single', 'method' => 'multi'],
         'phpdoc_order' => true,
         'phpdoc_scalar' => true,
         'phpdoc_separation' => true,

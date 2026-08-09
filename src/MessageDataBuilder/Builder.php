@@ -24,48 +24,74 @@ final class Builder
 
     public function addSegment(SegmentInterface $segment): self
     {
-        $this->updateState($segment);
+        // Kept in one method on purpose: this runs for every segment of every message,
+        // so each extra call here is paid hundreds of thousands of times on a big file.
+        $inDetailsSection = $this->currentBuilder instanceof DetailsSectionBuilder;
+
+        if (!$inDetailsSection && $segment instanceof LINLineItem) {
+            $this->setCurrentBuilder(new DetailsSectionBuilder());
+            $inDetailsSection = true;
+        }
+
+        if ($inDetailsSection && $this->endsDetailsSection($segment)) {
+            $this->setCurrentBuilder(new SimpleBuilder());
+        }
 
         $this->currentBuilder->addSegment($segment);
+
         return $this;
     }
 
+    /**
+     * A message alternates between header/summary sections and detail sections, so a
+     * tag can be filled by more than one builder (a DTM before the first LIN and
+     * another after UNS). Their maps are merged per tag — last subId wins, like within
+     * a single section — instead of the first section shadowing the whole tag.
+     *
+     * @return array<string, array<array-key, SegmentInterface>>
+     */
     public function buildSegments(): array
-    {
-        return $this->buildWhereBuilderIs(SimpleBuilder::class);
-    }
-
-    /**
-     * @return array<string|int, LineItem>
-     */
-    public function buildLineItems(): array
-    {
-        return array_map(
-            static fn (array $data) => new LineItem($data),
-            $this->buildWhereBuilderIs(DetailsSectionBuilder::class),
-        );
-    }
-
-    private function updateState(SegmentInterface $segment): void
-    {
-        if ($this->atStartOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new DetailsSectionBuilder());
-        }
-
-        if ($this->atEndOfDetailsSection($segment)) {
-            $this->setCurrentBuilder(new SimpleBuilder());
-        }
-    }
-
-    /**
-     * @param class-string<BuilderInterface> $type
-     */
-    private function buildWhereBuilderIs(string $type): array
     {
         $data = [];
 
         foreach ($this->builders as $builder) {
-            if (!is_a($builder, $type, true)) {
+            if (!$builder instanceof SimpleBuilder) {
+                continue;
+            }
+
+            foreach ($builder->build() as $tag => $bySubId) {
+                $data[$tag] = isset($data[$tag])
+                    ? array_replace($data[$tag], $bySubId)
+                    : $bySubId;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return array<array-key, LineItem>
+     */
+    public function buildLineItems(): array
+    {
+        return array_map(
+            static fn (array $lineItem) => new LineItem($lineItem),
+            $this->buildLineItemData(),
+        );
+    }
+
+    /**
+     * The raw line-item maps behind {@see self::buildLineItems()}, for callers that
+     * need to post-process the segments before wrapping them.
+     *
+     * @return array<array-key, array<string, array<array-key, SegmentInterface>>>
+     */
+    public function buildLineItemData(): array
+    {
+        $data = [];
+
+        foreach ($this->builders as $builder) {
+            if (!$builder instanceof DetailsSectionBuilder) {
                 continue;
             }
 
@@ -75,26 +101,13 @@ final class Builder
         return $data;
     }
 
-    private function atStartOfDetailsSection(SegmentInterface $segment): bool
+    private function endsDetailsSection(SegmentInterface $segment): bool
     {
-        return $segment instanceof LINLineItem
-            && !($this->currentBuilder instanceof DetailsSectionBuilder);
-    }
-
-    private function atEndOfDetailsSection(SegmentInterface $segment): bool
-    {
-        if (!($this->currentBuilder instanceof DetailsSectionBuilder)) {
+        if (!$this->rules->isBreakLineItemTag($segment->tag())) {
             return false;
         }
 
-        if ($this->rules->isBreakLineItemTag($segment->tag())) {
-            if ($segment instanceof UNSSectionControl) {
-                return $segment->indicatesEndOfDetailsSection();
-            }
-
-            return true;
-        }
-
-        return false;
+        // A UNS only closes the details section when it announces the summary section.
+        return !($segment instanceof UNSSectionControl) || $segment->indicatesEndOfDetailsSection();
     }
 }

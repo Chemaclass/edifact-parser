@@ -47,14 +47,7 @@ final class NADQualifierTest extends TestCase
         ];
 
         foreach ($testCases as $index => $qualifier) {
-            $result = match ($qualifier) {
-                NADQualifier::BUYER => 'buyer',
-                NADQualifier::SUPPLIER => 'supplier',
-                NADQualifier::CONSIGNEE => 'consignee',
-                default => 'other',
-            };
-
-            self::assertEquals($expected[$index], $result);
+            self::assertEquals($expected[$index], self::describe($qualifier));
         }
     }
 
@@ -68,5 +61,15 @@ final class NADQualifierTest extends TestCase
         $this->expectException(Error::class);
 
         new NADQualifier();
+    }
+
+    private static function describe(string $qualifier): string
+    {
+        return match ($qualifier) {
+            NADQualifier::BUYER => 'buyer',
+            NADQualifier::SUPPLIER => 'supplier',
+            NADQualifier::CONSIGNEE => 'consignee',
+            default => 'other',
+        };
     }
 }

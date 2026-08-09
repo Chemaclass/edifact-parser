@@ -4,24 +4,47 @@ declare(strict_types=1);
 
 namespace EdifactParser;
 
+use ArrayIterator;
 use Countable;
 use EdifactParser\MessageDataBuilder\Builder as MessageDataBuilder;
+use EdifactParser\Segments\SegmentArray;
 use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNEFunctionalGroupTrailer;
 use EdifactParser\Segments\UNGFunctionalGroupHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UNTMessageFooter;
+use IteratorAggregate;
+use JsonException;
+use Traversable;
 
+use function array_values;
 use function count;
-use function in_array;
+use function spl_object_id;
 
-final class TransactionMessage implements Countable
+/**
+ * @implements IteratorAggregate<int, SegmentInterface>
+ */
+final class TransactionMessage implements Countable, IteratorAggregate
 {
     use HasRetrievableSegments;
 
+    /** Tags that live on the interchange itself rather than inside a UNH…UNT message. */
+    private const GLOBAL_TAGS = ['UNA' => true, 'UNB' => true, 'UNZ' => true];
+
     /**
-     * @param  array<string, array<string, SegmentInterface>>  $groupedSegments
-     * @param  array<int|string, LineItem>  $lineItems
+     * Lazily flattened view of {@see self::$segments}; also the fallback for messages
+     * built straight from the keyed map. @see self::orderedSegments()
+     *
+     * @var list<SegmentInterface>|null
+     */
+    private ?array $ordered = null;
+
+    /** @var array<string, int>|null */
+    private ?array $countByTag = null;
+
+    /**
+     * @param  array<string, array<array-key, SegmentInterface>>  $groupedSegments
+     * @param  array<array-key, LineItem>  $lineItems
      * @param  list<ContextSegment>  $contextSegments
      * @param  list<SegmentInterface>  $segments  Every segment in original order, duplicates preserved
      */
@@ -51,14 +74,33 @@ final class TransactionMessage implements Countable
      */
     public static function groupSegmentsByMessage(GroupingRules $rules, SegmentInterface ...$segments): ParserResult
     {
+        return self::groupSegments($rules, $segments);
+    }
+
+    /**
+     * Same as {@see self::groupSegmentsByMessage()} for segments you already have
+     * together — no argument unpacking, which matters when a single interchange holds
+     * hundreds of thousands of segments, and a generator works just as well as an array.
+     *
+     * @param iterable<SegmentInterface> $segments
+     */
+    public static function groupSegments(GroupingRules $rules, iterable $segments): ParserResult
+    {
         $messages = [];
         $groupedSegments = [];
 
         $functionalGroups = [];
+        $globalSegments = [];
         $openHeader = null;
         $openGroupMessages = [];
 
         foreach ($segments as $segment) {
+            // Collected here rather than in a second pass: an interchange can hold
+            // hundreds of thousands of segments and this loop already visits them all.
+            if (isset(self::GLOBAL_TAGS[$segment->tag()])) {
+                $globalSegments[] = $segment;
+            }
+
             if ($segment instanceof UNGFunctionalGroupHeader) {
                 $openHeader = $segment;
                 $openGroupMessages = [];
@@ -81,7 +123,7 @@ final class TransactionMessage implements Countable
             $groupedSegments[] = $segment;
 
             if ($segment instanceof UNTMessageFooter) {
-                $message = self::groupSegmentsByName($rules, ...$groupedSegments);
+                $message = self::groupSegmentsByName($rules, $groupedSegments);
                 $messages[] = $message;
 
                 if ($openHeader !== null) {
@@ -91,14 +133,14 @@ final class TransactionMessage implements Countable
         }
 
         return new ParserResult(
-            self::filterGlobalSegments($rules, $segments),
+            self::groupSegmentsByName($rules, $globalSegments),
             self::hasUnhSegment(...$messages),
             $functionalGroups,
         );
     }
 
     /**
-     * @return array<int|string, LineItem>
+     * @return array<array-key, LineItem>
      */
     public function lineItems(): array
     {
@@ -115,11 +157,11 @@ final class TransactionMessage implements Countable
 
     public function lineItemById(string|int $lineItemId): ?LineItem
     {
-        return $this->lineItems[(string) $lineItemId] ?? null;
+        return $this->lineItems[$lineItemId] ?? null;
     }
 
     /**
-     * @return array<string, array<string,SegmentInterface>>
+     * @return array<string, array<array-key, SegmentInterface>>
      */
     public function allSegments(): array
     {
@@ -131,18 +173,7 @@ final class TransactionMessage implements Countable
      */
     public function query(): SegmentQuery
     {
-        if ($this->segments !== []) {
-            return new SegmentQuery($this->segments);
-        }
-
-        $flat = [];
-        foreach ($this->groupedSegments as $tagSegments) {
-            foreach ($tagSegments as $segment) {
-                $flat[] = $segment;
-            }
-        }
-
-        return new SegmentQuery($flat);
+        return new SegmentQuery($this->orderedSegments());
     }
 
     /**
@@ -150,13 +181,47 @@ final class TransactionMessage implements Countable
      */
     public function count(): int
     {
-        if ($this->segments !== []) {
-            return count($this->segments);
+        return count($this->orderedSegments());
+    }
+
+    /**
+     * Iterate every segment in original order, duplicates included — so a message can
+     * be handed straight to anything taking `iterable<SegmentInterface>`, such as
+     * {@see Serializer\EdifactSerializer::serialize()}.
+     *
+     * @return Traversable<int, SegmentInterface>
+     */
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->orderedSegments());
+    }
+
+    /**
+     * How often each tag occurs, in first-seen order. Computed once per message.
+     *
+     * @return array<string, int>
+     */
+    public function countByTag(): array
+    {
+        if ($this->countByTag !== null) {
+            return $this->countByTag;
         }
 
-        // Fallback for a message built directly from the keyed map (no ordered list):
-        // sum the segments across tags rather than counting tags.
-        return array_sum(array_map('count', $this->groupedSegments));
+        $counts = [];
+        foreach ($this->orderedSegments() as $segment) {
+            $tag = $segment->tag();
+            $counts[$tag] = ($counts[$tag] ?? 0) + 1;
+        }
+
+        return $this->countByTag = $counts;
+    }
+
+    /**
+     * Whether the message carries at least one segment with the given tag.
+     */
+    public function has(string $tag): bool
+    {
+        return isset($this->countByTag()[$tag]);
     }
 
     /**
@@ -166,7 +231,7 @@ final class TransactionMessage implements Countable
     public function messageType(): ?string
     {
         $unhSegments = $this->segmentsByTag('UNH');
-        if (empty($unhSegments)) {
+        if ($unhSegments === []) {
             return null;
         }
 
@@ -178,7 +243,7 @@ final class TransactionMessage implements Countable
         return null;
     }
 
-    public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
+    public function segmentByTagAndSubId(string $tag, string|int $subId): ?SegmentInterface
     {
         $segment = $this->groupedSegments[$tag][$subId] ?? null;
         if ($segment !== null) {
@@ -196,16 +261,49 @@ final class TransactionMessage implements Countable
     }
 
     /**
-     * @param list<SegmentInterface> $segments
+     * The message as plain data — every segment in order, contexts nested. Handy for
+     * logging, snapshot tests and diffing two interchanges.
+     *
+     * @return array{type: string|null, segments: list<array>}
      */
-    private static function filterGlobalSegments(GroupingRules $rules, array $segments): self
+    public function toArray(): array
     {
-        $globalMessages = array_filter(
-            $segments,
-            static fn (SegmentInterface $s) => in_array($s->tag(), ['UNA', 'UNB', 'UNZ'], true)
-        );
+        return [
+            'type' => $this->messageType(),
+            'segments' => SegmentArray::fromSegments($this->orderedSegments()),
+        ];
+    }
 
-        return self::groupSegmentsByName($rules, ...$globalMessages);
+    /**
+     * @throws JsonException
+     */
+    public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT): string
+    {
+        return json_encode($this->toArray(), $flags);
+    }
+
+    /**
+     * @return list<SegmentInterface>
+     */
+    private function orderedSegments(): array
+    {
+        if ($this->ordered !== null) {
+            return $this->ordered;
+        }
+
+        if ($this->segments !== []) {
+            return $this->ordered = $this->segments;
+        }
+
+        // Fallback for a message built directly from the keyed map (no ordered list).
+        $flat = [];
+        foreach ($this->groupedSegments as $tagSegments) {
+            foreach ($tagSegments as $segment) {
+                $flat[] = $segment;
+            }
+        }
+
+        return $this->ordered = $flat;
     }
 
     /**
@@ -214,60 +312,70 @@ final class TransactionMessage implements Countable
     private static function hasUnhSegment(self ...$messages): array
     {
         return array_values(
-            array_filter($messages, static fn (self $m) => !empty($m->segmentsByTag('UNH')))
-        );
-    }
-
-    private static function groupSegmentsByName(GroupingRules $rules, SegmentInterface ...$segments): self
-    {
-        $builder = new MessageDataBuilder($rules);
-        $contextParser = new ContextStackParser($rules);
-
-        foreach ($segments as $segment) {
-            $builder->addSegment($segment);
-        }
-        $groupedSegments = $builder->buildSegments();
-        $lineItemsData = [];
-        foreach ($builder->buildLineItems() as $key => $lineItem) {
-            $lineItemsData[$key] = $lineItem->allSegments();
-        }
-
-        $contexts = $contextParser->parse(...$segments);
-
-        foreach ($contexts as $context) {
-            self::applyContext($context, $groupedSegments, $lineItemsData);
-        }
-
-        $lineItems = array_map(static fn (array $data) => new LineItem($data), $lineItemsData);
-
-        return new self(
-            $groupedSegments,
-            $lineItems,
-            $contexts,
-            array_values($segments),
+            array_filter($messages, static fn (self $m) => $m->segmentsByTag('UNH') !== [])
         );
     }
 
     /**
-     * @param array<string, array<string, SegmentInterface>> $grouped
-     * @param array<string|int, array<string, array<string, SegmentInterface>>> $lineItems
+     * @param list<SegmentInterface> $segments
      */
-    private static function applyContext(ContextSegment $context, array &$grouped, array &$lineItems): void
+    private static function groupSegmentsByName(GroupingRules $rules, array $segments): self
     {
-        $segment = $context->segment();
-        $tag = $segment->tag();
-        $subId = $segment->subId();
+        $builder = new MessageDataBuilder($rules);
 
-        if (isset($grouped[$tag][$subId]) && $grouped[$tag][$subId] === $segment) {
-            $grouped[$tag][$subId] = $context;
+        foreach ($segments as $segment) {
+            $builder->addSegment($segment);
         }
 
-        foreach ($lineItems as &$segments) {
-            if (isset($segments[$tag][$subId]) && $segments[$tag][$subId] === $segment) {
-                $segments[$tag][$subId] = $context;
-                break;
+        $groupedSegments = $builder->buildSegments();
+        $lineItemsData = $builder->buildLineItemData();
+
+        $contexts = (new ContextStackParser($rules))->parseAll($segments);
+        self::applyContexts($contexts, $groupedSegments, $lineItemsData);
+
+        $lineItems = array_map(static fn (array $data) => new LineItem($data), $lineItemsData);
+
+        return new self($groupedSegments, $lineItems, $contexts, $segments);
+    }
+
+    /**
+     * Swaps every segment that opened a context for the context itself, so the keyed
+     * views expose the children too. Indexing the contexts by object identity keeps
+     * this linear — a scan per context would be quadratic in the number of line items.
+     *
+     * @param list<ContextSegment> $contexts
+     * @param array<string, array<array-key, SegmentInterface>> $grouped
+     * @param array<array-key, array<string, array<array-key, SegmentInterface>>> $lineItems
+     */
+    private static function applyContexts(array $contexts, array &$grouped, array &$lineItems): void
+    {
+        if ($contexts === []) {
+            return;
+        }
+
+        $contextsBySegmentId = [];
+        foreach ($contexts as $context) {
+            $contextsBySegmentId[spl_object_id($context->segment())] = $context;
+        }
+
+        foreach ($grouped as $tag => $bySubId) {
+            foreach ($bySubId as $subId => $segment) {
+                $context = $contextsBySegmentId[spl_object_id($segment)] ?? null;
+                if ($context !== null) {
+                    $grouped[$tag][$subId] = $context;
+                }
             }
         }
-        unset($segments);
+
+        foreach ($lineItems as $key => $byTag) {
+            foreach ($byTag as $tag => $bySubId) {
+                foreach ($bySubId as $subId => $segment) {
+                    $context = $contextsBySegmentId[spl_object_id($segment)] ?? null;
+                    if ($context !== null) {
+                        $lineItems[$key][$tag][$subId] = $context;
+                    }
+                }
+            }
+        }
     }
 }

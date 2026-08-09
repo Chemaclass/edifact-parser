@@ -7,10 +7,8 @@ namespace EdifactParser\Segments;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
-use function class_implements;
-use function in_array;
+use function is_a;
 use function is_string;
-use function strlen;
 
 /** @psalm-immutable */
 final class SegmentFactory implements SegmentFactoryInterface
@@ -79,21 +77,23 @@ final class SegmentFactory implements SegmentFactoryInterface
     /**
      * The list of "segment class names" for every segment that might be created.
      *
-     * @var array<string,string>
+     * @var array<array-key, class-string<SegmentInterface>>
      */
     private array $segments;
 
     /**
      * @param  array<string, string>  $segments
+     * @param  bool  $validate  skipped for {@see self::DEFAULT_SEGMENTS}, whose classes ship
+     *                          with the library: validating them would autoload every segment
+     *                          class up front, even the ones a given interchange never uses
      */
-    private function __construct(array $segments)
+    private function __construct(array $segments, bool $validate = true)
     {
-        foreach ($segments as $tag => $class) {
-            Assert::length($tag, self::TAG_LENGTH, "Segment tag '{$tag}' must be " . self::TAG_LENGTH . ' chars');
-            if (!$this->isSegment($class)) {
-                throw new InvalidArgumentException("'{$class}' must implement 'SegmentInterface'");
-            }
+        if ($validate) {
+            self::assertValidSegments($segments);
         }
+
+        /** @var array<array-key, class-string<SegmentInterface>> $segments */
         $this->segments = $segments;
     }
 
@@ -111,7 +111,7 @@ final class SegmentFactory implements SegmentFactoryInterface
 
     public static function withDefaultSegments(): self
     {
-        return new self(self::DEFAULT_SEGMENTS);
+        return new self(self::DEFAULT_SEGMENTS, validate: false);
     }
 
     /**
@@ -123,35 +123,46 @@ final class SegmentFactory implements SegmentFactoryInterface
      */
     public static function withAdditionalSegments(array $segments): self
     {
-        return new self($segments + self::DEFAULT_SEGMENTS);
+        self::assertValidSegments($segments);
+
+        return new self($segments + self::DEFAULT_SEGMENTS, validate: false);
     }
 
     public function createSegmentFromArray(array $rawArray): SegmentInterface
     {
         $tag = $rawArray[0] ?? null;
 
-        if (!is_string($tag) || strlen($tag) !== self::TAG_LENGTH) {
+        // Every registered tag is exactly TAG_LENGTH chars (enforced on construction),
+        // so a miss in the map already covers tags of any other length.
+        if (!is_string($tag)) {
             return new UnknownSegment($rawArray);
         }
 
-        $className = $this->segments[$tag] ?? '';
+        $className = $this->segments[$tag] ?? null;
 
-        if (empty($className)) {
+        if ($className === null) {
             return new UnknownSegment($rawArray);
         }
 
-        $segment = new $className($rawArray);
-        Assert::isInstanceOf($segment, SegmentInterface::class);
-
-        return $segment;
+        // Guaranteed to be a SegmentInterface: the class was checked on construction.
+        return new $className($rawArray);
     }
 
-    private function isSegment(string $className): bool
+    /**
+     * A numeric tag ('123') arrives here as an int key — PHP normalizes those — hence
+     * `array-key` and the cast below.
+     *
+     * @param  array<array-key, string>  $segments
+     */
+    private static function assertValidSegments(array $segments): void
     {
-        // The '@' suppresses the "class does not exist" warning for an unknown class,
-        // which class_implements() reports as `false` — handled below.
-        $interfaces = @class_implements($className);
+        foreach ($segments as $tag => $class) {
+            $tag = (string) $tag;
+            Assert::length($tag, self::TAG_LENGTH, "Segment tag '{$tag}' must be " . self::TAG_LENGTH . ' chars');
 
-        return $interfaces !== false && in_array(SegmentInterface::class, $interfaces, true);
+            if (!is_a($class, SegmentInterface::class, allow_string: true)) {
+                throw new InvalidArgumentException("'{$class}' must implement 'SegmentInterface'");
+            }
+        }
     }
 }

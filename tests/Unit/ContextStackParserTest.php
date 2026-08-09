@@ -35,4 +35,20 @@ final class ContextStackParserTest extends TestCase
             new ContextSegment($doc, [$dtm]),
         ], $result);
     }
+
+    public function test_parse_all_accepts_any_iterable_of_segments(): void
+    {
+        $nad = new NADNameAddress(['NAD', 'CN']);
+        $com = new UnknownSegment(['COM', '123:TE']);
+
+        $generator = (static function () use ($nad, $com) {
+            yield $nad;
+            yield $com;
+        })();
+
+        self::assertEquals(
+            [new ContextSegment($nad, [$com])],
+            (new ContextStackParser())->parseAll($generator),
+        );
+    }
 }

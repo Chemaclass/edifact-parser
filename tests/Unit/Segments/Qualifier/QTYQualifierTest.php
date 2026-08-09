@@ -45,14 +45,7 @@ final class QTYQualifierTest extends TestCase
         ];
 
         foreach ($testCases as $index => $qualifier) {
-            $result = match ($qualifier) {
-                QTYQualifier::ORDERED => 'ordered',
-                QTYQualifier::DISPATCHED => 'dispatched',
-                QTYQualifier::INVOICED => 'invoiced',
-                default => 'other',
-            };
-
-            self::assertEquals($expected[$index], $result);
+            self::assertEquals($expected[$index], self::describe($qualifier));
         }
     }
 
@@ -66,5 +59,15 @@ final class QTYQualifierTest extends TestCase
         $this->expectException(Error::class);
 
         new QTYQualifier();
+    }
+
+    private static function describe(string $qualifier): string
+    {
+        return match ($qualifier) {
+            QTYQualifier::ORDERED => 'ordered',
+            QTYQualifier::DISPATCHED => 'dispatched',
+            QTYQualifier::INVOICED => 'invoiced',
+            default => 'other',
+        };
     }
 }

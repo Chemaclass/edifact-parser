@@ -30,12 +30,12 @@ final class MessageAnalyzer
 
     public function segmentCount(): int
     {
-        return $this->message->query()->count();
+        return $this->message->count();
     }
 
     public function segmentCountByTag(string $tag): int
     {
-        return $this->message->query()->withTag($tag)->count();
+        return $this->message->countByTag()[$tag] ?? 0;
     }
 
     public function lineItemCount(): int
@@ -85,8 +85,9 @@ final class MessageAnalyzer
                 if ($segment instanceof CUXCurrencyDetails) {
                     $values = $segment->rawValues();
                     // CUX format: CUX+<usage>:<currency>:<qualifier>
-                    if (is_array($values[1] ?? null) && !empty($values[1][1] ?? '')) {
-                        $currencies[] = $values[1][1];
+                    $currency = is_array($values[1] ?? null) ? (string) ($values[1][1] ?? '') : '';
+                    if ($currency !== '') {
+                        $currencies[] = $currency;
                     }
                 }
             });
@@ -178,7 +179,7 @@ final class MessageAnalyzer
 
     public function hasSegment(string $tag): bool
     {
-        return $this->message->query()->withTag($tag)->exists();
+        return $this->message->has($tag);
     }
 
     /**

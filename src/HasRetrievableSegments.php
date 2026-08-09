@@ -9,19 +9,22 @@ use EdifactParser\Segments\SegmentInterface;
 trait HasRetrievableSegments
 {
     /**
-     * @return array<string, array<string, SegmentInterface>>
+     * Segments keyed by tag and then by subId. A subId that looks like an integer
+     * ('1', '21') becomes an int key — PHP normalizes those — hence `array-key`.
+     *
+     * @return array<string, array<array-key, SegmentInterface>>
      */
     abstract public function allSegments(): array;
 
     /**
-     * @return array<string,SegmentInterface>
+     * @return array<array-key, SegmentInterface>
      */
     public function segmentsByTag(string $tag): array
     {
         return $this->allSegments()[$tag] ?? [];
     }
 
-    public function segmentByTagAndSubId(string $tag, string $subId): ?SegmentInterface
+    public function segmentByTagAndSubId(string $tag, string|int $subId): ?SegmentInterface
     {
         return $this->allSegments()[$tag][$subId] ?? null;
     }

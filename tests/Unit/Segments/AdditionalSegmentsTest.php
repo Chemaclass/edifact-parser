@@ -200,6 +200,17 @@ final class AdditionalSegmentsTest extends TestCase
     /**
      * @test
      */
+    public function parsed_sub_id_always_returns_strings(): void
+    {
+        // A composite element can carry raw ints; the components are still strings.
+        $segment = new FTXFreeText(['FTX', [7, 20231102]]);
+
+        self::assertSame(['7', '20231102'], $segment->parsedSubId());
+    }
+
+    /**
+     * @test
+     */
     public function composite_accessors(): void
     {
         $ftx = new FTXFreeText(['FTX', 'AAI', '', '', 'Some free text']);

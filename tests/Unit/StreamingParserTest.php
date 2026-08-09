@@ -6,6 +6,7 @@ namespace EdifactParser\Tests\Unit;
 
 use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
+use EdifactParser\GroupingRules;
 use EdifactParser\StreamingParser;
 use PHPUnit\Framework\TestCase;
 
@@ -88,5 +89,47 @@ final class StreamingParserTest extends TestCase
         } finally {
             @unlink($path);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function keeps_released_delimiters_inside_values_across_chunk_boundaries(): void
+    {
+        // '?+' and '??' are escaped characters: they belong to the value, they do not
+        // split the element. The value is long enough to straddle several read chunks.
+        $note = str_repeat('a?+b??c', 20000);
+        $edi = "UNB+UNOC:3+S+R+200101:1200+1'UNH+1+ORDERS:D:96A:UN'FTX+AAI+++{$note}'UNT+3+1'UNZ+1+1'";
+        $path = (string) tempnam(sys_get_temp_dir(), 'edi');
+        file_put_contents($path, $edi);
+
+        try {
+            $messages = [];
+            foreach (StreamingParser::createWithDefaultSegments()->parseFile($path) as $message) {
+                $messages[] = $message;
+            }
+
+            self::assertCount(1, $messages);
+            $ftx = $messages[0]->segmentByTagAndSubId('FTX', 'AAI');
+            self::assertNotNull($ftx);
+            self::assertSame(str_repeat('a+b?c', 20000), $ftx->rawValues()[4]);
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function accepts_custom_grouping_rules(): void
+    {
+        $rules = GroupingRules::default()->withContextTags([]);
+
+        $messages = [];
+        foreach (StreamingParser::createWithDefaultSegments($rules)->parseFile(self::SAMPLE) as $message) {
+            $messages[] = $message;
+        }
+
+        self::assertSame([], $messages[0]->contextSegments());
     }
 }

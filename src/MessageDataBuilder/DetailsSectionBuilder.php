@@ -23,7 +23,7 @@ final class DetailsSectionBuilder implements BuilderInterface
     }
 
     /**
-     * @return array<string|int, array<string, array<string, SegmentInterface>>>
+     * @return array<array-key, array<string, array<array-key, SegmentInterface>>>
      */
     public function build(): array
     {

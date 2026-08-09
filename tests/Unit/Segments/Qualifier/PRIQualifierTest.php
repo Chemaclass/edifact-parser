@@ -46,14 +46,7 @@ final class PRIQualifierTest extends TestCase
         ];
 
         foreach ($testCases as $index => $qualifier) {
-            $result = match ($qualifier) {
-                PRIQualifier::CALCULATION_NET => 'net',
-                PRIQualifier::GROSS => 'gross',
-                PRIQualifier::LIST => 'list',
-                default => 'other',
-            };
-
-            self::assertEquals($expected[$index], $result);
+            self::assertEquals($expected[$index], self::describe($qualifier));
         }
     }
 
@@ -67,5 +60,15 @@ final class PRIQualifierTest extends TestCase
         $this->expectException(Error::class);
 
         new PRIQualifier();
+    }
+
+    private static function describe(string $qualifier): string
+    {
+        return match ($qualifier) {
+            PRIQualifier::CALCULATION_NET => 'net',
+            PRIQualifier::GROSS => 'gross',
+            PRIQualifier::LIST => 'list',
+            default => 'other',
+        };
     }
 }
