@@ -38,9 +38,16 @@ abstract class AbstractSegment implements SegmentInterface
     {
         $value = $this->rawValues[1] ?? '';
 
-        return is_array($value)
-            ? $value
-            : explode(':', (string) $value);
+        if (!is_array($value)) {
+            return explode(':', (string) $value);
+        }
+
+        $components = [];
+        foreach ($value as $component) {
+            $components[] = (string) $component;
+        }
+
+        return $components;
     }
 
     /**
@@ -52,11 +59,8 @@ abstract class AbstractSegment implements SegmentInterface
      */
     public function toArray(): array
     {
-        return [
-            'tag' => $this->tag(),
-            'subId' => $this->subId(),
-            'rawValues' => $this->rawValues(),
-        ];
+        /** @var array{tag: string, subId: string, rawValues: array} */
+        return SegmentArray::fromSegment($this);
     }
 
     /**

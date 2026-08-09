@@ -11,6 +11,7 @@ use function feof;
 use function fopen;
 use function fread;
 use function implode;
+use function strcspn;
 use function strlen;
 use function strtoupper;
 use function substr;
@@ -28,7 +29,7 @@ use function trim;
  */
 final class StreamingParser
 {
-    private const CHUNK_BYTES = 8192;
+    private const CHUNK_BYTES = 65536;
     private const UNA_LENGTH = 9;
 
     public function __construct(
@@ -38,9 +39,9 @@ final class StreamingParser
     ) {
     }
 
-    public static function createWithDefaultSegments(): self
+    public static function createWithDefaultSegments(?GroupingRules $groupingRules = null): self
     {
-        return new self(EdifactParser::createWithDefaultSegments());
+        return new self(EdifactParser::createWithDefaultSegments($groupingRules));
     }
 
     /**
@@ -141,7 +142,11 @@ final class StreamingParser
 
     /**
      * Splits complete segments out of the buffer, leaving the trailing partial
-     * segment (and its escape state) in place for the next read.
+     * segment (and its escape state, carried by the retained release char) in place
+     * for the next read.
+     *
+     * Runs of ordinary data are copied in one go with strcspn/substr rather than one
+     * character at a time — the difference is orders of magnitude on large files.
      *
      * @return list<string>
      */
@@ -149,34 +154,36 @@ final class StreamingParser
     {
         $segments = [];
         $current = '';
-        $escaped = false;
         $length = strlen($buffer);
+        $stopChars = $release . $terminator;
+        $offset = 0;
 
-        for ($i = 0; $i < $length; ++$i) {
-            $char = $buffer[$i];
+        while ($offset < $length) {
+            $run = strcspn($buffer, $stopChars, $offset);
 
-            if ($escaped) {
-                $current .= $char;
-                $escaped = false;
-                continue;
-            }
+            if ($run !== 0) {
+                $current .= substr($buffer, $offset, $run);
+                $offset += $run;
 
-            if ($char === $release) {
-                $current .= $char;
-                $escaped = true;
-                continue;
-            }
-
-            if ($char === $terminator) {
-                $trimmed = trim($current);
-                if ($trimmed !== '') {
-                    $segments[] = $trimmed;
+                if ($offset === $length) {
+                    break;
                 }
-                $current = '';
+            }
+
+            if ($buffer[$offset] === $release) {
+                // Keep the release char and whatever it escapes verbatim; a release char
+                // at the very end stays in the buffer and escapes the next read's first char.
+                $current .= substr($buffer, $offset, 2);
+                $offset += 2;
                 continue;
             }
 
-            $current .= $char;
+            $trimmed = trim($current);
+            if ($trimmed !== '') {
+                $segments[] = $trimmed;
+            }
+            $current = '';
+            ++$offset;
         }
 
         $buffer = $current;

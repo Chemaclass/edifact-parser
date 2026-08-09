@@ -11,6 +11,7 @@ use EdifactParser\Segments\MEADimensions;
 use EdifactParser\Segments\NADNameAddress;
 use EdifactParser\Segments\PCIPackageId;
 use EdifactParser\Segments\SegmentFactory;
+use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNBInterchangeHeader;
 use EdifactParser\Segments\UNHMessageHeader;
 use EdifactParser\Segments\UnknownSegment;
@@ -136,6 +137,22 @@ final class SegmentFactoryTest extends TestCase
         );
         self::assertCount(7, SegmentFactory::ENVELOPE_SEGMENTS);
         self::assertCount(32, SegmentFactory::DEFAULT_SEGMENTS);
+    }
+
+    /**
+     * @test
+     */
+    public function every_default_class_implements_the_segment_interface(): void
+    {
+        // withDefaultSegments() skips the per-class check to avoid autoloading all of
+        // them on boot, so this test is what guards the invariant instead.
+        foreach (SegmentFactory::DEFAULT_SEGMENTS as $tag => $class) {
+            self::assertContains(
+                SegmentInterface::class,
+                (array) class_implements($class),
+                "'{$class}' registered for '{$tag}' must implement SegmentInterface",
+            );
+        }
     }
 
     /**

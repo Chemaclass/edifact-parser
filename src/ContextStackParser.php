@@ -20,6 +20,19 @@ final class ContextStackParser
      */
     public function parse(SegmentInterface ...$segments): array
     {
+        return $this->parseAll($segments);
+    }
+
+    /**
+     * Same as {@see self::parse()} for segments you already have together — no
+     * argument unpacking, and a generator works just as well as an array.
+     *
+     * @param iterable<SegmentInterface> $segments
+     *
+     * @return list<ContextSegment>
+     */
+    public function parseAll(iterable $segments): array
+    {
         $result = [];
         $current = null;
 

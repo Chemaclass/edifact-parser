@@ -288,4 +288,85 @@ final class SegmentQueryTest extends TestCase
 
         self::assertEquals(['CN', 'SU'], $collected);
     }
+
+    /**
+     * @test
+     */
+    public function filter_out_tags(): void
+    {
+        $query = new SegmentQuery([
+            new NADNameAddress(['NAD', 'CN']),
+            new LINLineItem(['LIN', '1']),
+            new QTYQuantity(['QTY', ['21', '100']]),
+        ]);
+
+        $result = $query->withoutTags(['LIN', 'QTY'])->get();
+
+        self::assertCount(1, $result);
+        self::assertEquals('NAD', $result[0]->tag());
+    }
+
+    /**
+     * @test
+     */
+    public function reduce_segments(): void
+    {
+        $query = new SegmentQuery([
+            new QTYQuantity(['QTY', ['21', '100']]),
+            new QTYQuantity(['QTY', ['21', '50']]),
+        ]);
+
+        $total = $query->reduce(
+            static fn (float $carry, $segment): float => $carry + (float) $segment->rawValues()[1][1],
+            0.0,
+        );
+
+        self::assertSame(150.0, $total);
+    }
+
+    /**
+     * @test
+     */
+    public function reduce_without_an_initial_value_starts_from_null(): void
+    {
+        $query = new SegmentQuery([]);
+
+        self::assertNull($query->reduce(static fn ($carry, $segment) => $segment));
+    }
+
+    /**
+     * @test
+     */
+    public function group_and_count_by_tag(): void
+    {
+        $consignee = new NADNameAddress(['NAD', 'CN']);
+        $supplier = new NADNameAddress(['NAD', 'SU']);
+        $lineItem = new LINLineItem(['LIN', '1']);
+
+        $query = new SegmentQuery([$consignee, $lineItem, $supplier]);
+
+        self::assertSame(
+            ['NAD' => [$consignee, $supplier], 'LIN' => [$lineItem]],
+            $query->groupByTag(),
+        );
+        self::assertSame(['NAD' => 2, 'LIN' => 1], $query->countByTag());
+    }
+
+    /**
+     * @test
+     */
+    public function is_iterable(): void
+    {
+        $segments = [
+            new NADNameAddress(['NAD', 'CN']),
+            new NADNameAddress(['NAD', 'SU']),
+        ];
+
+        $collected = [];
+        foreach (new SegmentQuery($segments) as $segment) {
+            $collected[] = $segment;
+        }
+
+        self::assertSame($segments, $collected);
+    }
 }
