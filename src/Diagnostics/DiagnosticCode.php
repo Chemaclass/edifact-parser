@@ -24,6 +24,18 @@ final class DiagnosticCode
     /** Tokenizing: anything the underlying tokenizer reported without a mapped code. */
     public const TOKENIZE_FAILED = 'tokenize.failed';
 
+    /** Validation: a mandatory data element or composite is empty. */
+    public const ELEMENT_REQUIRED = 'element.required';
+
+    /** Validation: a value is longer than the directory allows. */
+    public const ELEMENT_TOO_LONG = 'element.too-long';
+
+    /** Validation: a value does not match the element's representation (`n`, `a`, `an`). */
+    public const ELEMENT_TYPE = 'element.type';
+
+    /** Validation: a coded value is not in the directory's code list for that element. */
+    public const CODE_UNKNOWN = 'code.unknown';
+
     /** Validation: a required segment is absent. */
     public const SEGMENT_REQUIRED = 'segment.required';
 

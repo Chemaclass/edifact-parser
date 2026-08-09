@@ -31,9 +31,15 @@
         "phpstan/phpstan": "^2.2",
         "symfony/var-dumper": "^5.4 || ^6.4 || ^7.0",
         "vimeo/psalm": "^5.26",
-        "rector/rector": "^2.6"
+        "rector/rector": "^2.6",
+        "php-edifact/edifact-mapping": "^0.5.2"
     },
-    "bin": ["bin/edifact"],
+    "suggest": {
+        "php-edifact/edifact-mapping": "UN/EDIFACT directory data (D96A-D26x), for DirectoryValidator: element/composite requirements, representation, lengths and code lists"
+    },
+    "bin": [
+        "bin/edifact"
+    ],
     "autoload": {
         "psr-4": {
             "EdifactParser\\": "src/"
@@ -46,7 +52,10 @@
     },
     "scripts": {
         "test": "@test-all",
-        "fix":["@csfix", "@rector"],
+        "fix": [
+            "@csfix",
+            "@rector"
+        ],
         "test-all": [
             "@quality",
             "@phpunit"
@@ -67,8 +76,8 @@
         "phpstan": "./vendor/bin/phpstan analyze",
         "csfix": "./vendor/bin/php-cs-fixer fix",
         "csrun": "./vendor/bin/php-cs-fixer fix --dry-run",
-        "rector":"./vendor/bin/rector",
-        "rector:dry":"./vendor/bin/rector --dry-run",
+        "rector": "./vendor/bin/rector",
+        "rector:dry": "./vendor/bin/rector --dry-run",
         "bench": "php tools/benchmark.php",
         "bench:json": "php tools/benchmark.php --json"
     },

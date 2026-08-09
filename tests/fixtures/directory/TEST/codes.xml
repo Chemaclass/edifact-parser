@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<data_elements>
+    <data_element id="6063">
+        <code id="21" desc="Ordered quantity"/>
+        <code id="12" desc="Despatch quantity"/>
+    </data_element>
+    <data_element id="1153">
+        <code id="ON" desc="Order number"/>
+        <code id="CU" desc="Customer reference number"/>
+    </data_element>
+</data_elements>

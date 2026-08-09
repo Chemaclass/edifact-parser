@@ -7,6 +7,8 @@ declare(strict_types=1);
  */
 
 use EdifactParser\Diagnostics\DiagnosticCode;
+use EdifactParser\Directory\XmlDirectory;
+use EdifactParser\Validation\DirectoryValidator;
 use EdifactParser\EdifactParser;
 use EdifactParser\Validation\MessageRuleSet;
 use EdifactParser\Validation\MessageRuleSets;
@@ -82,5 +84,37 @@ assert(DiagnosticCode::RELEASE_INVALID !== '');
 assert(DiagnosticCode::TOKENIZE_FAILED !== '');
 assert(DiagnosticCode::SEGMENT_CARDINALITY !== '');
 assert(DiagnosticCode::SEGMENT_SEQUENCE !== '');
+
+// --- Directory validation ---------------------------------------------------
+$directory = XmlDirectory::locate('D96A');
+
+if ($directory !== null) {
+    $directoryValidator = new DirectoryValidator($directory);
+
+    $good = EdifactParser::createWithDefaultSegments()
+        ->parse("UNH+1+ORDERS:D:96A:UN'QTY+21:100:PCE'UNT+3+1'")
+        ->transactionMessages()[0];
+    assert($directoryValidator->validate($good) === []);
+    assert($directoryValidator->isValid($good) === true);
+
+    $bad = EdifactParser::createWithDefaultSegments()
+        ->parse("UNH+1+ORDERS:D:96A:UN'QTY+21'UNT+3+1'")
+        ->transactionMessages()[0];
+    $found = $directoryValidator->validate($bad);
+    assert($found !== []);
+    assert($found[0]->code() === DiagnosticCode::ELEMENT_REQUIRED);
+    assert($found[0]->elementPath() === 'C186/6060');
+
+    $coded = EdifactParser::createWithDefaultSegments()
+        ->parse("UNH+1+ORDERS:D:96A:UN'QTY+ZZ:100'UNT+3+1'")
+        ->transactionMessages()[0];
+    assert($directoryValidator->validate($coded) === []);
+    assert($directoryValidator->withCodeValidation()->validate($coded)[0]->code() === DiagnosticCode::CODE_UNKNOWN);
+
+    assert(count($directory->tags()) > 100);
+    assert($directory->segment('QTY')?->name() === 'quantity');
+    assert($directory->segment('ZZZ') === null);
+    assert(in_array('Ordered quantity', $directory->codesFor('6063'), true));
+}
 
 echo "docs/llms/validation.md OK\n";

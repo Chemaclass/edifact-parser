@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **Directory-driven validation.** `Directory\XmlDirectory` reads the UN/EDIFACT UNTDID
+  directories (segment definitions and code lists) published by `php-edifact/edifact-mapping`,
+  or any folder laid out the same way. `Validation\DirectoryValidator` checks each segment
+  against them: mandatory data elements and composites, representation (`an`/`n`/`a`),
+  maximum lengths, and — opt-in — whether coded values appear in the directory code list.
+  Diagnostics carry the element path (`C186/6060`). Tags the directory does not define are
+  never flagged. The data package is a `suggest`, not a requirement, and both files are read
+  with XMLReader on first use, so a full directory costs ~4 MB rather than tens.
 - **EDIFACT syntax version 4: the repetition separator.** `UNA` position 5 is read and
   honoured (default `*`), released occurrences (`?*`) are data, and repeated elements are
   split into a list of repeats. `UnaSeparators` gains `fromUnaSegment()`, `syntax4()`,
