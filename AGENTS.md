@@ -7,7 +7,11 @@ AI context for understanding this EDIFACT parser library architecture.
 **Parsing flow:** EdifactParser → SegmentFactory → ParserResult
 
 1. **EdifactParser** (`src/EdifactParser.php`)
-   - Entry point, uses `sabas/edifact` for low-level parsing
+   - Entry point; tokenizing is pluggable via `Tokenizer\TokenizerInterface`
+     - `SabasTokenizer` (default) wraps `sabas/edifact` — reference behaviour
+     - `NativeTokenizer` — regex-free single pass, ~2.2x faster, keeps non-ASCII bytes
+       that the default strips. Kept honest by `TokenizerEquivalenceTest`, which diffs the
+       two over fixtures plus a generated corpus; extend it before touching either.
    - Delegates to SegmentFactory for typed segment objects
    - Returns ParserResult
 

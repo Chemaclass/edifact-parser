@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser;
 
 use EdifactParser\Exception\InvalidFile;
+use EdifactParser\Tokenizer\TokenizerInterface;
 
 use function fclose;
 use function feof;
@@ -39,9 +40,11 @@ final class StreamingParser
     ) {
     }
 
-    public static function createWithDefaultSegments(?GroupingRules $groupingRules = null): self
-    {
-        return new self(EdifactParser::createWithDefaultSegments($groupingRules));
+    public static function createWithDefaultSegments(
+        ?GroupingRules $groupingRules = null,
+        ?TokenizerInterface $tokenizer = null,
+    ): self {
+        return new self(EdifactParser::createWithDefaultSegments($groupingRules, $tokenizer));
     }
 
     /**
