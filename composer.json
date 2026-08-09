@@ -33,6 +33,7 @@
         "vimeo/psalm": "^5.26",
         "rector/rector": "^2.6"
     },
+    "bin": ["bin/edifact"],
     "autoload": {
         "psr-4": {
             "EdifactParser\\": "src/"

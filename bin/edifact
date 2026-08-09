@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use EdifactParser\Console\Application;
+use EdifactParser\Console\StreamOutput;
+
+(static function (): void {
+    $autoloaders = [
+        __DIR__ . '/../vendor/autoload.php',        // installed as the project itself
+        __DIR__ . '/../../../autoload.php',         // installed as a dependency
+    ];
+
+    foreach ($autoloaders as $autoloader) {
+        if (is_file($autoloader)) {
+            require $autoloader;
+
+            return;
+        }
+    }
+
+    fwrite(STDERR, "Cannot locate the composer autoloader. Run `composer install`.\n");
+    exit(2);
+})();
+
+exit((new Application(new StreamOutput(STDOUT, STDERR)))->run($argv));

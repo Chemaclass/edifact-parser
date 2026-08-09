@@ -59,6 +59,31 @@ final class MessageRuleSets
      * The mandatory service segments (UNH/BGM/UNT, exactly one each) shared by every
      * message type; callers append the type-specific sequence.
      */
+    /**
+     * The message types with a bundled rule set, upper-case.
+     *
+     * @return list<string>
+     */
+    public static function names(): array
+    {
+        return ['ORDERS', 'INVOIC', 'DESADV', 'IFTMIN'];
+    }
+
+    /**
+     * Look one up by message type, case-insensitively — null when there is no bundled set,
+     * which is not an error: most message types simply have none.
+     */
+    public static function byName(string $messageType): ?MessageRuleSet
+    {
+        return match (strtoupper($messageType)) {
+            'ORDERS' => self::orders(),
+            'INVOIC' => self::invoic(),
+            'DESADV' => self::desadv(),
+            'IFTMIN' => self::iftmin(),
+            default => null,
+        };
+    }
+
     private static function serviceEnvelope(string $type): MessageRuleSet
     {
         return MessageRuleSet::forType($type)
