@@ -392,11 +392,14 @@
     <div class="pillars">
       <div class="pillar"><div class="ic">📥</div><h3>Parse anything</h3><p>Unknown tags degrade gracefully to raw values — no message type is unsupported. The parser never throws on unknown segments.</p></div>
       <div class="pillar"><div class="ic">📤</div><h3>Write it back</h3><p>Serialize segments to valid <code>.edi</code>, or assemble a full <code>UNB…UNZ</code> interchange with auto-computed control counts.</p></div>
-      <div class="pillar"><div class="ic">✅</div><h3>Validate</h3><p>Pluggable rule sets for required segments, cardinality and relative order. Ready-made sets for ORDERS, INVOIC, DESADV, IFTMIN.</p></div>
+      <div class="pillar"><div class="ic">✅</div><h3>Validate</h3><p>Pluggable rule sets for required segments, cardinality and relative order. Ready-made sets for ORDERS, INVOIC, DESADV, IFTMIN — or check against the UN/EDIFACT directory itself.</p></div>
       <div class="pillar"><div class="ic">🌊</div><h3>Stream</h3><p>Parse multi-gigabyte files in bounded memory — one message at a time, honouring a leading <code>UNA</code> service advice.</p></div>
       <div class="pillar"><div class="ic">🧱</div><h3>Full envelope model</h3><p>Interchange → groups → messages, with duplicate-preserving access and typed metadata on every envelope segment.</p></div>
-      <div class="pillar"><div class="ic">🏷️</div><h3>32 typed segments</h3><p>Domain accessors and qualifier constants out of the box — and trivially extensible with your own segment classes.</p></div>
+      <div class="pillar"><div class="ic">🏷️</div><h3>32 typed segments, or 134</h3><p>Domain accessors and qualifier constants out of the box; opt into the full UN/EDIFACT directory for 134 tags, or add your own.</p></div>
       <div class="pillar"><div class="ic">🔎</div><h3>Fluent query API</h3><p>Chain filters, transforms and pagination over every segment; a statistics analyzer aggregates counts and totals.</p></div>
+      <div class="pillar"><div class="ic">📐</div><h3>Directory-aware</h3><p>Validate elements, lengths, representations and code lists against the real UN/EDIFACT directories — and group messages into their actual nested <code>SG1…SGn</code>.</p></div>
+      <div class="pillar"><div class="ic">🖥️</div><h3>CLI included</h3><p><code>edifact parse|inspect|validate|segments</code> — JSON on stdout, diagnostics on stderr, documented exit codes.</p></div>
+      <div class="pillar"><div class="ic">🩺</div><h3>Structured diagnostics</h3><p>Stable codes and positions across parsing and validation, so failures are matched on rather than string-searched.</p></div>
       <div class="pillar"><div class="ic">🌍</div><h3>Charset-aware</h3><p><code>UNOA</code>…<code>UNOY</code> decoding to UTF-8, strict types, PSR-4, fully covered by PHPUnit, PHPStan, Psalm &amp; Rector.</p></div>
     </div>
   </div>
@@ -521,8 +524,9 @@
   <div class="wrap">
     <p class="eyebrow">Batteries included</p>
     <h2 class="sec-title">32 typed segments out of the box</h2>
-    <p class="sec-sub">Each with domain accessors. Any other tag parses as an <code>UnknownSegment</code>
-      you can still read — then add a typed class in a few lines.</p>
+    <p class="sec-sub">Each with domain accessors — and <code>SegmentFactory::withDirectorySegments()</code>
+      brings the total to 134, generated from the UN/EDIFACT directory. Any other tag parses as an
+      <code>UnknownSegment</code> you can still read — then add a typed class in a few lines.</p>
     <div class="seg-groups">
       <div class="seg-group">
         <h4>Envelope / service</h4>
