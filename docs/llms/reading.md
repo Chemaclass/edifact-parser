@@ -146,3 +146,69 @@ $analyzer->calculateTotalQuantity('21');
 $analyzer->hasSegment('UNS');
 $analyzer->getSummary();
 ```
+
+## Segment groups (directory-driven)
+
+`contextSegments()` and `lineItems()` come from `GroupingRules`, a configurable heuristic:
+one flat parent/child tag list applied to every message type. The standard instead defines a
+distinct, arbitrarily nested structure per message and directory — ORDERS D96A has 54 groups.
+
+With directory data available you can group against the real thing:
+
+```php
+use EdifactParser\Directory\GroupInstance;
+use EdifactParser\Directory\StructureGrouper;
+use EdifactParser\Directory\XmlDirectory;
+
+$structure = XmlDirectory::locate('D96A')?->messageStructure('ORDERS');
+$nodes = (new StructureGrouper())->group($message, $structure);
+// list<GroupInstance|SegmentInterface> — ungrouped segments and group occurrences, in order
+
+foreach ($nodes as $node) {
+    if (!$node instanceof GroupInstance) {
+        continue;                      // a segment sitting outside any group
+    }
+
+    $node->id();                       // 'SG2'
+    $node->occurrence();               // 0, 1, 2 …
+    $node->segments();                 // segments directly in this occurrence
+    $node->segmentByTag('NAD');
+    $node->children();                 // nested GroupInstances
+    $node->childrenOfGroup('SG5');
+    count($node);
+    $node->toArray();
+}
+```
+
+For the message above this yields:
+
+```
+UNH
+BGM
+DTM
+SG1#0 [RFF,DTM]
+SG2#0 [NAD]
+  SG5#0 [CTA,COM]
+SG2#1 [NAD]
+SG25#0 [LIN,QTY]
+  SG28#0 [PRI]
+SG25#1 [LIN,QTY]
+UNS
+UNT
+```
+
+Inspecting a structure directly:
+
+```php
+$structure->messageType();     // 'ORDERS'
+$structure->groupCount();      // 54
+$structure->groups();          // array<string, SegmentGroup>, nested ones included
+$group = $structure->group('SG2');
+$group?->triggerTag();         // 'NAD' — the segment that opens a repetition
+$group?->maxRepeat();
+$group?->isRequired();
+$group?->parts();              // list<SegmentPosition|SegmentGroup>
+```
+
+Segments the structure does not account for are still returned, ungrouped: grouping
+imperfectly beats dropping data.

@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **Directory-driven segment groups.** `Directory\MessageStructure` reads the nested segment
+  groups a directory defines for a message type — ORDERS D96A has 54, several levels deep —
+  and `Directory\StructureGrouper` groups a parsed message against them, producing
+  `GroupInstance` occurrences with their nested children. This is the standard structure
+  rather than the `GroupingRules` heuristic, which applies one flat parent/child tag list to
+  every message type. Segments the structure does not account for are still returned,
+  ungrouped. `GroupingRules`, `contextSegments()` and `lineItems()` are unchanged and remain
+  the fallback when no structure is available.
 - **Generated segment classes.** `tools/generate-segments.php` emits typed classes from a
   UN/EDIFACT directory, accessors named from the official element names. 102 are committed
   for D96A, available through `SegmentFactory::withDirectorySegments()` — 134 tags instead
