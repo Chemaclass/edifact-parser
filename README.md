@@ -642,7 +642,14 @@ composer install
 composer test       # PHPUnit (unit + functional)
 composer quality    # PHP-CS-Fixer, Psalm, PHPStan, Rector
 composer csfix      # apply code-style fixes
+composer bench      # benchmark the hot paths (corpus generated at runtime)
 ```
+
+CI runs the benchmarks on every pull request, measuring the base branch and the head
+branch on the same runner and failing when a metric regresses beyond 1.5×. Absolute
+timings on shared hardware mean little; ratios measured back to back do. Never change
+`tools/benchmark.php` in a commit that also reports a performance delta — the numbers
+stop being comparable.
 
 - PHP 8.0+, strict types, PSR-4. Type hints and tests required for new functionality.
 - All code must pass PHP-CS-Fixer, Psalm, PHPStan and Rector (CI is authoritative).

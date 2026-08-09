@@ -9,6 +9,7 @@ return RectorConfig::configure()
         __DIR__ . '/example',
         __DIR__ . '/src',
         __DIR__ . '/tests',
+        __DIR__ . '/tools',
     ])
     ->withPhpSets(php80: true)
     ->withTypeCoverageLevel(0)

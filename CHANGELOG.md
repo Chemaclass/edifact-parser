@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- **Benchmark suite and CI regression gate.** `composer bench` measures the paths
+  `AGENTS.md` marks as hot, over a corpus generated at runtime so nothing large lives in
+  the repo. CI benchmarks the PR's base branch and its head on the same runner and fails
+  when a metric regresses beyond 1.5× — ratios measured back to back, since absolute
+  timings on shared hardware are meaningless.
 - **Pluggable tokenizing** via `Tokenizer\TokenizerInterface`. `Tokenizer\SabasTokenizer`
   wraps `sabas/edifact` and stays the default, so existing behaviour is unchanged.
   `Tokenizer\NativeTokenizer` is a regex-free single-pass alternative: **2.2× faster at
