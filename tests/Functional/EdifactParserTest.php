@@ -144,7 +144,7 @@ EDI;
     public function test_handles_cnt_outside_lin_segments(): void
     {
         $fileContent = <<<EDI
-UNA:+.?'
+UNA:+.? '
 UNB+UNOC:3+1234567890123+9876543210987+250506:1300+ORDER001'
 UNH+1+ORDERS:D:96A:UN:EAN008'
 BGM+220+PO123456+9'
@@ -168,13 +168,13 @@ EDI;
         $message = $parserResult->transactionMessages()[0];
         self::assertCount(2, $message->lineItems());
 
-        self::assertEquals(['2' => new CNTControl(['CNT', ['2', '2\'']])], $message->allSegments()['CNT']);
+        self::assertEquals(['2' => new CNTControl(['CNT', ['2', '2']])], $message->allSegments()['CNT']);
     }
 
     public function test_segments_after_cnt_are_added_to_summary_until_next_lin(): void
     {
         $fileContent = <<<EDI
-UNA:+.?'
+UNA:+.? '
 UNH+1+ORDERS:D:96A:UN:EAN008'
 LIN+1'
 QTY+21:10'

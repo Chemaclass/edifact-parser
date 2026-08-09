@@ -110,24 +110,29 @@ A **message** starts at `UNH` and ends at `UNT`; an **interchange** wraps messag
 
 ### Choosing a tokenizer
 
-Turning raw text into segments is pluggable. The default delegates to `sabas/edifact` and is
-unchanged; `NativeTokenizer` is a regex-free single-pass scanner that is **~2.2× faster at
-tokenizing (~1.5× on `parse()` overall)** and, unlike the default, **preserves non-ASCII
-bytes** instead of stripping them:
+Turning raw text into segments is pluggable. **`NativeTokenizer` is the default** — a
+regex-free single-pass scanner, ~2.2× faster at tokenizing (~1.5× on `parse()` overall),
+and it never rewrites the bytes it reads:
 
 ```php
-use EdifactParser\Tokenizer\NativeTokenizer;
-
-$parser = EdifactParser::createWithDefaultSegments(tokenizer: new NativeTokenizer());
-$stream = StreamingParser::createWithDefaultSegments(tokenizer: new NativeTokenizer());
-
-// or with a custom factory
-new EdifactParser(SegmentFactory::withDefaultSegments(), tokenizer: new NativeTokenizer());
+$parser = EdifactParser::createWithDefaultSegments();   // NativeTokenizer
 ```
 
-Both produce identical output for ASCII input — verified segment-for-segment against the
-default across the test fixtures and a generated corpus. They differ deliberately on
-non-ASCII: the default deletes those bytes (`Müller` → `Mller`), the native one keeps them.
+`SabasTokenizer` delegates to `sabas/edifact`, which was the default up to 6.x. It is still
+available, but be aware it **strips every byte in `\x80-\xFF`** — `NAD+BY+++Müller` comes
+back as `Mller`:
+
+```php
+use EdifactParser\Tokenizer\SabasTokenizer;
+
+new EdifactParser(SegmentFactory::withDefaultSegments(), tokenizer: new SabasTokenizer());
+```
+
+Reach for it when you need bug-for-bug compatibility with 6.x, or want the restricted
+`UNOB` repertoire enforced. Otherwise the default is both faster and lossless.
+
+For ASCII input the two tokenize identically — verified segment-for-segment across the test
+fixtures and a generated corpus.
 
 ---
 

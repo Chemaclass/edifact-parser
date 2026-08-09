@@ -135,6 +135,22 @@ final class NativeTokenizerTest extends TestCase
     /**
      * @test
      */
+    public function it_is_the_default_so_non_ascii_survives_a_plain_parse(): void
+    {
+        $edi = "UNB+UNOC:3+S+R+240101:1200+1'UNH+1+ORDERS:D:96A:UN'NAD+BY+++Müller GmbH'UNT+3+1'UNZ+1+1'";
+
+        $buyer = EdifactParser::createWithDefaultSegments()
+            ->parse($edi)
+            ->transactionMessages()[0]
+            ->segmentByTagAndSubId('NAD', 'BY');
+
+        self::assertInstanceOf(NADNameAddress::class, $buyer);
+        self::assertSame('Müller GmbH', $buyer->name());
+    }
+
+    /**
+     * @test
+     */
     public function the_parser_accepts_it_as_a_drop_in(): void
     {
         $edi = "UNB+UNOC:3+S+R+240101:1200+1'UNH+1+ORDERS:D:96A:UN'NAD+BY+++Müller GmbH'UNT+3+1'UNZ+1+1'";

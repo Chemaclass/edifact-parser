@@ -7,7 +7,7 @@ namespace EdifactParser;
 use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\Segments\SegmentFactoryInterface;
-use EdifactParser\Tokenizer\SabasTokenizer;
+use EdifactParser\Tokenizer\NativeTokenizer;
 use EdifactParser\Tokenizer\TokenizerInterface;
 
 final class EdifactParser
@@ -25,7 +25,7 @@ final class EdifactParser
     ) {
         $this->groupingRules = $groupingRules ?? GroupingRules::default();
         $this->segmentList = new SegmentList($segmentFactory);
-        $this->tokenizer = $tokenizer ?? new SabasTokenizer();
+        $this->tokenizer = $tokenizer ?? new NativeTokenizer();
     }
 
     /**
