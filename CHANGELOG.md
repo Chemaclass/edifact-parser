@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.5.0] - 2026-08-09
+
 #### Added
 - `ParserResult`, `TransactionMessage`, `LineItem`, `FunctionalGroup` and `SegmentQuery`
   are now `Countable` and `IteratorAggregate`, so `count($message)` and
