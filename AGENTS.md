@@ -97,6 +97,11 @@ TransactionMessage organizes segments three ways:
   back to an `.edi` string (inverse of parsing)
 - **Interchange assembly** (`Writer\InterchangeBuilder` + `Writer\MessageBuilder`): build a full
   UNB…UNZ with auto UNT/UNZ counts, then `toString()`
+- **Segment groups** (`Directory\MessageStructure`, `SegmentGroup`, `SegmentPosition`,
+  `StructureGrouper` -> `GroupInstance`): the real nested structure from the directory, as
+  opposed to the `GroupingRules` heuristic. The matcher is greedy and order-driven; when the
+  same tag could belong to several levels, document order decides. Never drop unmatched
+  segments — they go into the ungrouped remainder
 - **Generated segments** (`tools/generate-segments.php` -> `Segments\Generated\*`,
   `Segments\GeneratedSegments`): never edit generated files, regenerate. Component 0 of an
   element MUST use `firstComponent()`, not `component(0, n)` — a single-value element

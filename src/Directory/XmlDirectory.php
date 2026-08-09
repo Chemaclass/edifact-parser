@@ -7,6 +7,7 @@ namespace EdifactParser\Directory;
 use InvalidArgumentException;
 use XMLReader;
 
+use function count;
 use function is_dir;
 use function is_file;
 
@@ -85,6 +86,68 @@ final class XmlDirectory implements DirectoryInterface
     public function codesFor(string $dataElementId): array
     {
         return $this->codes()[$dataElementId] ?? [];
+    }
+
+    /**
+     * The structure this directory defines for a message type, or null when it defines
+     * none — the data is optional and unknown message types must stay parseable.
+     */
+    public function messageStructure(string $messageType): ?MessageStructure
+    {
+        $file = $this->path . '/messages/' . strtolower($messageType) . '.xml';
+
+        if (!is_file($file)) {
+            return null;
+        }
+
+        $reader = new XMLReader();
+        $reader->open($file);
+
+        /** @var list<SegmentPosition|SegmentGroup> $parts */
+        $parts = [];
+        /** @var list<SegmentGroup> $open */
+        $open = [];
+
+        while ($reader->read()) {
+            if ($reader->nodeType === XMLReader::ELEMENT && $reader->name === 'segment') {
+                $position = new SegmentPosition(
+                    (string) $reader->getAttribute('id'),
+                    $reader->getAttribute('required') === 'true',
+                    (int) ($reader->getAttribute('maxrepeat') ?? 1),
+                );
+
+                if ($open === []) {
+                    $parts[] = $position;
+                } else {
+                    $open[count($open) - 1] = $open[count($open) - 1]->withPart($position);
+                }
+                continue;
+            }
+
+            if ($reader->nodeType === XMLReader::ELEMENT && $reader->name === 'group') {
+                $open[] = new SegmentGroup(
+                    (string) $reader->getAttribute('id'),
+                    (int) ($reader->getAttribute('maxrepeat') ?? 1),
+                    $reader->getAttribute('required') === 'true',
+                    [],
+                );
+                continue;
+            }
+
+            if ($reader->nodeType === XMLReader::END_ELEMENT && $reader->name === 'group' && $open !== []) {
+                $finished = array_pop($open);
+
+                if ($open === []) {
+                    $parts[] = $finished;
+                } else {
+                    $open[count($open) - 1] = $open[count($open) - 1]->withPart($finished);
+                }
+            }
+        }
+
+        $reader->close();
+
+        return new MessageStructure(strtoupper($messageType), $parts);
     }
 
     /**

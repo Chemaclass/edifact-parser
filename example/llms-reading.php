@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 use EdifactParser\Analysis\MessageAnalyzer;
 use EdifactParser\ContextSegment;
+use EdifactParser\Directory\GroupInstance;
+use EdifactParser\Directory\StructureGrouper;
+use EdifactParser\Directory\XmlDirectory;
 use EdifactParser\EdifactParser;
 use EdifactParser\Segments\NADNameAddress;
 
@@ -134,5 +137,33 @@ assert($analyzer->calculateTotalAmount('79') === 1250.0);
 assert($analyzer->calculateTotalQuantity('21') === 100.0);
 assert($analyzer->hasSegment('UNS') === true);
 assert(array_key_exists('segment_counts', $analyzer->getSummary()));
+
+// --- Segment groups (directory-driven) --------------------------------------
+$structure = XmlDirectory::locate('D96A')?->messageStructure('ORDERS');
+
+if ($structure !== null) {
+    assert($structure->messageType() === 'ORDERS');
+    assert($structure->groupCount() > 40);
+    assert($structure->group('SG2')?->triggerTag() === 'NAD');
+    assert($structure->group('SG9999') === null);
+
+    $nodes = (new StructureGrouper())->group($message, $structure);
+    $groups = array_values(array_filter($nodes, static fn ($n) => $n instanceof GroupInstance));
+    assert($groups !== []);
+
+    $sg2 = null;
+    foreach ($groups as $group) {
+        if ($group->id() === 'SG2') {
+            $sg2 = $group;
+            break;
+        }
+    }
+    assert($sg2 instanceof GroupInstance);
+    assert($sg2->occurrence() === 0);
+    assert($sg2->segmentByTag('NAD') !== null);
+    assert($sg2->childrenOfGroup('SG5') !== []);
+    assert(count($sg2) >= 1);
+    assert($sg2->toArray()['group'] === 'SG2');
+}
 
 echo "docs/llms/reading.md OK\n";
