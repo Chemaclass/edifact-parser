@@ -120,6 +120,10 @@ TransactionMessage organizes segments three ways:
 
 ## Hot Paths (do not regress)
 
+Enforced, not just documented: `composer bench` measures each of these, and CI runs the
+same suite against the PR's base branch on the same runner, failing on a >1.5x regression.
+Do not edit `tools/benchmark.php` in a commit that also claims a performance delta.
+
 These run once per segment of an interchange — hundreds of thousands of times on a large
 file. Keep them allocation- and call-free:
 

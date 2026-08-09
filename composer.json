@@ -67,7 +67,9 @@
         "csfix": "./vendor/bin/php-cs-fixer fix",
         "csrun": "./vendor/bin/php-cs-fixer fix --dry-run",
         "rector":"./vendor/bin/rector",
-        "rector:dry":"./vendor/bin/rector --dry-run"
+        "rector:dry":"./vendor/bin/rector --dry-run",
+        "bench": "php tools/benchmark.php",
+        "bench:json": "php tools/benchmark.php --json"
     },
     "config": {
         "platform": {

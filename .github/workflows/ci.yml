@@ -146,3 +146,36 @@ jobs:
               exit(1);
             }
           '
+
+  benchmarks:
+    name: Benchmarks (no regression)
+    # Compares this branch against its merge base in the same job, on the same runner —
+    # absolute timings on shared CI hardware are meaningless, ratios are not.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+          ini-values: memory_limit=1G
+          tools: composer
+
+      - name: Benchmark the base branch
+        run: |
+          git checkout --quiet ${{ github.event.pull_request.base.sha }}
+          composer install --no-interaction --no-ansi --no-progress --quiet
+          php tools/benchmark.php --json > /tmp/base.json || echo '{"results":{}}' > /tmp/base.json
+
+      - name: Benchmark this branch
+        run: |
+          git checkout --quiet ${{ github.event.pull_request.head.sha }}
+          composer install --no-interaction --no-ansi --no-progress --quiet
+          php tools/benchmark.php --json > /tmp/head.json
+
+      - name: Compare
+        run: php tools/benchmark-compare.php /tmp/base.json /tmp/head.json
