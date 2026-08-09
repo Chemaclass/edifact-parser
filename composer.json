@@ -29,7 +29,6 @@
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpunit/phpunit": "^9.6",
         "phpstan/phpstan": "^2.2",
-        "symfony/var-dumper": "^5.4 || ^6.4 || ^7.0",
         "vimeo/psalm": "^5.26",
         "rector/rector": "^2.6",
         "php-edifact/edifact-mapping": "^0.5.2"

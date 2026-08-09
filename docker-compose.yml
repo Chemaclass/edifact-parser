@@ -1,7 +1,9 @@
-edifact_parser_php:
-  build: .
-  dockerfile: devops/dev/php.dockerfile
-  container_name: edifact_parser_php
-  hostname: php
-  volumes:
-    - .:/srv/edifact-parser:delegated
+services:
+  php:
+    build:
+      context: .
+      dockerfile: devops/dev/php.dockerfile
+    container_name: edifact_parser_php
+    hostname: php
+    volumes:
+      - .:/srv/edifact-parser:delegated
