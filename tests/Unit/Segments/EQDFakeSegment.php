@@ -10,6 +10,8 @@ use EdifactParser\Segments\AbstractSegment;
  * A stand-in for a user-registered segment. It deliberately mixes a plain accessor with a
  * method that takes an argument and one with an optional argument, which is what
  * {@see \EdifactParser\Segments\SegmentDescriptor} has to tell apart.
+ *
+ * @psalm-immutable
  */
 final class EQDFakeSegment extends AbstractSegment
 {

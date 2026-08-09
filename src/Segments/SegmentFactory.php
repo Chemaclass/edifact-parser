@@ -159,6 +159,8 @@ final class SegmentFactory implements SegmentFactoryInterface
     /**
      * What the segment registered for this tag can tell you, or null when the tag is not
      * registered. This one does load the class, since it reflects over it.
+     *
+     * @psalm-suppress ImpureMethodCall reflection reads the class; the factory is untouched
      */
     public function describeTag(string $tag): ?SegmentDescriptor
     {
