@@ -94,13 +94,13 @@ if ($directory !== null) {
     $good = EdifactParser::createWithDefaultSegments()
         ->parse("UNH+1+ORDERS:D:96A:UN'QTY+21:100:PCE'UNT+3+1'")
         ->transactionMessages()[0];
-    assert($directoryValidator->validate($good) === []);
+    assert($directoryValidator->diagnose($good) === []);
     assert($directoryValidator->isValid($good) === true);
 
     $bad = EdifactParser::createWithDefaultSegments()
         ->parse("UNH+1+ORDERS:D:96A:UN'QTY+21'UNT+3+1'")
         ->transactionMessages()[0];
-    $found = $directoryValidator->validate($bad);
+    $found = $directoryValidator->diagnose($bad);
     assert($found !== []);
     assert($found[0]->code() === DiagnosticCode::ELEMENT_REQUIRED);
     assert($found[0]->elementPath() === 'C186/6060');
@@ -108,8 +108,8 @@ if ($directory !== null) {
     $coded = EdifactParser::createWithDefaultSegments()
         ->parse("UNH+1+ORDERS:D:96A:UN'QTY+ZZ:100'UNT+3+1'")
         ->transactionMessages()[0];
-    assert($directoryValidator->validate($coded) === []);
-    assert($directoryValidator->withCodeValidation()->validate($coded)[0]->code() === DiagnosticCode::CODE_UNKNOWN);
+    assert($directoryValidator->diagnose($coded) === []);
+    assert($directoryValidator->withCodeValidation()->diagnose($coded)[0]->code() === DiagnosticCode::CODE_UNKNOWN);
 
     assert(count($directory->tags()) > 100);
     assert($directory->segment('QTY')?->name() === 'quantity');

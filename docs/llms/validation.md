@@ -4,6 +4,16 @@ Runnable version: [`example/llms-validation.php`](../../example/llms-validation.
 
 Validation never throws. An empty result means the message conforms.
 
+Two validators, one naming rule:
+
+| | |
+| --- | --- |
+| `diagnose()` | returns `list<Diagnostic>` — on **both** validators |
+| `validate()` | returns `list<ValidationViolation>` — `MessageValidator` only, the older shape |
+| `isValid()` | returns `bool` — on both |
+
+So if you want the shared vocabulary, call `diagnose()` whichever validator you hold.
+
 ```php
 use EdifactParser\Validation\MessageRuleSets;
 use EdifactParser\Validation\MessageValidator;
@@ -99,12 +109,12 @@ $directory = XmlDirectory::locate('D96A');            // ?XmlDirectory — null 
 $directory = XmlDirectory::fromPath('D96A', '/path/to/D96A');
 
 $validator = new DirectoryValidator($directory);
-$validator->validate($message);                        // list<Diagnostic>
+$validator->diagnose($message);                        // list<Diagnostic>
 $validator->isValid($message);
-$validator->validateSegment($segment);                 // one segment on its own
+$validator->diagnoseSegment($segment);                 // one segment on its own
 
 // Code lists are opt-in: real traffic uses partner-specific codes.
-$validator->withCodeValidation()->validate($message);
+$validator->withCodeValidation()->diagnose($message);
 ```
 
 Diagnostics carry the element path:

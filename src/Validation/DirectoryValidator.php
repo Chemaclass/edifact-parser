@@ -42,14 +42,19 @@ final class DirectoryValidator
     }
 
     /**
+     * Named `diagnose()` to match {@see MessageValidator::diagnose()}: both return the
+     * shared {@see Diagnostic} shape. `MessageValidator::validate()` keeps its older
+     * {@see ValidationViolation} return, so having two `validate()` in this namespace
+     * mean different things would be a trap.
+     *
      * @return list<Diagnostic>
      */
-    public function validate(TransactionMessage $message): array
+    public function diagnose(TransactionMessage $message): array
     {
         $diagnostics = [];
 
         foreach ($message as $index => $segment) {
-            foreach ($this->validateSegment($segment, $index) as $diagnostic) {
+            foreach ($this->diagnoseSegment($segment, $index) as $diagnostic) {
                 $diagnostics[] = $diagnostic;
             }
         }
@@ -59,13 +64,13 @@ final class DirectoryValidator
 
     public function isValid(TransactionMessage $message): bool
     {
-        return $this->validate($message) === [];
+        return $this->diagnose($message) === [];
     }
 
     /**
      * @return list<Diagnostic>
      */
-    public function validateSegment(SegmentInterface $segment, ?int $index = null): array
+    public function diagnoseSegment(SegmentInterface $segment, ?int $index = null): array
     {
         $definition = $this->directory->segment($segment->tag());
 
