@@ -107,7 +107,7 @@ final class DirectoryValidationTest extends TestCase
     {
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+21:100:PCE'UNT+3+1'");
 
-        self::assertSame([], (new DirectoryValidator(self::directory()))->validate($message));
+        self::assertSame([], (new DirectoryValidator(self::directory()))->diagnose($message));
         self::assertTrue((new DirectoryValidator(self::directory()))->isValid($message));
     }
 
@@ -118,7 +118,7 @@ final class DirectoryValidationTest extends TestCase
     {
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+21'UNT+3+1'");
 
-        $diagnostics = (new DirectoryValidator(self::directory()))->validate($message);
+        $diagnostics = (new DirectoryValidator(self::directory()))->diagnose($message);
 
         self::assertSame([DiagnosticCode::ELEMENT_REQUIRED], self::codes($diagnostics));
         self::assertSame('QTY', $diagnostics[0]->tag());
@@ -133,7 +133,7 @@ final class DirectoryValidationTest extends TestCase
     {
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'TST+abc'UNT+3+1'");
 
-        $diagnostics = (new DirectoryValidator(self::directory()))->validate($message);
+        $diagnostics = (new DirectoryValidator(self::directory()))->diagnose($message);
 
         self::assertContains(DiagnosticCode::ELEMENT_REQUIRED, self::codes($diagnostics));
         self::assertContains('C901', array_map(static fn (Diagnostic $d) => $d->elementPath(), $diagnostics));
@@ -148,7 +148,7 @@ final class DirectoryValidationTest extends TestCase
 
         $paths = array_map(
             static fn (Diagnostic $d) => $d->elementPath(),
-            (new DirectoryValidator(self::directory()))->validate($message),
+            (new DirectoryValidator(self::directory()))->diagnose($message),
         );
 
         self::assertContains('9001', $paths);
@@ -161,7 +161,7 @@ final class DirectoryValidationTest extends TestCase
     {
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+21:1:TOOLONGUNIT'UNT+3+1'");
 
-        $diagnostics = (new DirectoryValidator(self::directory()))->validate($message);
+        $diagnostics = (new DirectoryValidator(self::directory()))->diagnose($message);
 
         self::assertSame([DiagnosticCode::ELEMENT_TOO_LONG], self::codes($diagnostics));
         self::assertSame('C186/6411', $diagnostics[0]->elementPath());
@@ -176,14 +176,14 @@ final class DirectoryValidationTest extends TestCase
         $numeric = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+21:abc'UNT+3+1'");
         self::assertSame(
             [DiagnosticCode::ELEMENT_TYPE],
-            self::codes((new DirectoryValidator(self::directory()))->validate($numeric)),
+            self::codes((new DirectoryValidator(self::directory()))->diagnose($numeric)),
         );
 
         // 'a' is alphabetic: digits are not allowed.
         $alphabetic = self::parse("UNH+1+ORDERS:D:96A:UN'TST+ok+ab1++x'UNT+3+1'");
         self::assertContains(
             DiagnosticCode::ELEMENT_TYPE,
-            self::codes((new DirectoryValidator(self::directory()))->validate($alphabetic)),
+            self::codes((new DirectoryValidator(self::directory()))->diagnose($alphabetic)),
         );
     }
 
@@ -197,7 +197,7 @@ final class DirectoryValidationTest extends TestCase
 
             self::assertSame(
                 [],
-                (new DirectoryValidator(self::directory()))->validate($message),
+                (new DirectoryValidator(self::directory()))->diagnose($message),
                 "expected '{$value}' to be a valid numeric value",
             );
         }
@@ -211,14 +211,14 @@ final class DirectoryValidationTest extends TestCase
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+ZZ:100'UNT+3+1'");
         $validator = new DirectoryValidator(self::directory());
 
-        self::assertSame([], $validator->validate($message));
+        self::assertSame([], $validator->diagnose($message));
 
-        $diagnostics = $validator->withCodeValidation()->validate($message);
+        $diagnostics = $validator->withCodeValidation()->diagnose($message);
         self::assertSame([DiagnosticCode::CODE_UNKNOWN], self::codes($diagnostics));
         self::assertSame('C186/6063', $diagnostics[0]->elementPath());
         self::assertStringContainsString("'ZZ' is not a listed code", $diagnostics[0]->message());
 
-        self::assertSame([], $validator->withCodeValidation(false)->validate($message));
+        self::assertSame([], $validator->withCodeValidation(false)->diagnose($message));
     }
 
     /**
@@ -228,7 +228,7 @@ final class DirectoryValidationTest extends TestCase
     {
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+12:100'UNT+3+1'");
 
-        self::assertSame([], (new DirectoryValidator(self::directory(), validateCodes: true))->validate($message));
+        self::assertSame([], (new DirectoryValidator(self::directory(), validateCodes: true))->diagnose($message));
     }
 
     /**
@@ -239,7 +239,7 @@ final class DirectoryValidationTest extends TestCase
         // 6060 has no codes.xml entry, so an arbitrary numeric value must stay valid.
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+21:987654'UNT+3+1'");
 
-        self::assertSame([], (new DirectoryValidator(self::directory(), validateCodes: true))->validate($message));
+        self::assertSame([], (new DirectoryValidator(self::directory(), validateCodes: true))->diagnose($message));
     }
 
     /**
@@ -250,7 +250,7 @@ final class DirectoryValidationTest extends TestCase
         // UNH/UNT are absent from the fixture directory; unknown tags must not be errors.
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'ZZZ+whatever'UNT+3+1'");
 
-        self::assertSame([], (new DirectoryValidator(self::directory()))->validate($message));
+        self::assertSame([], (new DirectoryValidator(self::directory()))->diagnose($message));
     }
 
     /**
@@ -261,7 +261,7 @@ final class DirectoryValidationTest extends TestCase
         // 'RFF+ON' — one component where a composite is expected.
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'RFF+ON'UNT+3+1'");
 
-        self::assertSame([], (new DirectoryValidator(self::directory()))->validate($message));
+        self::assertSame([], (new DirectoryValidator(self::directory()))->diagnose($message));
     }
 
     /**
@@ -271,7 +271,7 @@ final class DirectoryValidationTest extends TestCase
     {
         $segment = SegmentFactory::withDefaultSegments()->createSegmentFromArray(['QTY', ['21']]);
 
-        $diagnostics = (new DirectoryValidator(self::directory()))->validateSegment($segment);
+        $diagnostics = (new DirectoryValidator(self::directory()))->diagnoseSegment($segment);
 
         self::assertSame([DiagnosticCode::ELEMENT_REQUIRED], self::codes($diagnostics));
         self::assertNull($diagnostics[0]->segmentIndex());
@@ -304,7 +304,7 @@ final class DirectoryValidationTest extends TestCase
         // the value, so this must validate rather than blow up on the array.
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'TST+ok:extra+++x'UNT+3+1'");
 
-        self::assertSame([], (new DirectoryValidator(self::directory()))->validate($message));
+        self::assertSame([], (new DirectoryValidator(self::directory()))->diagnose($message));
     }
 
     /**
@@ -324,7 +324,7 @@ final class DirectoryValidationTest extends TestCase
         // than tripping over the type.
         $segment = SegmentFactory::withDefaultSegments()->createSegmentFromArray(['QTY', ['21', 100, 'PCE']]);
 
-        self::assertSame([], (new DirectoryValidator(self::directory()))->validateSegment($segment));
+        self::assertSame([], (new DirectoryValidator(self::directory()))->diagnoseSegment($segment));
     }
 
     /**
@@ -371,7 +371,7 @@ final class DirectoryValidationTest extends TestCase
         self::assertContains('Ordered quantity', $directory->codesFor('6063'));
 
         $message = self::parse("UNH+1+ORDERS:D:96A:UN'QTY+21:100:PCE'UNT+3+1'");
-        self::assertSame([], (new DirectoryValidator($directory))->validate($message));
+        self::assertSame([], (new DirectoryValidator($directory))->diagnose($message));
     }
 
     private static function directory(string $name = 'TEST'): XmlDirectory

@@ -114,6 +114,10 @@ TransactionMessage organizes segments three ways:
   without it, so every entry point returns null rather than throwing when data is absent.
   Unit tests run against a small committed fixture in `tests/fixtures/directory` so the suite
   does not need the 150 MB package; one test loads the real D96A when present
+- **Validator naming rule**: `diagnose()` returns `list<Diagnostic>` on every validator;
+  `validate()` returns the older `list<ValidationViolation>` and exists only on
+  `MessageValidator`. Two methods with the same name and different return types in one
+  namespace is a trap — keep new validators on `diagnose()`
 - **Directory validation** (`Validation\DirectoryValidator`): element/composite requirements,
   representation, lengths, and opt-in code lists. Complements `MessageValidator`, which works
   at message level
