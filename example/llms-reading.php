@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 use EdifactParser\Analysis\MessageAnalyzer;
 use EdifactParser\ContextSegment;
+use EdifactParser\Diff\Difference;
+use EdifactParser\Diff\InterchangeDiff;
 use EdifactParser\Directory\GroupInstance;
 use EdifactParser\Directory\StructureGrouper;
 use EdifactParser\Directory\XmlDirectory;
@@ -165,5 +167,20 @@ if ($structure !== null) {
     assert(count($sg2) >= 1);
     assert($sg2->toArray()['group'] === 'SG2');
 }
+
+// --- Comparing two interchanges ---------------------------------------------
+$other = EdifactParser::createWithDefaultSegments()->parse(str_replace('QTY+21:100', 'QTY+21:250', $edi));
+$diff = new InterchangeDiff();
+
+assert($diff->isIdentical($result, $result) === true);
+$differences = $diff->diff($result, $other);
+assert(count($differences) === 1);
+assert($differences[0]->kind() === Difference::CHANGED);
+assert($differences[0]->tag() === 'QTY');
+assert($differences[0]->messageIndex() === 0);
+assert($differences[0]->before() !== null && $differences[0]->after() !== null);
+assert($differences[0]->toArray()['kind'] === 'changed');
+assert((string) $differences[0] === '~ message 0  QTY:21');
+assert($diff->diffMessages($result->transactionMessages()[0], $other->transactionMessages()[0]) !== []);
 
 echo "docs/llms/reading.md OK\n";

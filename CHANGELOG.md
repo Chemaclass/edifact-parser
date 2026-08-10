@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > whether they affect you. Most applications need no changes.
 
 #### Added
+- **`Diff\InterchangeDiff` and `edifact diff`.** Compare two interchanges segment by
+  segment: what was added, removed or changed, with the before and after values. Alignment
+  uses a longest-common-subsequence over tag + subId rather than position, so inserting one
+  segment reports one addition instead of marking everything after it as changed. The CLI
+  exits 1 when the files differ, like `diff(1)`.
 - **Directory-driven segment groups.** `Directory\MessageStructure` reads the nested segment
   groups a directory defines for a message type — ORDERS D96A has 54, several levels deep —
   and `Directory\StructureGrouper` groups a parsed message against them, producing

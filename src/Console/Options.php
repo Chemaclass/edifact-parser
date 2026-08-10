@@ -78,7 +78,32 @@ final class Options
 
     public function path(): ?string
     {
-        return $this->positional[0] ?? null;
+        return $this->pathAt(0);
+    }
+
+    /**
+     * The nth positional path, for commands taking more than one — `diff a.edi b.edi`.
+     */
+    public function pathAt(int $index): ?string
+    {
+        return $this->positional[$index] ?? null;
+    }
+
+    /**
+     * Read a specific positional file. Null when it is absent or unreadable, which the
+     * caller reports as a usage error rather than an empty interchange.
+     */
+    public function readPath(int $index): ?string
+    {
+        $path = $this->pathAt($index);
+
+        if ($path === null || !is_file($path)) {
+            return null;
+        }
+
+        $content = @file_get_contents($path);
+
+        return $content === false ? null : $content;
     }
 
     /**

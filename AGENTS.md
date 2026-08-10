@@ -133,7 +133,10 @@ TransactionMessage organizes segments three ways:
   Go from a segment to what was grouped under it with
   `TransactionMessage::childrenOf()`/`contextFor()` (indexed by `spl_object_id`, and
   accepting either the segment or the context object)
-- **CLI** (`bin/edifact`, `Console\Application`): parse/inspect/validate/segments.
+- **Diff** (`Diff\InterchangeDiff` -> `Diff\Difference`): segment-level comparison, aligned
+  by LCS over tag + subId. Never align by position — one insertion would otherwise cascade
+  into every following segment
+- **CLI** (`bin/edifact`, `Console\Application`): parse/inspect/validate/segments/diff.
   Contract is part of the API — data on stdout, messages on stderr, exit 0/1/2. `Options`
   takes its stdin stream as an argument so the piped path stays testable; `OutputInterface`
   keeps the two channels separable in tests

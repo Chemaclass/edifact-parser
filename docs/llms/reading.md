@@ -212,3 +212,30 @@ $group?->parts();              // list<SegmentPosition|SegmentGroup>
 
 Segments the structure does not account for are still returned, ungrouped: grouping
 imperfectly beats dropping data.
+
+## Comparing two interchanges
+
+```php
+use EdifactParser\Diff\Difference;
+use EdifactParser\Diff\InterchangeDiff;
+
+$diff = new InterchangeDiff();
+$differences = $diff->diff($before, $after);   // list<Difference>
+$diff->isIdentical($before, $after);           // bool
+$diff->diffMessages($beforeMessage, $afterMessage);
+
+foreach ($differences as $difference) {
+    $difference->kind();          // Difference::ADDED | REMOVED | CHANGED
+    $difference->messageIndex();
+    $difference->tag();
+    $difference->subId();
+    $difference->before();        // ?SegmentInterface
+    $difference->after();         // ?SegmentInterface
+    $difference->toArray();
+    (string) $difference;         // "~ message 0  QTY:21"
+}
+```
+
+Segments are aligned by a longest-common-subsequence over tag + subId, not by position, so
+inserting one segment reports one addition rather than marking everything after it as
+changed.
