@@ -201,6 +201,63 @@ final class ApplicationTest extends TestCase
     /**
      * @test
      */
+    public function diff_reports_no_differences_with_exit_zero(): void
+    {
+        $path = $this->fixture("UNH+1+ORDERS:D:96A:UN'QTY+21:100'UNT+3+1'");
+
+        try {
+            $exit = $this->execute(['diff', $path, $path]);
+
+            self::assertSame(Application::EXIT_SUCCESS, $exit);
+            self::assertTrue($this->output->data[0]['identical']);
+            self::assertSame([], $this->output->data[0]['differences']);
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function diff_reports_differences_with_exit_one(): void
+    {
+        // Exit 1 on difference mirrors diff(1), so the command composes in a shell.
+        $before = $this->fixture("UNH+1+ORDERS:D:96A:UN'QTY+21:100'UNT+3+1'");
+        $after = $this->fixture("UNH+1+ORDERS:D:96A:UN'QTY+21:250'UNT+3+1'");
+
+        try {
+            $exit = $this->execute(['diff', $before, $after]);
+
+            self::assertSame(Application::EXIT_INVALID, $exit);
+            self::assertFalse($this->output->data[0]['identical']);
+            self::assertSame('changed', $this->output->data[0]['differences'][0]['kind']);
+            self::assertSame('QTY', $this->output->data[0]['differences'][0]['tag']);
+        } finally {
+            @unlink($before);
+            @unlink($after);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function diff_needs_two_readable_files(): void
+    {
+        $path = $this->fixture("UNH+1+ORDERS:D:96A:UN'UNT+2+1'");
+
+        try {
+            self::assertSame(Application::EXIT_USAGE, $this->execute(['diff', $path]));
+            self::assertSame(Application::EXIT_USAGE, $this->execute(['diff', $path, '/no/such/file.edi']));
+            self::assertStringContainsString('two readable files', implode("\n", $this->output->messages));
+            self::assertSame([], $this->output->data);
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    /**
+     * @test
+     */
     public function pretty_only_changes_formatting(): void
     {
         $this->execute(['segments', '--tag=QTY']);

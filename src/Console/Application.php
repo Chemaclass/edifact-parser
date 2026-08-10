@@ -6,6 +6,8 @@ namespace EdifactParser\Console;
 
 use EdifactParser\Analysis\MessageAnalyzer;
 use EdifactParser\Diagnostics\Diagnostic;
+use EdifactParser\Diff\Difference;
+use EdifactParser\Diff\InterchangeDiff;
 use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
 use EdifactParser\Segments\SegmentFactory;
@@ -42,6 +44,7 @@ final class Application
         'inspect' => 'Summarise an interchange: types, counts, line items',
         'validate' => 'Check messages against a rule set',
         'segments' => 'Show what the parser knows about a segment tag',
+        'diff' => 'Compare two interchanges segment by segment',
         'help' => 'Show this help',
     ];
 
@@ -98,6 +101,10 @@ final class Application
 
         if ($command === 'segments') {
             return $this->segments($options);
+        }
+
+        if ($command === 'diff') {
+            return $this->diff($options);
         }
 
         $content = $options->readInput();
@@ -201,6 +208,33 @@ final class Application
         return $valid ? self::EXIT_SUCCESS : self::EXIT_INVALID;
     }
 
+    private function diff(Options $options): int
+    {
+        $before = $options->readPath(0);
+        $after = $options->readPath(1);
+
+        if ($before === null || $after === null) {
+            $this->output->error('diff needs two readable files: edifact diff <before.edi> <after.edi>');
+
+            return self::EXIT_USAGE;
+        }
+
+        $parser = EdifactParser::createWithDefaultSegments();
+        $differences = (new InterchangeDiff())->diff($parser->parse($before), $parser->parse($after));
+
+        $this->output->data([
+            'identical' => $differences === [],
+            'differences' => array_map(
+                static fn (Difference $difference): array => $difference->toArray(),
+                $differences,
+            ),
+        ], $options->pretty());
+
+        // Exit 1 when they differ, so `edifact diff a b && echo same` reads naturally and
+        // the command composes in a shell the way diff(1) does.
+        return $differences === [] ? self::EXIT_SUCCESS : self::EXIT_INVALID;
+    }
+
     private function segments(Options $options): int
     {
         $factory = SegmentFactory::withDefaultSegments();
@@ -245,6 +279,8 @@ final class Application
         $lines[] = '  --pretty        Pretty-print the JSON';
         $lines[] = '  --rules=NAME    Rule set for `validate` (' . implode(', ', MessageRuleSets::names()) . ')';
         $lines[] = '  --tag=TAG       Segment tag for `segments`';
+        $lines[] = '';
+        $lines[] = '  diff takes two files: edifact diff before.edi after.edi';
         $lines[] = '';
         $lines[] = 'Reads stdin when no file is given. Data on stdout, diagnostics on stderr.';
         $lines[] = 'Exit codes: 0 success, 1 invalid input, 2 usage error.';

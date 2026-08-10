@@ -175,6 +175,7 @@ edifact validate order.edi              # rule set picked from the message type
 edifact validate order.edi --rules=ORDERS
 edifact segments                        # every tag the parser knows
 edifact segments --tag=NAD              # its accessors and return types
+edifact diff before.edi after.edi       # what changed between two interchanges
 edifact parse order.edi --pretty        # readable JSON
 
 cat order.edi | edifact inspect         # reads stdin when no path is given
