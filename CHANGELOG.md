@@ -8,26 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 #### Added
+- `segmentOfType(NADNameAddress::class, 'BY')`: a keyed lookup typed as the class you pass,
+  so PHPStan, Psalm and IDEs see `name()`.
+- `SegmentQuery` is generic: `query()->ofType(X::class)` narrows `first()`, `get()`, `map()`.
 - `edifact --version` (also `version`, `-V`) prints the installed version as JSON.
 
 #### Changed
+- Dropped the `webmozart/assert` dependency. Invalid tags still throw
+  `\InvalidArgumentException`.
 - CLI: a file that cannot be read is reported by name instead of as "No input".
-- **`webmozart/assert` is no longer a dependency.** It backed a single check. An invalid
-  tag passed to `SegmentFactory` still throws `\InvalidArgumentException`, now the base
-  class rather than `Webmozart\Assert\InvalidArgumentException`.
 
 #### Fixed
-- **`toJson()` honours its `@throws JsonException` contract** whatever flags are passed.
-  Called without `JSON_THROW_ON_ERROR` on data that cannot be encoded (non-UTF-8 bytes, for
-  example), it raised a `TypeError` instead.
-- **`MissingSubId` and `InvalidFile` keep the offending values in their message** when those
-  values are not valid UTF-8. The values were dropped silently.
+- `toJson()` without `JSON_THROW_ON_ERROR` raised a `TypeError` on unencodable data instead
+  of `JsonException`.
+- `MissingSubId` and `InvalidFile` messages no longer drop non-UTF-8 values.
 
 #### Development
-- Psalm 6, isolated in `vendor-bin/psalm`, so every check runs on current PHP. Psalm 5 crashed
-  on PHP 8.4+.
-- `composer examples` and `composer coverage` run the documentation and coverage CI jobs
-  locally; `composer list` describes every script.
+- Psalm 6 in `vendor-bin/psalm`, so every check runs on current PHP.
+- New `composer examples` and `composer coverage`, matching their CI jobs.
 
 ## [7.0.0] - 2026-08-10
 
