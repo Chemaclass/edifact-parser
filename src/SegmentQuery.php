@@ -21,17 +21,22 @@ use function count;
  * Every filter returns a new query, so a query can be reused as a base for several
  * refinements.
  *
- * @implements IteratorAggregate<int, SegmentInterface>
+ * @template T of SegmentInterface
+ *
+ * @implements IteratorAggregate<int, T>
  */
 final class SegmentQuery implements Countable, IteratorAggregate
 {
     /**
-     * @param list<SegmentInterface> $segments
+     * @param list<T> $segments
      */
     public function __construct(private array $segments)
     {
     }
 
+    /**
+     * @return self<T>
+     */
     public function withTag(string $tag): self
     {
         return $this->where(static fn (SegmentInterface $s) => $s->tag() === $tag);
@@ -39,6 +44,8 @@ final class SegmentQuery implements Countable, IteratorAggregate
 
     /**
      * @param list<string> $tags
+     *
+     * @return self<T>
      */
     public function withTags(array $tags): self
     {
@@ -51,6 +58,8 @@ final class SegmentQuery implements Countable, IteratorAggregate
      * The segments whose tag is *not* one of the given ones.
      *
      * @param list<string> $tags
+     *
+     * @return self<T>
      */
     public function withoutTags(array $tags): self
     {
@@ -59,13 +68,18 @@ final class SegmentQuery implements Countable, IteratorAggregate
         return $this->where(static fn (SegmentInterface $s) => !isset($excluded[$s->tag()]));
     }
 
+    /**
+     * @return self<T>
+     */
     public function withSubId(string $subId): self
     {
         return $this->where(static fn (SegmentInterface $s) => $s->subId() === $subId);
     }
 
     /**
-     * @param callable(SegmentInterface): bool $predicate
+     * @param callable(T): bool $predicate
+     *
+     * @return self<T>
      */
     public function where(callable $predicate): self
     {
@@ -73,30 +87,47 @@ final class SegmentQuery implements Countable, IteratorAggregate
     }
 
     /**
-     * @template T of SegmentInterface
+     * Narrows the element type too, so `->ofType(NADNameAddress::class)->first()?->name()`
+     * type-checks.
      *
-     * @param class-string<T> $className
+     * @template U of SegmentInterface
+     *
+     * @param class-string<U> $className
+     *
+     * @return self<U>
      */
     public function ofType(string $className): self
     {
-        return $this->where(static fn (SegmentInterface $s) => $s instanceof $className);
+        return new self(self::instancesOf($className, $this->segments));
     }
 
+    /**
+     * @return self<T>
+     */
     public function limit(int $limit): self
     {
         return new self(array_slice($this->segments, 0, $limit));
     }
 
+    /**
+     * @return self<T>
+     */
     public function skip(int $offset): self
     {
         return new self(array_slice($this->segments, $offset));
     }
 
+    /**
+     * @return T|null
+     */
     public function first(): ?SegmentInterface
     {
         return $this->segments[0] ?? null;
     }
 
+    /**
+     * @return T|null
+     */
     public function last(): ?SegmentInterface
     {
         $count = count($this->segments);
@@ -105,7 +136,7 @@ final class SegmentQuery implements Countable, IteratorAggregate
     }
 
     /**
-     * @return list<SegmentInterface>
+     * @return list<T>
      */
     public function get(): array
     {
@@ -130,11 +161,11 @@ final class SegmentQuery implements Countable, IteratorAggregate
     /**
      * Map segments to another type
      *
-     * @template T
+     * @template R
      *
-     * @param callable(SegmentInterface): T $mapper
+     * @param callable(T): R $mapper
      *
-     * @return list<T>
+     * @return list<R>
      */
     public function map(callable $mapper): array
     {
@@ -144,12 +175,12 @@ final class SegmentQuery implements Countable, IteratorAggregate
     /**
      * Fold the segments into a single value — totals, concatenations, custom indexes.
      *
-     * @template T
+     * @template R
      *
-     * @param callable(T, SegmentInterface): T $reducer
-     * @param T $initial
+     * @param callable(R, T): R $reducer
+     * @param R $initial
      *
-     * @return T
+     * @return R
      */
     public function reduce(callable $reducer, mixed $initial = null): mixed
     {
@@ -165,7 +196,7 @@ final class SegmentQuery implements Countable, IteratorAggregate
     /**
      * The matching segments bucketed by tag, in first-seen order.
      *
-     * @return array<string, list<SegmentInterface>>
+     * @return array<string, list<T>>
      */
     public function groupByTag(): array
     {
@@ -196,7 +227,7 @@ final class SegmentQuery implements Countable, IteratorAggregate
     }
 
     /**
-     * @param callable(SegmentInterface): void $callback
+     * @param callable(T): void $callback
      */
     public function each(callable $callback): void
     {
@@ -206,10 +237,31 @@ final class SegmentQuery implements Countable, IteratorAggregate
     }
 
     /**
-     * @return Traversable<int, SegmentInterface>
+     * @return Traversable<int, T>
      */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->segments);
+    }
+
+    /**
+     * @template U of SegmentInterface
+     *
+     * @param class-string<U> $className
+     * @param list<SegmentInterface> $segments
+     *
+     * @return list<U>
+     */
+    private static function instancesOf(string $className, array $segments): array
+    {
+        $matching = [];
+
+        foreach ($segments as $segment) {
+            if ($segment instanceof $className) {
+                $matching[] = $segment;
+            }
+        }
+
+        return $matching;
     }
 }

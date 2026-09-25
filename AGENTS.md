@@ -132,6 +132,9 @@ TransactionMessage organizes segments three ways:
   required-segment, cardinality and `inSequence()` conformance checks; never throws
 - **Duplicate-preserving access**: `query()` and `TransactionMessage::segments()` keep
   every segment in order (dups included); keyed views index by tag+subId (last wins)
+- **Typed lookups**: `segmentOfType(X::class, $subId)` (on every `HasRetrievableSegments`)
+  and `SegmentQuery<T>::ofType()` carry the class into the return type. `SegmentQuery` is
+  generic and invariant; Psalm rejects `@template-covariant` because of the callable params
 - **Keyed views hold the typed segment, never a `ContextSegment`** — so
   `segmentByTagAndSubId('NAD', 'BY')->name()` and `instanceof NADNameAddress` both work.
   Go from a segment to what was grouped under it with
