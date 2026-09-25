@@ -12,7 +12,7 @@ vendor/bin/edifact validate order.edi --rules=ORDERS
 vendor/bin/edifact segments                           # every registered tag
 vendor/bin/edifact segments --tag=NAD                 # accessors and return types
 vendor/bin/edifact diff before.edi after.edi           # segment-level differences
-vendor/bin/edifact --version                          # {"name": …, "version": "7.1.0"}
+vendor/bin/edifact --version                          # installed package version as JSON
 vendor/bin/edifact help
 
 vendor/bin/edifact parse order.edi --pretty           # pretty-printed JSON
