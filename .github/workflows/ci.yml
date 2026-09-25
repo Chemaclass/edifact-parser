@@ -142,6 +142,7 @@ jobs:
       - name: Exercise the CLI
         run: |
           ./bin/edifact segments --tag=NAD > /dev/null
+          ./bin/edifact --version > /dev/null
           ./bin/edifact inspect example/edifact-sample.edi > /dev/null
           cat example/edifact-sample.edi | ./bin/edifact parse > /dev/null
 

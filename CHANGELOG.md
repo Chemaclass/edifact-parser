@@ -11,10 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `segmentOfType(NADNameAddress::class, 'BY')`: a keyed lookup typed as the class you pass,
   so PHPStan, Psalm and IDEs see `name()`.
 - `SegmentQuery` is generic: `query()->ofType(X::class)` narrows `first()`, `get()`, `map()`.
+- `edifact --version` (also `version`, `-V`) prints the installed version as JSON.
 
 #### Changed
 - Dropped the `webmozart/assert` dependency. Invalid tags still throw
   `\InvalidArgumentException`.
+- CLI: a file that cannot be read is reported by name instead of as "No input".
 
 #### Fixed
 - `toJson()` without `JSON_THROW_ON_ERROR` raised a `TypeError` on unencodable data instead
