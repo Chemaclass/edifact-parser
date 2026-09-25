@@ -1,0 +1,11 @@
+{
+    "description": "Psalm, isolated so it can run on current PHP while the library still resolves against PHP 8.0",
+    "require-dev": {
+        "psalm/phar": "^6.18"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2"
+        }
+    }
+}

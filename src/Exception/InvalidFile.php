@@ -29,7 +29,7 @@ final class InvalidFile extends Exception
             $message .= "\n\nContext:\n{$contextStr}";
         }
 
-        $message .= "\n\nErrors:\n" . json_encode($errors, JSON_PRETTY_PRINT);
+        $message .= "\n\nErrors:\n" . (string) json_encode($errors, JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE);
 
         parent::__construct($message);
     }
@@ -76,7 +76,7 @@ final class InvalidFile extends Exception
         foreach ($this->errors as $error) {
             $diagnostics[] = Diagnostic::error(
                 DiagnosticCode::TOKENIZE_FAILED,
-                is_scalar($error) ? (string) $error : (string) json_encode($error),
+                is_scalar($error) ? (string) $error : (string) json_encode($error, JSON_INVALID_UTF8_SUBSTITUTE),
             );
         }
 
@@ -112,7 +112,7 @@ final class InvalidFile extends Exception
     {
         $lines = [];
         foreach ($this->context as $key => $value) {
-            $valueStr = is_scalar($value) ? (string) $value : json_encode($value);
+            $valueStr = is_scalar($value) ? (string) $value : (string) json_encode($value, JSON_INVALID_UTF8_SUBSTITUTE);
             $lines[] = "  {$key}: {$valueStr}";
         }
         return implode("\n", $lines);

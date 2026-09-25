@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\LINLineItem;
 use PHPUnit\Framework\TestCase;
 
-class LINLineItemTest extends TestCase
+final class LINLineItemTest extends TestCase
 {
     /**
      * @test

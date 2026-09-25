@@ -734,13 +734,25 @@ be reworded at any time.
 ## 🛠️ Development
 
 ```bash
-composer install
-composer test       # PHPUnit (unit + functional)
-composer quality    # PHP-CS-Fixer, Psalm, PHPStan, Rector
-composer csfix      # apply code-style fixes
-composer bench      # benchmark the hot paths (corpus generated at runtime)
+composer install         # also installs Psalm into vendor-bin/psalm
+composer test            # everything CI gates on: quality checks, unit and functional tests
+composer quality         # PHP-CS-Fixer, Psalm, PHPStan, Rector (dry runs)
+composer fix             # apply PHP-CS-Fixer and Rector fixes
+composer examples        # run every example/ script with assertions on
+composer coverage        # full suite, failing below 100% line coverage (needs pcov or xdebug)
+composer bench           # benchmark the hot paths (corpus generated at runtime)
 composer verify-package  # build the dist, install it elsewhere, and use it
+composer list            # every script, with a description
 ```
+
+Each CI job runs one of these scripts, so a green `composer test` plus `composer examples`
+locally means the same checks pass in CI. The one exception is the 100% coverage gate,
+which needs a coverage driver.
+
+Psalm lives in its own Composer project under `vendor-bin/psalm`. The library resolves its
+dependencies against PHP 8.0, which would pin Psalm to a release that crashes on current
+PHP. Isolating it lets the analysis run on any PHP from 8.2 up, while `psalm.xml` still
+targets 8.0.
 
 CI runs the benchmarks on every pull request, measuring the base branch and the head
 branch on the same runner and failing when a metric regresses beyond 1.5×. Absolute
@@ -750,10 +762,6 @@ stop being comparable.
 
 - PHP 8.0+, strict types, PSR-4. Type hints and tests required for new functionality.
 - All code must pass PHP-CS-Fixer, Psalm, PHPStan and Rector (CI is authoritative).
-
-> **Local toolchain note:** the pinned Psalm (`vimeo/psalm ^4.30`) runs on **PHP ≤ 8.3** —
-> run it under 8.3 if your CLI is newer. On PHP > 8.3, PHP-CS-Fixer needs
-> `PHP_CS_FIXER_IGNORE_ENV=1`.
 
 ---
 

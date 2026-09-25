@@ -14,7 +14,7 @@ use EdifactParser\Segments\SegmentInterface;
 use EdifactParser\Segments\UNSSectionControl;
 use PHPUnit\Framework\TestCase;
 
-class MessageBuilderTest extends TestCase
+final class MessageBuilderTest extends TestCase
 {
     private SegmentInterface $referenceSegment;
     private SegmentInterface $dateTimeSegment;

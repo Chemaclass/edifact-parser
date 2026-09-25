@@ -315,8 +315,7 @@ UNT+10+2'
 UNZ+2+3'
 EDI;
         $messages = $this->parse($fileContent)->transactionMessages();
-        /** @var TransactionMessage $firstMessage */
-        $firstMessage = reset($messages);
+        $firstMessage = $messages[0];
 
         self::assertEquals([
             'UNH' => [
@@ -344,8 +343,7 @@ UNT+10+2'
 UNZ+2+3'
 EDI;
         $messages = $this->parse($fileContent)->transactionMessages();
-        /** @var TransactionMessage $firstMessage */
-        $firstMessage = reset($messages);
+        $firstMessage = $messages[0];
 
         self::assertEquals([
             '5' => new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
@@ -367,8 +365,7 @@ UNT+10+2'
 UNZ+2+3'
 EDI;
         $messages = $this->parse($fileContent)->transactionMessages();
-        /** @var TransactionMessage $firstMessage */
-        $firstMessage = reset($messages);
+        $firstMessage = $messages[0];
 
         self::assertEquals(
             new CNTControl(['CNT', ['5', '0.1', 'KGM']]),
@@ -397,7 +394,7 @@ UNZ+2+3'
 EDI;
 
         $messages = $this->parse($fileContent)->transactionMessages();
-        $firstMessage = reset($messages);
+        $firstMessage = $messages[0];
 
         $firstLineItem = new LineItem([
             'LIN' => ['1' => new LINLineItem(['LIN', '1'])],
@@ -432,7 +429,7 @@ UNT+19+1'
 EDI;
 
         $messages = $this->parse($fileContent)->transactionMessages();
-        $firstMessage = reset($messages);
+        $firstMessage = $messages[0];
 
         $expected = [
             new ContextSegment(
@@ -472,7 +469,7 @@ EDI;
     public function test_a_segment_without_a_context_has_none(): void
     {
         $messages = $this->parse("UNA:+.? 'UNH+1+anything'NAD+CN'UNT+3+1'")->transactionMessages();
-        $firstMessage = reset($messages);
+        $firstMessage = $messages[0];
 
         $unh = $firstMessage->segmentByTagAndSubId('UNH', '1');
         self::assertNotNull($unh);
