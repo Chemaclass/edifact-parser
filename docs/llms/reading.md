@@ -5,16 +5,20 @@ Runnable version: [`example/llms-reading.php`](../../example/llms-reading.php)
 ## Keyed lookups return the typed segment
 
 ```php
-$buyer = $message->segmentByTagAndSubId('NAD', 'BY');  // ?NADNameAddress
+$buyer = $message->segmentOfType(NADNameAddress::class, 'BY');  // ?NADNameAddress
 $buyer?->name();
 $buyer?->countryCode();
+
+$message->segmentByTagAndSubId('NAD', 'BY');  // same object, typed ?SegmentInterface
 
 $message->segmentsByTag('NAD');   // array<array-key, SegmentInterface>, keyed by subId
 ```
 
 Two things to know:
 
-- The result is the **typed** segment, so accessors and `instanceof` work.
+- The result is the **typed** segment, so accessors and `instanceof` work. Prefer
+  `segmentOfType()` in code checked by PHPStan or Psalm: its return type is the class you
+  pass. `query()->ofType(X::class)` narrows the same way.
 - Keyed views keep the **last** segment for a given tag+subId. Use `query()` when
   duplicates matter.
 
