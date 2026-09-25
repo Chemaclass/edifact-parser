@@ -314,7 +314,7 @@ final class TransactionMessage implements Countable, IteratorAggregate
      */
     public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT): string
     {
-        return json_encode($this->toArray(), $flags);
+        return (string) json_encode($this->toArray(), $flags | JSON_THROW_ON_ERROR);
     }
 
     /**
