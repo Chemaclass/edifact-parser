@@ -19,6 +19,7 @@
     ],
     "prefer-stable": true,
     "require": {
+        "composer-runtime-api": "^2.0",
         "ext-json": "*",
         "ext-mbstring": "*",
         "php": ">=8.0",

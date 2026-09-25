@@ -98,6 +98,7 @@ printf "%s" "UNH+1+ORDERS:D:96A:UN'BGM+220'UNT+3+1'" > "$APP/order.edi"
 "$APP/vendor/bin/edifact" inspect "$APP/order.edi" > /dev/null
 "$APP/vendor/bin/edifact" segments --tag=QTY > /dev/null
 "$APP/vendor/bin/edifact" validate "$APP/order.edi" --rules=ORDERS > /dev/null
+"$APP/vendor/bin/edifact" --version | grep -q '"version"'
 echo "CLI OK"
 
 echo

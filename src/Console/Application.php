@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EdifactParser\Console;
 
+use Composer\InstalledVersions;
 use EdifactParser\Analysis\MessageAnalyzer;
 use EdifactParser\Diagnostics\Diagnostic;
 use EdifactParser\Diff\Difference;
@@ -45,6 +46,7 @@ final class Application
         'validate' => 'Check messages against a rule set',
         'segments' => 'Show what the parser knows about a segment tag',
         'diff' => 'Compare two interchanges segment by segment',
+        'version' => 'Print the installed version as JSON',
         'help' => 'Show this help',
     ];
 
@@ -73,6 +75,10 @@ final class Application
             $this->printUsage();
 
             return self::EXIT_SUCCESS;
+        }
+
+        if (in_array($command, ['-V', '--version'], true)) {
+            $command = 'version';
         }
 
         if (!isset(self::COMMANDS[$command])) {
@@ -107,12 +113,18 @@ final class Application
             return $this->diff($options);
         }
 
+        if ($command === 'version') {
+            return $this->version($options);
+        }
+
         $content = $options->readInput();
 
         if ($content === null) {
-            $this->output->error('No input: pass a file path or pipe an interchange on stdin.');
+            $path = $options->path();
 
-            return self::EXIT_USAGE;
+            return $this->usageError($path === null
+                ? 'No input: pass a file path or pipe an interchange on stdin.'
+                : self::unreadable($path));
         }
 
         $result = EdifactParser::createWithDefaultSegments()->parse($content);
@@ -214,9 +226,11 @@ final class Application
         $after = $options->readPath(1);
 
         if ($before === null || $after === null) {
-            $this->output->error('diff needs two readable files: edifact diff <before.edi> <after.edi>');
+            $path = $options->pathAt($before === null ? 0 : 1);
 
-            return self::EXIT_USAGE;
+            return $this->usageError($path === null
+                ? 'diff needs two files: edifact diff <before.edi> <after.edi>'
+                : self::unreadable($path));
         }
 
         $parser = EdifactParser::createWithDefaultSegments();
@@ -257,6 +271,30 @@ final class Application
         $this->output->data($descriptor->toArray(), $options->pretty());
 
         return self::EXIT_SUCCESS;
+    }
+
+    private function version(Options $options): int
+    {
+        $package = 'chemaclass/edifact-parser';
+
+        $this->output->data([
+            'name' => $package,
+            'version' => InstalledVersions::getPrettyVersion($package),
+        ], $options->pretty());
+
+        return self::EXIT_SUCCESS;
+    }
+
+    private function usageError(string $message): int
+    {
+        $this->output->error($message);
+
+        return self::EXIT_USAGE;
+    }
+
+    private static function unreadable(string $path): string
+    {
+        return sprintf('Cannot read "%s": no such file, or not readable.', $path);
     }
 
     private function printUsage(): void
