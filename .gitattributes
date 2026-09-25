@@ -7,6 +7,7 @@
 /example            export-ignore
 /tests              export-ignore
 /tools              export-ignore
+/vendor-bin         export-ignore
 /.gitattributes     export-ignore
 /.gitignore         export-ignore
 /.php-cs-fixer.dist.php export-ignore

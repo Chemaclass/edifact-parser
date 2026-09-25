@@ -11,7 +11,7 @@ jobs:
     name: Coding Guidelines
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -19,19 +19,7 @@ jobs:
           coverage: none
           tools: composer
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-ansi --no-progress
+      - uses: ramsey/composer-install@v4
 
       - name: Run friendsofphp/php-cs-fixer
         run: ./vendor/bin/php-cs-fixer fix --allow-risky=yes --dry-run --show-progress=dots --using-cache=no --verbose
@@ -40,33 +28,22 @@ jobs:
     name: Type Checker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.0
+          # Psalm 6 needs PHP 8.2+; psalm.xml and phpstan.neon still analyse for 8.0.
+          php-version: 8.4
           coverage: none
           tools: composer
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: ramsey/composer-install@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+      - name: Run Psalm
+        run: composer psalm -- --shepherd --show-info=false --stats --output-format=github
 
-      - name: Install dependencies
-        run: composer install --no-interaction --no-ansi --no-progress
-
-      - name: Run vimeo/psalm on internal code
-        run: ./vendor/bin/psalm --config=psalm.xml --no-progress --shepherd --show-info=false --stats --output-format=github
-
-      - name: Run phpstan on internal code
-        run: ./vendor/bin/phpstan analyze -c phpstan.neon src
+      - name: Run PHPStan
+        run: composer phpstan
 
   tests:
     name: Tests
@@ -76,7 +53,7 @@ jobs:
       matrix:
         php: ['8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -84,19 +61,7 @@ jobs:
           coverage: none
           tools: composer
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-ansi --no-progress
+      - uses: ramsey/composer-install@v4
 
       - name: Run the unit test suite
         run: vendor/bin/phpunit --testsuite unit
@@ -108,7 +73,7 @@ jobs:
     name: Coverage (100%)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -116,36 +81,10 @@ jobs:
           coverage: pcov
           tools: composer
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: ramsey/composer-install@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --no-interaction --no-ansi --no-progress
-
-      - name: Run the whole suite with coverage
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml
-
-      - name: Enforce 100% line coverage
-        run: |
-          php -r '
-            $xml = simplexml_load_file("coverage.xml");
-            $m = $xml->project->metrics;
-            $elements = (int) $m["elements"];
-            $covered = (int) $m["coveredelements"];
-            printf("Coverage: %d/%d elements\n", $covered, $elements);
-            if ($covered !== $elements) {
-              fwrite(STDERR, "Coverage is below 100%\n");
-              exit(1);
-            }
-          '
+      - name: Run the whole suite, enforcing 100% line coverage
+        run: composer coverage
 
   benchmarks:
     name: Benchmarks (no regression)
@@ -154,7 +93,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -187,26 +126,18 @@ jobs:
     # Start was a fatal error for years because nothing executed it.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
           php-version: 8.3
           coverage: none
-          ini-values: zend.assertions=1, assert.exception=1
           tools: composer
 
-      - name: Install dependencies
-        run: composer install --no-interaction --no-ansi --no-progress
+      - uses: ramsey/composer-install@v4
 
       - name: Run every example
-        run: |
-          status=0
-          for file in example/*.php; do
-            echo "--- $file"
-            php "$file" > /dev/null || status=1
-          done
-          exit $status
+        run: composer examples
 
       - name: Exercise the CLI
         run: |
@@ -220,7 +151,7 @@ jobs:
     # published artefact — excluding src/ or schema/ by accident would pass every other job.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:

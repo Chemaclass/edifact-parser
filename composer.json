@@ -22,14 +22,12 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "php": ">=8.0",
-        "sabas/edifact": "^1.3",
-        "webmozart/assert": "^1.12"
+        "sabas/edifact": "^1.3"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpunit/phpunit": "^9.6",
         "phpstan/phpstan": "^2.2",
-        "vimeo/psalm": "^5.26",
         "rector/rector": "^2.6",
         "php-edifact/edifact-mapping": "^0.5.2"
     },
@@ -50,6 +48,9 @@
         }
     },
     "scripts": {
+        "post-install-cmd": "@tools:install",
+        "post-update-cmd": "@tools:install",
+        "tools:install": "@composer --working-dir=vendor-bin/psalm install --no-interaction --no-progress",
         "test": "@test-all",
         "fix": [
             "@csfix",
@@ -71,7 +72,13 @@
         ],
         "test-unit": "./vendor/bin/phpunit --testsuite=unit",
         "test-functional": "./vendor/bin/phpunit --testsuite=functional",
-        "psalm": "./vendor/bin/psalm",
+        "coverage": [
+            "@putenv XDEBUG_MODE=coverage",
+            "./vendor/bin/phpunit --coverage-clover=coverage.xml",
+            "php tools/check-coverage.php coverage.xml"
+        ],
+        "examples": "php tools/run-examples.php",
+        "psalm": "php vendor-bin/psalm/vendor/bin/psalm.phar --no-progress",
         "phpstan": "./vendor/bin/phpstan analyze",
         "csfix": "./vendor/bin/php-cs-fixer fix",
         "csrun": "./vendor/bin/php-cs-fixer fix --dry-run",
@@ -85,5 +92,26 @@
         "platform": {
             "php": "8.0"
         }
+    },
+    "scripts-descriptions": {
+        "tools:install": "Install the isolated tools under vendor-bin/ (runs after install/update)",
+        "test": "Everything CI gates on locally: quality checks, then unit and functional tests",
+        "fix": "Apply code-style and Rector fixes",
+        "test-all": "Alias of test",
+        "quality": "PHP-CS-Fixer (dry run), Psalm, PHPStan, Rector (dry run)",
+        "phpunit": "Unit and functional test suites",
+        "test-unit": "Unit test suite",
+        "test-functional": "Functional test suite",
+        "coverage": "Full suite with coverage, failing below 100% of lines (needs pcov or xdebug)",
+        "examples": "Run every example/ script with assertions on, as the docs CI job does",
+        "psalm": "Psalm 6, installed in vendor-bin/psalm",
+        "phpstan": "PHPStan level 5 over src/",
+        "csfix": "Apply PHP-CS-Fixer",
+        "csrun": "Check code style without changing files",
+        "rector": "Apply Rector",
+        "rector:dry": "Check Rector without changing files",
+        "verify-package": "Build the dist with git archive, install it elsewhere and use it",
+        "bench": "Benchmark the documented hot paths",
+        "bench:json": "Benchmark as JSON, for tools/benchmark-compare.php"
     }
 }

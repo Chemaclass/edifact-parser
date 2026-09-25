@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\RFFReference;
 use PHPUnit\Framework\TestCase;
 
-class RFFReferenceTest extends TestCase
+final class RFFReferenceTest extends TestCase
 {
     /**
      * @test

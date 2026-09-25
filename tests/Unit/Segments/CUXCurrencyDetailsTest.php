@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\CUXCurrencyDetails;
 use PHPUnit\Framework\TestCase;
 
-class CUXCurrencyDetailsTest extends TestCase
+final class CUXCurrencyDetailsTest extends TestCase
 {
     /**
      * @test

@@ -64,7 +64,7 @@ final class UnknownSegmentTest extends TestCase
     {
         $rawValues = ['unknown', [['other_sub_id']]];
         self::assertEquals(
-            md5(json_encode($rawValues)),
+            md5((string) json_encode($rawValues)),
             (new UnknownSegment($rawValues))->subId()
         );
     }

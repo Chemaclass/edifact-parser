@@ -13,7 +13,7 @@ By participating in this project, you agree to follow our [Code of Conduct](CODE
 
 ## ⚖️ Licensing
 
-All contributions are made under the [MIT License](https://github.com/Chemaclass/EdifactParser/blob/master/LICENSE).
+All contributions are made under the [MIT License](https://github.com/Chemaclass/EdifactParser/blob/main/LICENSE).
 
 ---
 
@@ -34,15 +34,15 @@ Please include the following in your bug report:
 ## 🔧 Pull Request Workflow
 
 1. Fork and clone the repo.
-2. Run `composer install` to install dependencies.
-3. Create a branch:
-    - From `master` for new features or major changes
-    - From the oldest affected branch for bug fixes
-4. Make your changes and add tests.
-5. Format your code:
-    - `composer csfix`
-6. Run the test suite and check static analysis:
-    - `composer test`
+2. Run `composer install` to install dependencies (PHP 8.2+ to run every check; the
+   library itself supports 8.0).
+3. Create a branch from `main`.
+4. Make your changes and add tests. CI requires 100% line coverage.
+5. Apply code-style and Rector fixes:
+    - `composer fix`
+6. Run the same checks CI runs:
+    - `composer test` (static analysis, unit and functional tests)
+    - `composer examples` if you touched the docs or a public API
 7. Submit your pull request 🎉
     - Make sure your Git name/email is correctly set
       up ([guide](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup)). 

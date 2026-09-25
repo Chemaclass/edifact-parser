@@ -204,7 +204,9 @@ file. Keep them allocation- and call-free:
 composer test-unit              # Unit tests
 composer test-functional        # Functional tests
 composer quality                # All checks (CS, Psalm, PHPStan, Rector)
-composer csfix                  # Fix code style
+composer fix                    # Fix code style and apply Rector
+composer examples               # Run example/*.php with assertions, as CI does
+composer coverage               # Enforce 100% line coverage (needs pcov or xdebug)
 ```
 
 **Documentation contract:** `llms.txt` + `docs/llms/*.md` are the agent-facing docs. Every
@@ -217,8 +219,9 @@ its example — a snippet with no example is how the README Quick Start stayed b
 project and uses it — including the CLI, whose autoloader resolution differs when installed
 as a dependency. CI runs it. Add an `export-ignore` and this is what catches an over-exclusion.
 
-**Toolchain gotcha:** the pinned Psalm (`^5.26`) is happiest on **PHP ≤ 8.3** — run it under
-8.3 if your CLI is newer, and add `--threads=1` if it dies mid-run. On PHP > 8.3,
-PHP-CS-Fixer needs `PHP_CS_FIXER_IGNORE_ENV=1`. PHPStan passing does not guarantee Psalm
-passes (Psalm is stricter about union returns from `rawValues()` accessors) — run both
-before pushing. CI enforces **100% line coverage**, so every new method needs a test.
+**Toolchain:** Psalm is isolated in `vendor-bin/psalm` (installed by `composer install`),
+because the root resolves against PHP 8.0 and would pin a Psalm that crashes on current PHP.
+Every check runs on PHP 8.2+; the analysers still target 8.0. PHPStan passing does not
+guarantee Psalm passes (Psalm is stricter about union returns from `rawValues()` accessors
+and about `json_encode()` returning false), so run both before pushing. CI enforces **100%
+line coverage** (`composer coverage`, needs pcov or xdebug), so every new method needs a test.
