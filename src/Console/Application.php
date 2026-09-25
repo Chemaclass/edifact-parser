@@ -11,6 +11,8 @@ use EdifactParser\Diff\Difference;
 use EdifactParser\Diff\InterchangeDiff;
 use EdifactParser\EdifactParser;
 use EdifactParser\Exception\InvalidFile;
+use EdifactParser\ParserResult;
+use EdifactParser\Segments\SegmentArray;
 use EdifactParser\Segments\SegmentFactory;
 use EdifactParser\TransactionMessage;
 use EdifactParser\Validation\MessageRuleSets;
@@ -20,6 +22,7 @@ use function array_slice;
 use function count;
 use function defined;
 use function in_array;
+use function spl_object_id;
 use function sprintf;
 
 /**
@@ -130,22 +133,41 @@ final class Application
         $result = EdifactParser::createWithDefaultSegments()->parse($content);
 
         return match ($command) {
-            'parse' => $this->parse($result->transactionMessages(), $options),
+            'parse' => $this->parse($result, $options),
             'inspect' => $this->inspect($result->transactionMessages(), $options),
             default => $this->validate($result->transactionMessages(), $options),
         };
     }
 
-    /**
-     * @param list<TransactionMessage> $messages
-     */
-    private function parse(array $messages, Options $options): int
+    private function parse(ParserResult $result, Options $options): int
     {
+        $messages = $result->transactionMessages();
+        $messageIndexes = [];
+        foreach ($messages as $index => $message) {
+            $messageIndexes[spl_object_id($message)] = $index;
+        }
+
+        $groups = [];
+        foreach ($result->functionalGroups() as $group) {
+            $indexes = [];
+            foreach ($group->messages() as $message) {
+                $indexes[] = $messageIndexes[spl_object_id($message)];
+            }
+
+            $groups[] = [
+                'header' => $group->header()->toArray(),
+                'messageIndexes' => $indexes,
+                'trailer' => $group->trailer()?->toArray(),
+            ];
+        }
+
         $this->output->data([
+            'globalSegments' => SegmentArray::fromSegments($result->globalSegments()),
             'messages' => array_map(
                 static fn (TransactionMessage $message): array => $message->toArray(),
                 $messages,
             ),
+            'functionalGroups' => $groups,
         ], $options->pretty());
 
         return self::EXIT_SUCCESS;

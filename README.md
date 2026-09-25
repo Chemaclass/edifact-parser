@@ -171,7 +171,7 @@ foreach (StreamingParser::createWithDefaultSegments()->parseFile('/path/to/large
 writing a script — and it is built for automation as much as for people:
 
 ```bash
-edifact parse order.edi                 # the parsed interchange as JSON
+edifact parse order.edi                 # envelope, messages, and groups as JSON
 edifact inspect order.edi               # type, counts by tag, line items
 edifact validate order.edi              # rule set picked from the message type
 edifact validate order.edi --rules=ORDERS
@@ -191,6 +191,8 @@ Contract, so output can be consumed without guessing:
 - JSON by default; `--pretty` is purely cosmetic
 
 No console framework is pulled in — a parsing library should not put one in your `vendor/`.
+
+`parse` returns `globalSegments` (file-level segments such as `UNB` and `UNZ`), `messages` in document order, and `functionalGroups`. Each group includes its `UNG` header, `UNE` trailer, and zero-based `messageIndexes` into `messages`.
 
 ---
 
