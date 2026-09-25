@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69ac281862d69dc5b1fe81532fbc6c3c",
+    "content-hash": "d60948d679ff53b1862e8886d284f8fa",
     "packages": [
         {
             "name": "sabas/edifact",
@@ -4743,6 +4743,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
+        "composer-runtime-api": "^2.0",
         "ext-json": "*",
         "ext-mbstring": "*",
         "php": ">=8.0"

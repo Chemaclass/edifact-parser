@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Added
+- `edifact --version` (also `version`, `-V`) prints the installed version as JSON.
+
 #### Changed
+- CLI: a file that cannot be read is reported by name instead of as "No input".
 - **`webmozart/assert` is no longer a dependency.** It backed a single check. An invalid
   tag passed to `SegmentFactory` still throws `\InvalidArgumentException`, now the base
   class rather than `Webmozart\Assert\InvalidArgumentException`.
