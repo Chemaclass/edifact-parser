@@ -1,4 +1,5 @@
-FROM php:8.0-fpm
+# Psalm 6 needs PHP 8.2+; the CI matrix covers 8.0 itself.
+FROM php:8.4-fpm
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git zip

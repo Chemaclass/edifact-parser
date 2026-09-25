@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Changed
+- **`webmozart/assert` is no longer a dependency.** It backed a single check. An invalid
+  tag passed to `SegmentFactory` still throws `\InvalidArgumentException`, now the base
+  class rather than `Webmozart\Assert\InvalidArgumentException`.
+
+#### Fixed
+- **`toJson()` honours its `@throws JsonException` contract** whatever flags are passed.
+  Called without `JSON_THROW_ON_ERROR` on data that cannot be encoded (non-UTF-8 bytes, for
+  example), it raised a `TypeError` instead.
+- **`MissingSubId` and `InvalidFile` keep the offending values in their message** when those
+  values are not valid UTF-8. The values were dropped silently.
+
+#### Development
+- Psalm 6, isolated in `vendor-bin/psalm`, so every check runs on current PHP. Psalm 5 crashed
+  on PHP 8.4+.
+- `composer examples` and `composer coverage` run the documentation and coverage CI jobs
+  locally; `composer list` describes every script.
+
 ## [7.0.0] - 2026-08-10
 
 > Contains breaking changes — see [UPGRADING.md](UPGRADING.md) for what they are and

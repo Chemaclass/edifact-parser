@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\PIAAdditionalProductId;
 use PHPUnit\Framework\TestCase;
 
-class PIAAdditionalProductIdTest extends TestCase
+final class PIAAdditionalProductIdTest extends TestCase
 {
     /**
      * @test
