@@ -4,6 +4,7 @@
 /public/bundles/
 /var/
 /vendor/
+/vendor-bin/*/vendor/
 /coverage/
 psalm.log
 

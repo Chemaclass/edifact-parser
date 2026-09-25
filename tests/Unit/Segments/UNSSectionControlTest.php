@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\UNSSectionControl;
 use PHPUnit\Framework\TestCase;
 
-class UNSSectionControlTest extends TestCase
+final class UNSSectionControlTest extends TestCase
 {
     /**
      * @test

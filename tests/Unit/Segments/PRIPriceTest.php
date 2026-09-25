@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\PRIPrice;
 use PHPUnit\Framework\TestCase;
 
-class PRIPriceTest extends TestCase
+final class PRIPriceTest extends TestCase
 {
     /**
      * @test

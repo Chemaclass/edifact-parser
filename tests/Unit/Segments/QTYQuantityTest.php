@@ -7,7 +7,7 @@ namespace EdifactParser\Tests\Unit\Segments;
 use EdifactParser\Segments\QTYQuantity;
 use PHPUnit\Framework\TestCase;
 
-class QTYQuantityTest extends TestCase
+final class QTYQuantityTest extends TestCase
 {
     /**
      * @test

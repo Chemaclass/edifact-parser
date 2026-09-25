@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace EdifactParser\Segments;
 
 use InvalidArgumentException;
-use Webmozart\Assert\Assert;
 
 use function array_keys;
 use function array_map;
 use function is_a;
 use function is_string;
+use function mb_strlen;
 use function sort;
 
 /** @psalm-immutable */
@@ -215,7 +215,9 @@ final class SegmentFactory implements SegmentFactoryInterface
     {
         foreach ($segments as $tag => $class) {
             $tag = (string) $tag;
-            Assert::length($tag, self::TAG_LENGTH, "Segment tag '{$tag}' must be " . self::TAG_LENGTH . ' chars');
+            if (mb_strlen($tag) !== self::TAG_LENGTH) {
+                throw new InvalidArgumentException("Segment tag '{$tag}' must be " . self::TAG_LENGTH . ' chars');
+            }
 
             if (!is_a($class, SegmentInterface::class, allow_string: true)) {
                 throw new InvalidArgumentException("'{$class}' must implement 'SegmentInterface'");

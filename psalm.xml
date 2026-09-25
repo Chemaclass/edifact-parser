@@ -4,7 +4,7 @@
         phpVersion="8.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="https://getpsalm.org/schema/config"
-        xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+        xsi:schemaLocation="https://getpsalm.org/schema/config https://raw.githubusercontent.com/vimeo/psalm/6.x/config.xsd"
         allowStringToStandInForClass="true"
         findUnusedCode="false"
         findUnusedBaselineEntry="true"
@@ -21,7 +21,6 @@
         <extension name=".php"/>
     </fileExtensions>
 
-
     <issueHandlers>
         <InvalidReturnType>
             <errorLevel type="suppress">
@@ -29,37 +28,10 @@
             </errorLevel>
         </InvalidReturnType>
 
-        <InvalidScalarArgument>
-            <errorLevel type="suppress">
-                <directory name="tests/"/>
-            </errorLevel>
-        </InvalidScalarArgument>
-
-        <PossiblyInvalidArgument>
-            <errorLevel type="suppress">
-                <directory name="tests/"/>
-            </errorLevel>
-        </PossiblyInvalidArgument>
-
-        <PossiblyUndefinedMethod>
-            <errorLevel type="suppress">
-                <directory name="tests/"/>
-            </errorLevel>
-        </PossiblyUndefinedMethod>
-
-        <InternalMethod>
-            <errorLevel type="suppress">
-                <directory name="tests/"/>
-            </errorLevel>
-        </InternalMethod>
-
         <!-- This hides a number of errors that we don't really care about. -->
         <PropertyNotSetInConstructor errorLevel="suppress"/>
 
-        <RedundantCondition>
-            <errorLevel type="suppress">
-                <directory name="tests/"/>
-            </errorLevel>
-        </RedundantCondition>
+        <!-- #[Override] needs PHP 8.3; the library supports 8.0. -->
+        <MissingOverrideAttribute errorLevel="suppress"/>
     </issueHandlers>
 </psalm>
