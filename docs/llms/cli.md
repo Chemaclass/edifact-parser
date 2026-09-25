@@ -10,6 +10,7 @@ edifact validate order.edi --rules=ORDERS
 edifact segments                           # every registered tag
 edifact segments --tag=NAD                 # accessors and return types
 edifact diff before.edi after.edi           # segment-level differences
+edifact --version                          # {"name": …, "version": "7.1.0"}
 edifact help
 
 edifact parse order.edi --pretty           # pretty-printed JSON
@@ -21,7 +22,7 @@ cat order.edi | edifact inspect            # stdin when no path is given
 - **stdout carries data only** (JSON). Diagnostics, usage and errors go to **stderr**, so
   `edifact parse x.edi | jq` is always safe.
 - **Exit codes**: `0` success or valid, `1` invalid input, a failed validation, or a `diff`
-  that found differences, `2` usage error (unknown command, unknown rule set, no input).
+  that found differences, `2` usage error (unknown command, unknown rule set, no input, a file that cannot be read).
 - `--pretty` changes formatting only, never content.
 
 ## Shapes

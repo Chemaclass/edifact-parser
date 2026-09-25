@@ -177,7 +177,7 @@ final class ApplicationTest extends TestCase
         $exit = $this->execute(['parse', '/no/such/file.edi']);
 
         self::assertSame(Application::EXIT_USAGE, $exit);
-        self::assertStringContainsString('No input', implode("\n", $this->output->messages));
+        self::assertStringContainsString('Cannot read "/no/such/file.edi"', implode("\n", $this->output->messages));
     }
 
     /**
@@ -247,8 +247,13 @@ final class ApplicationTest extends TestCase
 
         try {
             self::assertSame(Application::EXIT_USAGE, $this->execute(['diff', $path]));
-            self::assertSame(Application::EXIT_USAGE, $this->execute(['diff', $path, '/no/such/file.edi']));
-            self::assertStringContainsString('two readable files', implode("\n", $this->output->messages));
+            self::assertSame(Application::EXIT_USAGE, $this->execute(['diff', '/no/such/file.edi', $path]));
+            self::assertSame(Application::EXIT_USAGE, $this->execute(['diff', $path, '/no/such/other.edi']));
+            self::assertSame([
+                'diff needs two files: edifact diff <before.edi> <after.edi>',
+                'Cannot read "/no/such/file.edi": no such file, or not readable.',
+                'Cannot read "/no/such/other.edi": no such file, or not readable.',
+            ], $this->output->messages);
             self::assertSame([], $this->output->data);
         } finally {
             @unlink($path);
@@ -268,6 +273,34 @@ final class ApplicationTest extends TestCase
 
         self::assertSame($compact, $this->output->data[0]);
         self::assertTrue($this->output->pretty[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function no_path_and_nothing_piped_is_a_usage_error(): void
+    {
+        $emptyStdin = fopen('php://memory', 'rb');
+        self::assertIsResource($emptyStdin);
+
+        $exit = (new Application($this->output, $emptyStdin))->run(['edifact', 'parse']);
+
+        self::assertSame(Application::EXIT_USAGE, $exit);
+        self::assertStringContainsString('No input', implode("\n", $this->output->messages));
+    }
+
+    /**
+     * @test
+     */
+    public function version_prints_the_installed_version_as_data(): void
+    {
+        foreach (['version', '--version', '-V'] as $argument) {
+            $this->output = new RecordingOutput();
+
+            self::assertSame(Application::EXIT_SUCCESS, $this->execute([$argument]));
+            self::assertSame('chemaclass/edifact-parser', $this->output->data[0]['name']);
+            self::assertIsString($this->output->data[0]['version']);
+        }
     }
 
     /**
