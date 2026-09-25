@@ -54,7 +54,7 @@ $parser = new EdifactParser($factory);
 ## Directory segments
 
 The 32 hand-written segments are the defaults. The rest of a UN/EDIFACT directory is
-generated from the published definitions and available opt-in — 134 tags in total:
+generated from the published definitions and available opt-in - 134 tags in total:
 
 ```php
 $factory = SegmentFactory::withDirectorySegments();
@@ -121,7 +121,7 @@ Discover what the parser knows, instead of reading the source.
 ```php
 $factory = SegmentFactory::withDefaultSegments();
 
-$factory->registeredTags();     // ['BGM', 'CNT', …] — loads no classes
+$factory->registeredTags();     // ['BGM', 'CNT', …] - loads no classes
 $factory->classForTag('NAD');   // NADNameAddress::class, or null
 $factory->describeTag('QTY')?->accessors();
 // ['measureUnit' => 'string', 'qualifier' => 'string',

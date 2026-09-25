@@ -8,9 +8,9 @@ Two validators, one naming rule:
 
 | | |
 | --- | --- |
-| `diagnose()` | returns `list<Diagnostic>` — on **both** validators |
-| `validate()` | returns `list<ValidationViolation>` — `MessageValidator` only, the older shape |
-| `isValid()` | returns `bool` — on both |
+| `diagnose()` | returns `list<Diagnostic>` - on **both** validators |
+| `validate()` | returns `list<ValidationViolation>` - `MessageValidator` only, the older shape |
+| `isValid()` | returns `bool` - on both |
 
 So if you want the shared vocabulary, call `diagnose()` whichever validator you hold.
 
@@ -34,7 +34,7 @@ MessageRuleSets::desadv();
 MessageRuleSets::iftmin();
 
 MessageRuleSets::names();              // ['ORDERS', 'INVOIC', 'DESADV', 'IFTMIN']
-MessageRuleSets::byName('ORDERS');     // ?MessageRuleSet — null when unknown
+MessageRuleSets::byName('ORDERS');     // ?MessageRuleSet - null when unknown
 ```
 
 ## Custom rule sets
@@ -71,7 +71,7 @@ Parse failures and validation failures share one type:
 use EdifactParser\Diagnostics\DiagnosticCode;
 
 foreach ($diagnostics as $d) {
-    $d->code();          // stable — match on this, never on message()
+    $d->code();          // stable - match on this, never on message()
     $d->severity();      // 'error' | 'warning'
     $d->segmentIndex();  // ?int
     $d->tag();           // ?string
@@ -105,7 +105,7 @@ composer require --dev php-edifact/edifact-mapping
 use EdifactParser\Directory\XmlDirectory;
 use EdifactParser\Validation\DirectoryValidator;
 
-$directory = XmlDirectory::locate('D96A');            // ?XmlDirectory — null when absent
+$directory = XmlDirectory::locate('D96A');            // ?XmlDirectory - null when absent
 $directory = XmlDirectory::fromPath('D96A', '/path/to/D96A');
 
 $validator = new DirectoryValidator($directory);
@@ -126,13 +126,13 @@ error [element.too-long]  at segment 4 (QTY/C186/6411): Data element 6411 allows
 error [code.unknown]      at segment 3 (QTY/C186/6063): 'ZZ' is not a listed code for data element 6063
 ```
 
-Tags the directory does not define are never flagged — unknown and partner-specific
+Tags the directory does not define are never flagged - unknown and partner-specific
 segments stay valid, matching the parser's own permissiveness.
 
 Inspecting the directory directly:
 
 ```php
-$directory->tags();                       // list<string> — 127 for D96A
+$directory->tags();                       // list<string> - 127 for D96A
 $segment = $directory->segment('QTY');
 $segment?->name();                        // 'quantity'
 $composite = $segment?->partAt(0);         // Composite|DataElement|null
