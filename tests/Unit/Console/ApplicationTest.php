@@ -278,6 +278,20 @@ final class ApplicationTest extends TestCase
     /**
      * @test
      */
+    public function no_path_and_nothing_piped_is_a_usage_error(): void
+    {
+        $emptyStdin = fopen('php://memory', 'rb');
+        self::assertIsResource($emptyStdin);
+
+        $exit = (new Application($this->output, $emptyStdin))->run(['edifact', 'parse']);
+
+        self::assertSame(Application::EXIT_USAGE, $exit);
+        self::assertStringContainsString('No input', implode("\n", $this->output->messages));
+    }
+
+    /**
+     * @test
+     */
     public function version_prints_the_installed_version_as_data(): void
     {
         foreach (['version', '--version', '-V'] as $argument) {
