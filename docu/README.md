@@ -36,13 +36,13 @@ data element directories and syntax rules which cover delimiter characters etc.
 All of these `EDIFACT` messages have the same basic structure, consisting of a sequence of segments:
 
 ```
-UNA – separators, delimiters and special characters are defined for the interpreting software 
-UNB – file header (with the file end "UNZ" this makes up the envelope, containing basic information)
-UNG – group start
-UNH – message header
-UNT – message end
-UNE – group end
-UNZ – file end
+UNA - separators, delimiters and special characters are defined for the interpreting software
+UNB - file header (with the file end "UNZ" this makes up the envelope, containing basic information)
+UNG - group start
+UNH - message header
+UNT - message end
+UNE - group end
+UNZ - file end
 ```
 
 You can also visualize these lines as something like:

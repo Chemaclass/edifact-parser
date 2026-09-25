@@ -16,11 +16,11 @@ Both return a `ParserResult`. Invalid input throws `EdifactParser\Exception\Inva
 ## ParserResult
 
 ```php
-$result->transactionMessages();     // list<TransactionMessage> — the UNH…UNT blocks
+$result->transactionMessages();     // list<TransactionMessage> - the UNH…UNT blocks
 $result->firstMessage();            // ?TransactionMessage
 $result->messagesOfType('INVOIC');  // list<TransactionMessage>
-$result->functionalGroups();        // list<FunctionalGroup> — UNG…UNE, empty when unused
-$result->globalSegments();          // TransactionMessage — file-level UNA/UNB/UNZ
+$result->functionalGroups();        // list<FunctionalGroup> - UNG…UNE, empty when unused
+$result->globalSegments();          // TransactionMessage - file-level UNB/UNZ
 
 count($result);                     // number of messages
 foreach ($result as $message) { }   // iterate messages
@@ -102,7 +102,7 @@ try {
     $parser->parseFile($path);
 } catch (InvalidFile $e) {
     $e->getErrors();       // list of strings
-    $e->getDiagnostics();  // list<Diagnostic> — code, severity, segmentIndex, tag
+    $e->getDiagnostics();  // list<Diagnostic> - code, severity, segmentIndex, tag
 }
 ```
 

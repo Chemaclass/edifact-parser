@@ -9,7 +9,7 @@ Install with `composer require chemaclass/edifact-parser`. Entry point is
 which returns a `ParserResult`.
 
 Every snippet in these documents exists as a runnable file under `example/`, and CI runs
-them — so they cannot silently rot.
+them - so they cannot silently rot.
 
 ## Docs
 
@@ -33,7 +33,7 @@ Things that are not guessable from the signatures, and that have bitten people:
   maps are `array<string, array<array-key, SegmentInterface>>` and `segmentByTagAndSubId()`
   accepts `string|int`.
 - **Unknown tags never throw.** They become `UnknownSegment`, still readable via
-  `rawValues()`. Absence of a segment is `null`, not an exception — always null-check.
+  `rawValues()`. Absence of a segment is `null`, not an exception - always null-check.
 - **Keyed views keep the last duplicate.** Two segments sharing tag+subId collapse in
   `allSegments()`/`segmentsByTag()`. Use `query()` or `segments()` when duplicates matter;
   both preserve order and every occurrence.

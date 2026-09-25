@@ -28,8 +28,8 @@ an1    M     DECIMAL NOTATION       Comma or full stop
 an1    M     RELEASE INDICATOR      If not used, insert
                                     space character
 an1    M     REPETITION SEPARATOR   Syntax version 4 only.
-                                    Reserved in version 3 —
-                                    insert space character
+                                    Reserved in version 3; insert
+                                    space character
 an1    M     SEGMENT TERMINATOR
 ```
 [(source)](http://www.unece.org/fileadmin/DAM/trade/edifact/untdid/d422_s.htm#structures)
@@ -41,8 +41,8 @@ conventionally carries a space; version 4 uses it as the **repetition separator*
 `*`, which separates repeats of a single data element.
 
 ```
-UNA:+.? '     syntax 3 — position 5 reserved
-UNA:+.?*'     syntax 4 — '*' separates repetitions
+UNA:+.? '     syntax 3 - position 5 reserved
+UNA:+.?*'     syntax 4 - '*' separates repetitions
 ```
 
 The parser honours whichever the interchange declares. Under syntax 4 a repeated element is

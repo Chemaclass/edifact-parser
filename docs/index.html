@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EDIFACT Parser — PHP toolkit for UN/EDIFACT</title>
-<meta name="description" content="A complete PHP toolkit for UN/EDIFACT — read, write, validate, and stream EDI interchanges with a typed, object-oriented API.">
+<title>EDIFACT Parser - PHP toolkit for UN/EDIFACT</title>
+<meta name="description" content="A complete PHP toolkit for UN/EDIFACT - read, write, validate, and stream EDI interchanges with a typed, object-oriented API.">
 <style>
   /* ============================================================
-     Theme: "EDI transmission" — monospace, hairline, sharp corners.
+     Theme: "EDI transmission" - monospace, hairline, sharp corners.
      No rounded borders, no gradients/glows. Warm paper + burnt orange.
      ============================================================ */
   :root {
@@ -266,7 +266,7 @@
     <span class="badge-pill">PHP 8.0+ · strictly typed · MIT</span>
     <h1>The complete <span class="grad">EDIFACT toolkit</span><br>for PHP</h1>
     <p class="lead">Read, write, validate, and stream UN/EDIFACT interchanges with a typed,
-      object-oriented API — no magic array indices, no unsupported message types.</p>
+      object-oriented API - no magic array indices, no unsupported message types.</p>
     <div class="cta">
       <a class="btn btn-primary" href="#how">See how it works →</a>
       <a class="btn btn-ghost" href="https://github.com/Chemaclass/EdifactParser">⭐ Star on GitHub</a>
@@ -284,8 +284,8 @@
   <div class="wrap">
     <p class="eyebrow">What is EDIFACT?</p>
     <h2 class="sec-title">A worldwide language for business documents</h2>
-    <p class="sec-sub"><b>UN/EDIFACT</b> — <i>Electronic Data Interchange For Administration, Commerce and
-      Transport</i> — is the international standard behind orders, invoices, despatch advices and
+    <p class="sec-sub"><b>UN/EDIFACT</b> - <i>Electronic Data Interchange For Administration, Commerce and
+      Transport</i> - is the international standard behind orders, invoices, despatch advices and
       transport instructions. A file is plain text: lines called <b>segments</b>, each a tag plus
       <b>+</b>-separated elements. Hover a piece below to decode it.</p>
 
@@ -294,12 +294,12 @@
         <span class="seg-part seg-tag" data-k="tag">NAD</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="sub">CN</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e2">0410106314:160:Z12</span><span class="seg-sep">+</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e4">Person Name</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e5">Street Nr 2</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e6">City2</span><span class="seg-sep">+</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e8">12345</span><span class="seg-sep">+</span><span class="seg-part seg-val" data-k="e9">DE</span><span class="seg-sep">'</span>
       </div>
       <div class="decoder-legend">
-        <div class="leg-item"><span class="leg-key seg-tag">NAD</span><span class="d"><b>Segment tag</b> — Name &amp; Address. Maps to <code>NADNameAddress</code>.</span></div>
-        <div class="leg-item"><span class="leg-key seg-val">CN</span><span class="d"><b>Party qualifier</b> — <code>CN</code> = Consignee. <code>$nad->partyQualifier()</code></span></div>
-        <div class="leg-item"><span class="leg-key seg-val">Person Name</span><span class="d"><b>Name</b> — <code>$nad->name()</code></span></div>
-        <div class="leg-item"><span class="leg-key seg-val">Street Nr 2</span><span class="d"><b>Street</b> — <code>$nad->street()</code></span></div>
-        <div class="leg-item"><span class="leg-key seg-val">City2</span><span class="d"><b>City</b> — <code>$nad->city()</code></span></div>
-        <div class="leg-item"><span class="leg-key seg-val">DE</span><span class="d"><b>Country</b> — ISO 3166-1. <code>$nad->countryCode()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-tag">NAD</span><span class="d"><b>Segment tag</b> - Name &amp; Address. Maps to <code>NADNameAddress</code>.</span></div>
+        <div class="leg-item"><span class="leg-key seg-val">CN</span><span class="d"><b>Party qualifier</b> - <code>CN</code> = Consignee. <code>$nad->partyQualifier()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">Person Name</span><span class="d"><b>Name</b> - <code>$nad->name()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">Street Nr 2</span><span class="d"><b>Street</b> - <code>$nad->street()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">City2</span><span class="d"><b>City</b> - <code>$nad->city()</code></span></div>
+        <div class="leg-item"><span class="leg-key seg-val">DE</span><span class="d"><b>Country</b> - ISO 3166-1. <code>$nad->countryCode()</code></span></div>
       </div>
     </div>
     <p class="sec-sub" style="margin-top:22px">The library turns that raw line into a typed object: no more
@@ -313,8 +313,7 @@
   <div class="wrap">
     <p class="eyebrow">The envelope</p>
     <h2 class="sec-title">Every interchange is a nested envelope</h2>
-    <p class="sec-sub">Segments nest into a strict hierarchy. This library models all of it —
-      interchange → functional groups → messages → segments — with duplicate-preserving access.
+    <p class="sec-sub">Segments nest into a strict hierarchy. This library models the interchange, functional groups, messages, and segments with duplicate-preserving access.
       Below is a <b>real parsed sample</b> (click to expand).</p>
 
     <div class="tree" id="tree">
@@ -335,7 +334,7 @@
             <div class="env-hd">
               <span class="chev">▶</span>
               <span class="tagchip">UNH … UNT</span>
-              <span>Message #1 — IFTMIN</span>
+              <span>Message #1 - IFTMIN</span>
               <span class="meta">18 segments</span>
             </div>
             <div class="env-body">
@@ -358,7 +357,7 @@
             <div class="env-hd">
               <span class="chev">▶</span>
               <span class="tagchip">UNH … UNT</span>
-              <span>Message #2 — IFTMIN</span>
+              <span>Message #2 - IFTMIN</span>
               <span class="meta">19 segments</span>
             </div>
             <div class="env-body">
@@ -376,7 +375,7 @@
       </div>
     </div>
     <p class="sec-sub" style="margin-top:22px">Optional <code>UNG…UNE</code> functional groups sit between the
-      interchange and its messages — read them via <code>$result->functionalGroups()</code>. Trailer counts
+      interchange and its messages - read them via <code>$result->functionalGroups()</code>. Trailer counts
       (<code>UNT</code>, <code>UNZ</code>) are computed for you when <b>writing</b>.</p>
   </div>
 </section>
@@ -390,15 +389,15 @@
   </div>
   <div class="wrap">
     <div class="pillars">
-      <div class="pillar"><div class="ic">📥</div><h3>Parse anything</h3><p>Unknown tags degrade gracefully to raw values — no message type is unsupported. The parser never throws on unknown segments.</p></div>
+      <div class="pillar"><div class="ic">📥</div><h3>Parse anything</h3><p>Unknown tags degrade gracefully to raw values - no message type is unsupported. The parser never throws on unknown segments.</p></div>
       <div class="pillar"><div class="ic">📤</div><h3>Write it back</h3><p>Serialize segments to valid <code>.edi</code>, or assemble a full <code>UNB…UNZ</code> interchange with auto-computed control counts.</p></div>
-      <div class="pillar"><div class="ic">✅</div><h3>Validate</h3><p>Pluggable rule sets for required segments, cardinality and relative order. Ready-made sets for ORDERS, INVOIC, DESADV, IFTMIN — or check against the UN/EDIFACT directory itself.</p></div>
-      <div class="pillar"><div class="ic">🌊</div><h3>Stream</h3><p>Parse multi-gigabyte files in bounded memory — one message at a time, honouring a leading <code>UNA</code> service advice.</p></div>
+      <div class="pillar"><div class="ic">✅</div><h3>Validate</h3><p>Pluggable rule sets for required segments, cardinality and relative order. Ready-made sets for ORDERS, INVOIC, DESADV, IFTMIN - or check against the UN/EDIFACT directory itself.</p></div>
+      <div class="pillar"><div class="ic">🌊</div><h3>Stream</h3><p>Parse multi-gigabyte files in bounded memory - one message at a time, honouring a leading <code>UNA</code> service advice.</p></div>
       <div class="pillar"><div class="ic">🧱</div><h3>Full envelope model</h3><p>Interchange → groups → messages, with duplicate-preserving access and typed metadata on every envelope segment.</p></div>
       <div class="pillar"><div class="ic">🏷️</div><h3>32 typed segments, or 134</h3><p>Domain accessors and qualifier constants out of the box; opt into the full UN/EDIFACT directory for 134 tags, or add your own.</p></div>
       <div class="pillar"><div class="ic">🔎</div><h3>Fluent query API</h3><p>Chain filters, transforms and pagination over every segment; a statistics analyzer aggregates counts and totals.</p></div>
-      <div class="pillar"><div class="ic">📐</div><h3>Directory-aware</h3><p>Validate elements, lengths, representations and code lists against the real UN/EDIFACT directories — and group messages into their actual nested <code>SG1…SGn</code>.</p></div>
-      <div class="pillar"><div class="ic">🖥️</div><h3>CLI included</h3><p><code>edifact parse|inspect|validate|segments</code> — JSON on stdout, diagnostics on stderr, documented exit codes.</p></div>
+      <div class="pillar"><div class="ic">📐</div><h3>Directory-aware</h3><p>Validate elements, lengths, representations and code lists against the real UN/EDIFACT directories - and group messages into their actual nested <code>SG1…SGn</code>.</p></div>
+      <div class="pillar"><div class="ic">🖥️</div><h3>CLI included</h3><p><code>edifact parse|inspect|validate|segments</code> - JSON results on stdout, parse errors on stderr, documented exit codes.</p></div>
       <div class="pillar"><div class="ic">🩺</div><h3>Structured diagnostics</h3><p>Stable codes and positions across parsing and validation, so failures are matched on rather than string-searched.</p></div>
       <div class="pillar"><div class="ic">🌍</div><h3>Charset-aware</h3><p><code>UNOA</code>…<code>UNOY</code> decoding to UTF-8, strict types, PSR-4, fully covered by PHPUnit, PHPStan, Psalm &amp; Rector.</p></div>
     </div>
@@ -433,11 +432,11 @@
     <span class="tk">echo</span> <span class="tv">$message</span>-&gt;<span class="tf">messageType</span>();   <span class="tc">// 'IFTMIN', 'ORDERS', 'INVOIC', …</span>
 }
 
-<span class="tc">// Unknown segments never throw — read them via ->rawValues()</span>
+<span class="tc">// Unknown segments never throw - read them via ->rawValues()</span>
 <span class="tv">$result</span>-&gt;<span class="tf">functionalGroups</span>();  <span class="tc">// UNG…UNE groups, if any</span>
 <span class="tv">$result</span>-&gt;<span class="tf">globalSegments</span>();     <span class="tc">// file-level UNA/UNB/UNZ</span></pre>
 
-      <pre class="code hidden" data-p="read"><span class="tc">// Typed accessors — no magic array indices</span>
+      <pre class="code hidden" data-p="read"><span class="tc">// Typed accessors - no magic array indices</span>
 <span class="tv">$nad</span> = <span class="tv">$message</span>-&gt;<span class="tf">segmentByTagAndSubId</span>(<span class="ts">'NAD'</span>, <span class="ts">'CN'</span>);
 <span class="tv">$nad</span>?-&gt;<span class="tf">name</span>();          <span class="tc">// 'Person Name'</span>
 <span class="tv">$nad</span>?-&gt;<span class="tf">city</span>();          <span class="tc">// 'City2'</span>
@@ -495,7 +494,7 @@
 <span class="tk">foreach</span> (<span class="tv">$validator</span>-&gt;<span class="tf">validate</span>(<span class="tv">$message</span>, <span class="tv">$rules</span>) <span class="tk">as</span> <span class="tv">$violation</span>) {
     <span class="tk">echo</span> <span class="ts">"{<span class="tv">$violation</span>-&gt;segmentTag()}: {<span class="tv">$violation</span>-&gt;message()}\n"</span>;
 }
-<span class="tv">$validator</span>-&gt;<span class="tf">isValid</span>(<span class="tv">$message</span>, <span class="tv">$rules</span>);   <span class="tc">// bool — never throws</span></pre>
+<span class="tv">$validator</span>-&gt;<span class="tf">isValid</span>(<span class="tv">$message</span>, <span class="tv">$rules</span>);   <span class="tc">// bool - never throws</span></pre>
 
       <pre class="code hidden" data-p="extend"><span class="tk">use</span> EdifactParser\Segments\AbstractSegment;
 
@@ -524,9 +523,9 @@
   <div class="wrap">
     <p class="eyebrow">Batteries included</p>
     <h2 class="sec-title">32 typed segments out of the box</h2>
-    <p class="sec-sub">Each with domain accessors — and <code>SegmentFactory::withDirectorySegments()</code>
+    <p class="sec-sub">Each with domain accessors - and <code>SegmentFactory::withDirectorySegments()</code>
       brings the total to 134, generated from the UN/EDIFACT directory. Any other tag parses as an
-      <code>UnknownSegment</code> you can still read — then add a typed class in a few lines.</p>
+      <code>UnknownSegment</code> you can still read - then add a typed class in a few lines.</p>
     <div class="seg-groups">
       <div class="seg-group">
         <h4>Envelope / service</h4>
@@ -604,7 +603,7 @@
     var caps = {
       parse: 'Parse a file or string into a typed <code>ParserResult</code>.',
       read: 'Typed accessors replace magic array indices; numbers and dates convert for you.',
-      query: 'Chain filters, transforms and pagination over every segment — duplicates included.',
+      query: 'Chain filters, transforms and pagination over every segment - duplicates included.',
       write: 'Build segments fluently, then assemble a full interchange with auto-computed counts.',
       validate: 'Check a message against pluggable rules. The validator never throws.',
       extend: 'Add your own typed segment in a few lines and register it alongside the built-ins.'
