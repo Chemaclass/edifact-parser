@@ -45,13 +45,50 @@ final class ApplicationTest extends TestCase
     /**
      * @test
      */
-    public function parse_emits_every_message(): void
+    public function parse_emits_the_envelope_and_every_message(): void
     {
         $exit = $this->execute(['parse', self::SAMPLE]);
 
         self::assertSame(Application::EXIT_SUCCESS, $exit);
+        self::assertSame(['UNB', 'UNZ'], array_column($this->output->data[0]['globalSegments'], 'tag'));
         self::assertCount(2, $this->output->data[0]['messages']);
         self::assertSame('IFTMIN', $this->output->data[0]['messages'][0]['type']);
+        self::assertSame([], $this->output->data[0]['functionalGroups']);
+    }
+
+    /**
+     * @test
+     */
+    public function parse_links_functional_groups_to_flat_message_indexes(): void
+    {
+        $path = $this->fixture(<<<'EDI'
+            UNB+UNOC:3+SENDER+RECIPIENT+20191011:1200+REF'
+            UNG+ORDERS+S1+R1+20191011:1200+1+UN+D:96A'
+            UNH+1+ORDERS:D:96A:UN'
+            UNT+2+1'
+            UNH+2+ORDERS:D:96A:UN'
+            UNT+2+2'
+            UNE+2+1'
+            UNG+INVOIC+S1+R1+20191011:1200+2+UN+D:96A'
+            UNH+3+INVOIC:D:96A:UN'
+            UNT+2+3'
+            UNE+1+2'
+            UNZ+3+REF'
+            EDI);
+
+        try {
+            self::assertSame(Application::EXIT_SUCCESS, $this->execute(['parse', $path]));
+
+            $data = $this->output->data[0];
+            self::assertSame(['UNB', 'UNZ'], array_column($data['globalSegments'], 'tag'));
+            self::assertSame(['ORDERS', 'ORDERS', 'INVOIC'], array_column($data['messages'], 'type'));
+            self::assertSame([0, 1], $data['functionalGroups'][0]['messageIndexes']);
+            self::assertSame('UNG', $data['functionalGroups'][0]['header']['tag']);
+            self::assertSame('UNE', $data['functionalGroups'][0]['trailer']['tag']);
+            self::assertSame([2], $data['functionalGroups'][1]['messageIndexes']);
+        } finally {
+            @unlink($path);
+        }
     }
 
     /**
