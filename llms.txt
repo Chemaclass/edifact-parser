@@ -2,7 +2,7 @@
 
 > A PHP toolkit for UN/EDIFACT: parse, write, validate and stream EDI interchanges with a
 > typed, object-oriented API. PHP 8.0+, PSR-4, no required runtime dependency beyond
-> `sabas/edifact` and `webmozart/assert`.
+> `sabas/edifact`.
 
 Install with `composer require chemaclass/edifact-parser`. Entry point is
 `EdifactParser::createWithDefaultSegments()->parse($string)` or `->parseFile($path)`,
