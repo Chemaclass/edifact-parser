@@ -205,6 +205,8 @@ final class TransactionMessage implements Countable, IteratorAggregate
 
     /**
      * A duplicate-preserving, ordered query over every segment of the message.
+     *
+     * @return SegmentQuery<SegmentInterface>
      */
     public function query(): SegmentQuery
     {

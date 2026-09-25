@@ -72,6 +72,8 @@ Requires PHP 8.0+ with `ext-json` and `ext-mbstring`.
 <?php declare(strict_types=1);
 
 use EdifactParser\EdifactParser;
+use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\QTYQuantity;
 
 require 'vendor/autoload.php';
 
@@ -82,12 +84,12 @@ foreach ($result->transactionMessages() as $message) {
     echo $message->messageType();      // 'ORDERS', 'INVOIC', 'IFTMIN', …
 
     // Typed accessors — no magic array indices
-    $buyer = $message->segmentByTagAndSubId('NAD', 'BY');
+    $buyer = $message->segmentOfType(NADNameAddress::class, 'BY');
     echo $buyer?->name();              // 'ACME Corporation'
     echo $buyer?->countryCode();       // 'DE'
 
     foreach ($message->lineItems() as $lineItem) {
-        $qty = $lineItem->segmentByTagAndSubId('QTY', '21');
+        $qty = $lineItem->segmentOfType(QTYQuantity::class, '21');
         echo $qty?->quantityAsFloat(); // 100.0
     }
 }
@@ -227,8 +229,11 @@ $segment->rawValues();    // ['NAD', 'BY', ['0410106314', '160', 'Z12'], …]
 ### Accessing segments
 
 ```php
-// Fastest single lookup, by tag + subId
-$nad = $message->segmentByTagAndSubId('NAD', 'BY'); // ?SegmentInterface
+// Typed lookup: returns ?NADNameAddress, so PHPStan, Psalm and your IDE know `name()`
+$nad = $message->segmentOfType(NADNameAddress::class, 'BY');
+
+// Fastest single lookup, by tag + subId, typed as ?SegmentInterface
+$nad = $message->segmentByTagAndSubId('NAD', 'BY');
 
 // All segments with a tag (keyed by subId)
 $allNad = $message->segmentsByTag('NAD');

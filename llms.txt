@@ -27,7 +27,8 @@ Things that are not guessable from the signatures, and that have bitten people:
 - **Keyed lookups return the typed segment, not a context.** `segmentByTagAndSubId('NAD','BY')`
   is a `NADNameAddress`, so accessors and `instanceof` work. To reach what was grouped under
   it, use `$message->childrenOf($segment)` or `contextFor($segment)`. (Before 7.0 this
-  returned a `ContextSegment` and every typed accessor was a fatal error.)
+  returned a `ContextSegment` and every typed accessor was a fatal error.) For static
+  analysis, use `segmentOfType(NADNameAddress::class, 'BY')`: it returns `?NADNameAddress`.
 - **Numeric-looking subIds are int array keys.** PHP normalizes `'1'` and `'21'`, so keyed
   maps are `array<string, array<array-key, SegmentInterface>>` and `segmentByTagAndSubId()`
   accepts `string|int`.

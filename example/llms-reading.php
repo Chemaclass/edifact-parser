@@ -49,6 +49,8 @@ assert($buyer->city() === 'Berlin');
 assert($buyer->countryCode() === 'DE');
 assert($message->segmentsByTag('NAD') !== []);
 assert($message->segmentByTagAndSubId('NAD', 'ZZ') === null);
+assert($message->segmentOfType(NADNameAddress::class, 'BY') === $buyer);
+assert($message->segmentOfType(NADNameAddress::class, 'BY')?->city() === 'Berlin');
 
 // --- Typed accessors --------------------------------------------------------
 $qty = $message->lineItemById(1)?->segmentByTagAndSubId('QTY', '21');

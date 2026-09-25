@@ -30,7 +30,25 @@ trait HasRetrievableSegments
     }
 
     /**
+     * The typed counterpart of `segmentByTagAndSubId()`: the returned type is the class
+     * asked for, so `segmentOfType(NADNameAddress::class, 'BY')?->name()` type-checks.
+     * Duplicates resolve the same way, last one wins.
+     *
+     * @template T of SegmentInterface
+     *
+     * @param class-string<T> $className
+     *
+     * @return T|null
+     */
+    public function segmentOfType(string $className, string|int $subId): ?SegmentInterface
+    {
+        return $this->query()->ofType($className)->withSubId((string) $subId)->last();
+    }
+
+    /**
      * Start a fluent query for segments
+     *
+     * @return SegmentQuery<SegmentInterface>
      */
     public function query(): SegmentQuery
     {
