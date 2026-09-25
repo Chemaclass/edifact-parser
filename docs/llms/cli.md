@@ -2,6 +2,8 @@
 
 `composer require chemaclass/edifact-parser` installs an `edifact` binary.
 
+Runnable parse example: [`example/llms-cli.php`](../../example/llms-cli.php)
+
 ```bash
 edifact parse order.edi                    # parsed interchange as JSON
 edifact inspect order.edi                  # type, counts by tag, line items
@@ -29,7 +31,17 @@ cat order.edi | edifact inspect            # stdin when no path is given
 
 ```jsonc
 // parse
-{"messages": [{"type": "ORDERS", "segments": [{"tag": "UNH", "subId": "1", "rawValues": []}]}]}
+{"globalSegments": [
+  {"tag": "UNB", "subId": "UNOC", "rawValues": ["UNB", ["UNOC", "3"], "SENDER", "RECIPIENT", ["20191011", "1200"], "REF"]},
+  {"tag": "UNZ", "subId": "1", "rawValues": ["UNZ", "1", "REF"]}
+], "messages": [{"type": "ORDERS", "segments": [
+  {"tag": "UNH", "subId": "1", "rawValues": ["UNH", "1", ["ORDERS", "D", "96A", "UN"]]},
+  {"tag": "UNT", "subId": "2", "rawValues": ["UNT", "2", "1"]}
+]}], "functionalGroups": [{
+  "header": {"tag": "UNG", "subId": "ORDERS", "rawValues": ["UNG", "ORDERS", "S1", "R1", ["20191011", "1200"], "1", "UN", ["D", "96A"]]},
+  "messageIndexes": [0],
+  "trailer": {"tag": "UNE", "subId": "1", "rawValues": ["UNE", "1", "1"]}
+}]}
 
 // inspect
 {"messageCount": 2, "messages": [{"message_type": "IFTMIN", "total_segments": 18}]}
@@ -49,4 +61,6 @@ cat order.edi | edifact inspect            # stdin when no path is given
  "accessors": {"quantityAsFloat": "float"}}
 ```
 
-The `parse` shape is formally described by [`schema/message.schema.json`](../../schema/message.schema.json).
+Each entry in `messages` follows [`schema/message.schema.json`](../../schema/message.schema.json).
+
+`globalSegments` contains file-level segments such as `UNB` and `UNZ`. Each `functionalGroups` entry has its `UNG` header, `UNE` trailer, and zero-based indexes into `messages`. It is empty when the interchange has no groups.
