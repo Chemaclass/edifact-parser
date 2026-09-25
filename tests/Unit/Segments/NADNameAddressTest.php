@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EdifactParser\Tests\Unit\Segments;
 
 use EdifactParser\Segments\NADNameAddress;
+use JsonException;
 use PHPUnit\Framework\TestCase;
 
 final class NADNameAddressTest extends TestCase
@@ -78,5 +79,16 @@ final class NADNameAddressTest extends TestCase
         $json = $segment->toJson(JSON_THROW_ON_ERROR);
         self::assertJson($json);
         self::assertStringContainsString('NAD', $json);
+    }
+
+    /**
+     * @test
+     */
+    public function to_json_throws_on_unencodable_data_even_without_the_throw_flag(): void
+    {
+        $segment = new NADNameAddress(['NAD', 'CN', [], '', "M\xFCller"]);
+
+        $this->expectException(JsonException::class);
+        $segment->toJson(JSON_PRETTY_PRINT);
     }
 }

@@ -60,6 +60,6 @@ final class Charset
         }
 
         // $encoding always comes from the map above, so the conversion cannot fail.
-        return mb_convert_encoding($value, 'UTF-8', $encoding);
+        return (string) mb_convert_encoding($value, 'UTF-8', $encoding);
     }
 }
