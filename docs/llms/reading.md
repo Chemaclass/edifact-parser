@@ -47,7 +47,7 @@ $segment->rawValues();  // ['NAD', 'BY', ['0410106314', '160', 'Z12'], …]
 $segment->toArray();
 ```
 
-Discover accessors without reading the source — see [extending](extending.md#introspection).
+Discover accessors without reading the source - see [extending](extending.md#introspection).
 
 ## Query API
 
@@ -89,7 +89,7 @@ foreach ($message->lineItems() as $lineItem) {
     foreach ($lineItem as $segment) { }
 }
 
-$message->lineItemById(1);   // ?LineItem — accepts string|int
+$message->lineItemById(1);   // ?LineItem - accepts string|int
 ```
 
 ## Context segments
@@ -155,7 +155,7 @@ $analyzer->getSummary();
 
 `contextSegments()` and `lineItems()` come from `GroupingRules`, a configurable heuristic:
 one flat parent/child tag list applied to every message type. The standard instead defines a
-distinct, arbitrarily nested structure per message and directory — ORDERS D96A has 54 groups.
+distinct, arbitrarily nested structure per message and directory - ORDERS D96A has 54 groups.
 
 With directory data available you can group against the real thing:
 
@@ -166,7 +166,7 @@ use EdifactParser\Directory\XmlDirectory;
 
 $structure = XmlDirectory::locate('D96A')?->messageStructure('ORDERS');
 $nodes = (new StructureGrouper())->group($message, $structure);
-// list<GroupInstance|SegmentInterface> — ungrouped segments and group occurrences, in order
+// list<GroupInstance|SegmentInterface> - ungrouped segments and group occurrences, in order
 
 foreach ($nodes as $node) {
     if (!$node instanceof GroupInstance) {
@@ -208,7 +208,7 @@ $structure->messageType();     // 'ORDERS'
 $structure->groupCount();      // 54
 $structure->groups();          // array<string, SegmentGroup>, nested ones included
 $group = $structure->group('SG2');
-$group?->triggerTag();         // 'NAD' — the segment that opens a repetition
+$group?->triggerTag();         // 'NAD' - the segment that opens a repetition
 $group?->maxRepeat();
 $group?->isRequired();
 $group?->parts();              // list<SegmentPosition|SegmentGroup>

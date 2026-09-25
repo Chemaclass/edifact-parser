@@ -1,28 +1,27 @@
 # CLI
 
-`composer require chemaclass/edifact-parser` installs an `edifact` binary.
+`composer require chemaclass/edifact-parser` installs `vendor/bin/edifact` in your project.
 
 Runnable parse example: [`example/llms-cli.php`](../../example/llms-cli.php)
 
 ```bash
-edifact parse order.edi                    # parsed interchange as JSON
-edifact inspect order.edi                  # type, counts by tag, line items
-edifact validate order.edi                 # rule set chosen from the message type
-edifact validate order.edi --rules=ORDERS
-edifact segments                           # every registered tag
-edifact segments --tag=NAD                 # accessors and return types
-edifact diff before.edi after.edi           # segment-level differences
-edifact --version                          # {"name": …, "version": "7.1.0"}
-edifact help
+vendor/bin/edifact parse order.edi                    # parsed interchange as JSON
+vendor/bin/edifact inspect order.edi                  # type, counts by tag, line items
+vendor/bin/edifact validate order.edi                 # rule set chosen from the message type
+vendor/bin/edifact validate order.edi --rules=ORDERS
+vendor/bin/edifact segments                           # every registered tag
+vendor/bin/edifact segments --tag=NAD                 # accessors and return types
+vendor/bin/edifact diff before.edi after.edi           # segment-level differences
+vendor/bin/edifact --version                          # {"name": …, "version": "7.1.0"}
+vendor/bin/edifact help
 
-edifact parse order.edi --pretty           # pretty-printed JSON
-cat order.edi | edifact inspect            # stdin when no path is given
+vendor/bin/edifact parse order.edi --pretty           # pretty-printed JSON
+cat order.edi | vendor/bin/edifact inspect            # stdin when no path is given
 ```
 
 ## Output contract
 
-- **stdout carries data only** (JSON). Diagnostics, usage and errors go to **stderr**, so
-  `edifact parse x.edi | jq` is always safe.
+- **stdout carries JSON results**, including validation diagnostics. Parse and usage errors go to **stderr**, so `vendor/bin/edifact parse x.edi | jq` is safe.
 - **Exit codes**: `0` success or valid, `1` invalid input, a failed validation, or a `diff`
   that found differences, `2` usage error (unknown command, unknown rule set, no input, a file that cannot be read).
 - `--pretty` changes formatting only, never content.

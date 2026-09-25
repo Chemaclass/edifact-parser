@@ -8,12 +8,12 @@ AI context for understanding this EDIFACT parser library architecture.
 
 1. **EdifactParser** (`src/EdifactParser.php`)
    - Entry point; tokenizing is pluggable via `Tokenizer\TokenizerInterface`
-     - `NativeTokenizer` (default) — regex-free single pass, ~1.8x faster tokenizing, lossless
-     - `SabasTokenizer` — wraps `sabas/edifact`, the 6.x default. Strips every byte in
+     - `NativeTokenizer` (default) - regex-free single pass, ~1.8x faster tokenizing, lossless
+     - `SabasTokenizer` - wraps `sabas/edifact`, the 6.x default. Strips every byte in
        \x80-\xFF, so it destroys non-ASCII data. Kept for bug-for-bug compatibility.
      - Kept honest by `TokenizerEquivalenceTest`, which diffs `NativeTokenizer` against
        `EDI\Parser` over fixtures plus a generated corpus; extend it before touching either.
-       It compares raw tokenization, not error policy — some fixtures are deliberately
+       It compares raw tokenization, not error policy - some fixtures are deliberately
        malformed and `SabasTokenizer` rejects them.
    - Delegates to SegmentFactory for typed segment objects
    - Returns ParserResult
@@ -41,11 +41,11 @@ TransactionMessage organizes segments three ways:
 
 ## Key Patterns
 
-**Context hierarchy** (`ContextStackParser`, defaults — override via `GroupingRules`):
+**Context hierarchy** (`ContextStackParser`, defaults - override via `GroupingRules`):
 - Parents: NAD, LIN, DOC
 - Children: COM, CTA, PIA, IMD, MEA, QTY, PRI, TAX, DTM, MOA
 
-**Line item boundaries** (`MessageDataBuilder\Builder`, defaults — override via `GroupingRules`):
+**Line item boundaries** (`MessageDataBuilder\Builder`, defaults - override via `GroupingRules`):
 - Start: LIN segment
 - End: UNS, CNT, or UNT segments
 - DetailsSectionBuilder groups segments into line items
@@ -54,12 +54,12 @@ TransactionMessage organizes segments three ways:
 **Segment abstraction**:
 - SegmentInterface: `tag()`, `subId()`, `rawValues()`, `parsedSubId()`
 - AbstractSegment: Base implementation. Shared protected helpers segments delegate to:
-  - `requiredSubId()` — subId from `rawValues[1][0]`, throws `MissingSubId` if absent
-  - `component(int $index, int $group = 1)` — read a composite element, `''` if absent
+  - `requiredSubId()` - subId from `rawValues[1][0]`, throws `MissingSubId` if absent
+  - `component(int $index, int $group = 1)` - read a composite element, `''` if absent
 - ContextSegment: Decorator with `children()` for hierarchy; also `childByTag()`,
   `childrenByTag()`, `hasChildren()`, `toArray()/toJson()`, Countable + IteratorAggregate
 - HasRetrievableSegments: Trait for `segmentsByTag()`, `segmentByTagAndSubId()`, `query()`
-- SegmentArray: `fromSegment()`/`fromSegments()` — the one place segments become plain
+- SegmentArray: `fromSegment()`/`fromSegments()` - the one place segments become plain
   arrays; every `toArray()` in the library goes through it
 
 **Keyed maps use `array-key`, not `string`**: PHP normalizes a numeric-looking subId
@@ -70,7 +70,7 @@ TransactionMessage organizes segments three ways:
 **SubId logic**:
 - Base `subId()` reads `rawValues()[1]`; string `'CN'` or array `['21', 'C62']` → joined as `'21:C62'`
 - Segments with a mandatory composite id (UNH/UNB/CNT/DTM/CUX/PRI/QTY/RFF) override
-  `subId()` with `requiredSubId()` — these throw `MissingSubId` on malformed input
+  `subId()` with `requiredSubId()` - these throw `MissingSubId` on malformed input
 - Used for distinguishing multiple segments with the same tag
 
 ## Public API Surface (for extraction/consumption)
@@ -101,33 +101,33 @@ TransactionMessage organizes segments three ways:
   `StructureGrouper` -> `GroupInstance`): the real nested structure from the directory, as
   opposed to the `GroupingRules` heuristic. The matcher is greedy and order-driven; when the
   same tag could belong to several levels, document order decides. Never drop unmatched
-  segments — they go into the ungrouped remainder
+  segments - they go into the ungrouped remainder
 - **Generated segments** (`tools/generate-segments.php` -> `Segments\Generated\*`,
   `Segments\GeneratedSegments`): never edit generated files, regenerate. Component 0 of an
-  element MUST use `firstComponent()`, not `component(0, n)` — a single-value element
+  element MUST use `firstComponent()`, not `component(0, n)` - a single-value element
   round-trips as a plain string. `DEFAULT_SEGMENTS` stays at 32; generated tags are opt-in
   via `withDirectorySegments()`. Coverage comes from one reflection-driven test that calls
   every generated accessor, not per-class tests
 - **Directory data** (`Directory\XmlDirectory` + `DirectoryInterface`, `SegmentDefinition`,
   `Composite`, `DataElement`): UNTDID segment definitions and code lists, read with XMLReader
-  and cached. `php-edifact/edifact-mapping` is a `suggest` — the parser must keep working
+  and cached. `php-edifact/edifact-mapping` is a `suggest` - the parser must keep working
   without it, so every entry point returns null rather than throwing when data is absent.
   Unit tests run against a small committed fixture in `tests/fixtures/directory` so the suite
   does not need the 150 MB package; one test loads the real D96A when present
 - **Validator naming rule**: `diagnose()` returns `list<Diagnostic>` on every validator;
   `validate()` returns the older `list<ValidationViolation>` and exists only on
   `MessageValidator`. Two methods with the same name and different return types in one
-  namespace is a trap — keep new validators on `diagnose()`
+  namespace is a trap - keep new validators on `diagnose()`
 - **Directory validation** (`Validation\DirectoryValidator`): element/composite requirements,
   representation, lengths, and opt-in code lists. Complements `MessageValidator`, which works
   at message level
 - **Predefined rule sets** (`Validation\MessageRuleSets`): `orders()`/`invoic()`/`desadv()`/`iftmin()`
 - **Charset** (`Charset\Charset`): map UNB syntax id → encoding, decode values to UTF-8
 - **Diagnostics** (`Diagnostics\Diagnostic` + `DiagnosticCode`): one type for parse and
-  validation failures — stable code, severity, segment index, tag, element path,
+  validation failures - stable code, severity, segment index, tag, element path,
   `toArray()`/`toJson()`. Reached via `InvalidFile::getDiagnostics()`,
   `MessageValidator::diagnose()` and `ValidationViolation::toDiagnostic()`. **Codes are
-  public API and must stay stable; messages are free to change** — never match on message text
+  public API and must stay stable; messages are free to change** - never match on message text
 - **Validation** (`Validation\MessageValidator` + `MessageRuleSet` → `ValidationViolation`):
   required-segment, cardinality and `inSequence()` conformance checks; never throws
 - **Duplicate-preserving access**: `query()` and `TransactionMessage::segments()` keep
@@ -135,21 +135,21 @@ TransactionMessage organizes segments three ways:
 - **Typed lookups**: `segmentOfType(X::class, $subId)` (on every `HasRetrievableSegments`)
   and `SegmentQuery<T>::ofType()` carry the class into the return type. `SegmentQuery` is
   generic and invariant; Psalm rejects `@template-covariant` because of the callable params
-- **Keyed views hold the typed segment, never a `ContextSegment`** — so
+- **Keyed views hold the typed segment, never a `ContextSegment`** - so
   `segmentByTagAndSubId('NAD', 'BY')->name()` and `instanceof NADNameAddress` both work.
   Go from a segment to what was grouped under it with
   `TransactionMessage::childrenOf()`/`contextFor()` (indexed by `spl_object_id`, and
   accepting either the segment or the context object)
 - **Diff** (`Diff\InterchangeDiff` -> `Diff\Difference`): segment-level comparison, aligned
-  by LCS over tag + subId. Never align by position — one insertion would otherwise cascade
+  by LCS over tag + subId. Never align by position - one insertion would otherwise cascade
   into every following segment
 - **CLI** (`bin/edifact`, `Console\Application`): parse/inspect/validate/segments/diff.
-  Contract is part of the API — data on stdout, messages on stderr, exit 0/1/2. `Options`
+  Contract is part of the API - data on stdout, messages on stderr, exit 0/1/2. `Options`
   takes its stdin stream as an argument so the piped path stays testable; `OutputInterface`
   keeps the two channels separable in tests
 - **Introspection** (`SegmentFactory::registeredTags()/classForTag()/describeTag()`,
   `Segments\SegmentDescriptor`): enumerate tags and accessors at runtime. `registeredTags()`
-  and `classForTag()` must never autoload segment classes — see Hot Paths. Descriptors are
+  and `classForTag()` must never autoload segment classes - see Hot Paths. Descriptors are
   reflection-derived; do not hand-maintain them. `schema/message.schema.json` publishes the
   `toArray()` shape and is asserted against real output by a test
 - **Grouping config** (`GroupingRules`): injectable context/child/line-item-break tags
@@ -178,24 +178,24 @@ through its unescaped-release `preg_match` on every element and made `NativeToke
 2.2x faster; on clean data the honest figure is 1.8x. Quote ratios only from a corpus both
 sides accept, and say which corpus.
 
-These run once per segment of an interchange — hundreds of thousands of times on a large
+These run once per segment of an interchange - hundreds of thousands of times on a large
 file. Keep them allocation- and call-free:
 
-- `SegmentFactory::createSegmentFromArray()` — no per-instance validation; classes are
+- `SegmentFactory::createSegmentFromArray()` - no per-instance validation; classes are
   checked once on construction, and `withDefaultSegments()` skips even that (guarded by
   `SegmentFactoryTest::every_default_class_implements_the_segment_interface`) so building a
   factory does not autoload all 32 segment classes.
-- `GroupingRules::is*Tag()` — hash lookups over maps built in the constructor, not `in_array`.
-- `MessageDataBuilder\Builder::addSegment()` — state transitions inlined on purpose.
-- `TransactionMessage::groupSegments()` — one pass; global (UNA/UNB/UNZ) segments are
+- `GroupingRules::is*Tag()` - hash lookups over maps built in the constructor, not `in_array`.
+- `MessageDataBuilder\Builder::addSegment()` - state transitions inlined on purpose.
+- `TransactionMessage::groupSegments()` - one pass; global (UNA/UNB/UNZ) segments are
   collected inside it rather than by a second filter pass.
-- `StreamingParser::extractSegments()` — `strcspn`/`substr` runs, never a per-character loop.
+- `StreamingParser::extractSegments()` - `strcspn`/`substr` runs, never a per-character loop.
 - `TransactionMessage` memoizes its ordered segment list and tag counts; `ParserResult`
   memoizes the merged segment map.
 
 ## Conventions & Constraints
 
-- **Min PHP 8.0** (`composer.json` `platform.php: 8.0`) — enums (8.1) are NOT available;
+- **Min PHP 8.0** (`composer.json` `platform.php: 8.0`) - enums (8.1) are NOT available;
   use `final class` + `public const` for constant groups (see `Segments/Qualifier/*`).
 - Public library: preserve method signatures and const values; changes to them are BC breaks.
 - All code passes PHP-CS-Fixer, Psalm, PHPStan (level 5) and Rector; tests required for new behavior.
@@ -215,11 +215,11 @@ composer coverage               # Enforce 100% line coverage (needs pcov or xdeb
 **Documentation contract:** `llms.txt` + `docs/llms/*.md` are the agent-facing docs. Every
 snippet in them MUST have a runnable counterpart in `example/llms-*.php` asserting the same
 thing, and CI runs all examples with assertions on. If you change an API, update the doc AND
-its example — a snippet with no example is how the README Quick Start stayed broken for years.
+its example - a snippet with no example is how the README Quick Start stayed broken for years.
 
 **Packaging:** `.gitattributes` decides what ships, and it is the only thing that does.
 `composer verify-package` builds the dist with `git archive`, installs it into a throwaway
-project and uses it — including the CLI, whose autoloader resolution differs when installed
+project and uses it - including the CLI, whose autoloader resolution differs when installed
 as a dependency. CI runs it. Add an `export-ignore` and this is what catches an over-exclusion.
 
 **Toolchain:** Psalm is isolated in `vendor-bin/psalm` (installed by `composer install`),

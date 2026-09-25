@@ -29,6 +29,7 @@ assert($result->messagesOfType('IFTMIN') !== []);
 assert($result->messagesOfType('ORDERS') === []);
 assert($result->functionalGroups() === []);
 assert($result->globalSegments()->has('UNB'));
+assert($result->globalSegments()->has('UNZ'));
 assert(count($result) === 2);
 
 foreach ($result as $message) {
