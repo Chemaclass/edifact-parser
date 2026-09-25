@@ -133,6 +133,22 @@ foreach ($result->functionalGroups() as $group) {
 }
 ```
 
+## Character sets
+
+The parser keeps raw bytes. Read the syntax identifier from `UNB`, then decode text values to UTF-8:
+
+```php
+use EdifactParser\Charset\Charset;
+use EdifactParser\Segments\UNBInterchangeHeader;
+
+$header = $result->globalSegments()->segmentOfType(UNBInterchangeHeader::class, 'UNOC');
+if ($header !== null && $buyer !== null) {
+    $name = Charset::toUtf8($buyer->name(), $header->syntaxIdentifier());
+}
+```
+
+`UNOA` and `UNOB` use ASCII, `UNOC` through `UNOK` use ISO-8859 encodings, and `UNOY` uses UTF-8. The default tokenizer preserves the source bytes. See [tokenizers](parsing.md#tokenizers).
+
 ## Statistics
 
 ```php

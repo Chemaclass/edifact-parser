@@ -7,6 +7,7 @@ declare(strict_types=1);
  */
 
 use EdifactParser\Analysis\MessageAnalyzer;
+use EdifactParser\Charset\Charset;
 use EdifactParser\ContextSegment;
 use EdifactParser\Diff\Difference;
 use EdifactParser\Diff\InterchangeDiff;
@@ -15,6 +16,7 @@ use EdifactParser\Directory\StructureGrouper;
 use EdifactParser\Directory\XmlDirectory;
 use EdifactParser\EdifactParser;
 use EdifactParser\Segments\NADNameAddress;
+use EdifactParser\Segments\UNBInterchangeHeader;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -128,6 +130,12 @@ assert($unb->senderIdentification() === 'SENDER');
 assert($unb->recipientIdentification() === 'RECIPIENT');
 assert($unb->preparationDate() === '240101');
 assert($unb->interchangeControlReference() === 'REF01');
+
+// --- Character sets ---------------------------------------------------------
+$header = $result->globalSegments()->segmentOfType(UNBInterchangeHeader::class, 'UNOC');
+assert($header !== null);
+assert(Charset::toUtf8($buyer->name(), $header->syntaxIdentifier()) === $buyer->name());
+assert(Charset::toUtf8("M\xFCller", 'UNOC') === 'Müller');
 
 // --- Statistics -------------------------------------------------------------
 $analyzer = new MessageAnalyzer($message);

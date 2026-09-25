@@ -42,8 +42,7 @@ $message->toJson();
 
 ## Tokenizers
 
-`NativeTokenizer` is the default: regex-free, ~1.8× faster at tokenizing, and it preserves
-non-ASCII bytes.
+`NativeTokenizer` is the default. On a valid 2.6 MB corpus accepted by both tokenizers, it is about 1.8x faster at tokenizing and 1.3x faster for a full parse. It preserves non-ASCII bytes.
 
 ```php
 use EdifactParser\Tokenizer\SabasTokenizer;
