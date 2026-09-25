@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.1.0] - 2026-09-25
+
 #### Added
 - `segmentOfType(NADNameAddress::class, 'BY')`: a keyed lookup typed as the class you pass,
   so PHPStan, Psalm and IDEs see `name()`.
 - `SegmentQuery` is generic: `query()->ofType(X::class)` narrows `first()`, `get()`, `map()`.
 - `edifact --version` (also `version`, `-V`) prints the installed version as JSON.
+- `edifact parse` includes file-level segments and functional groups. Each group lists indexes into the existing flat `messages` array.
 
 #### Changed
 - Dropped the `webmozart/assert` dependency. Invalid tags still throw
@@ -27,9 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Psalm 6 in `vendor-bin/psalm`, so every check runs on current PHP.
 - New `composer examples` and `composer coverage`, matching their CI jobs.
 
+#### Documentation
+- The README starts with a runnable parse example and uses typed lookups throughout its examples.
+- Removed the Scrutinizer badge and em dashes from the documentation.
+
 ## [7.0.0] - 2026-08-10
 
-> Contains breaking changes — see [UPGRADING.md](UPGRADING.md) for what they are and
+> Contains breaking changes - see [UPGRADING.md](UPGRADING.md) for what they are and
 > whether they affect you. Most applications need no changes.
 
 #### Added
@@ -39,8 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   segment reports one addition instead of marking everything after it as changed. The CLI
   exits 1 when the files differ, like `diff(1)`.
 - **Directory-driven segment groups.** `Directory\MessageStructure` reads the nested segment
-  groups a directory defines for a message type — ORDERS D96A has 54, several levels deep —
-  and `Directory\StructureGrouper` groups a parsed message against them, producing
+  groups a directory defines for a message type. ORDERS D96A has 54 groups across several
+  levels. `Directory\StructureGrouper` groups a parsed message against them, producing
   `GroupInstance` occurrences with their nested children. This is the standard structure
   rather than the `GroupingRules` heuristic, which applies one flat parent/child tag list to
   every message type. Segments the structure does not account for are still returned,
@@ -48,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the fallback when no structure is available.
 - **Generated segment classes.** `tools/generate-segments.php` emits typed classes from a
   UN/EDIFACT directory, accessors named from the official element names. 102 are committed
-  for D96A, available through `SegmentFactory::withDirectorySegments()` — 134 tags instead
+  for D96A, available through `SegmentFactory::withDirectorySegments()` - 134 tags instead
   of 32. `DEFAULT_SEGMENTS` is deliberately unchanged, and a hand-written class always wins
   for the tags it covers. Nothing is autoloaded until a tag is seen, so factory boot is
   unaffected.
@@ -56,9 +63,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   directories (segment definitions and code lists) published by `php-edifact/edifact-mapping`,
   or any folder laid out the same way. `Validation\DirectoryValidator` checks each segment
   against them: mandatory data elements and composites, representation (`an`/`n`/`a`),
-  maximum lengths, and — opt-in — whether coded values appear in the directory code list.
+  maximum lengths, and - opt-in - whether coded values appear in the directory code list.
   Diagnostics carry the element path (`C186/6060`), and the entry point is `diagnose()`,
-  matching `MessageValidator::diagnose()` — both return the shared `Diagnostic` shape. Tags the directory does not define are
+  matching `MessageValidator::diagnose()` - both return the shared `Diagnostic` shape. Tags the directory does not define are
   never flagged. The data package is a `suggest`, not a requirement, and both files are read
   with XMLReader on first use, so a full directory costs ~4 MB rather than tens.
 - **EDIFACT syntax version 4: the repetition separator.** `UNA` position 5 is read and
@@ -70,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`llms.txt` and executable documentation.** A hierarchical `llms.txt` at the repo root
   links to per-topic docs under `docs/llms/`, with a gotchas section for the things that
   are not guessable from signatures. Every documented snippet exists as a runnable file
-  under `example/`, and a new CI job executes all of them with assertions enabled — the
+  under `example/`, and a new CI job executes all of them with assertions enabled - the
   README Quick Start was a fatal error for years because nothing ran it.
 - **`edifact` CLI.** `parse`, `inspect`, `validate` and `segments`, installed as a composer
   binary. JSON on stdout, diagnostics on stderr, documented exit codes (0 success,
@@ -85,23 +92,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Structured diagnostics.** `Diagnostics\Diagnostic` carries a stable
   `Diagnostics\DiagnosticCode`, a severity, and the position of the problem (segment index,
   tag, element path) instead of only an English sentence. `InvalidFile::getDiagnostics()`
-  exposes them for parse failures — falling back to the plain error strings when the
+  exposes them for parse failures - falling back to the plain error strings when the
   exception was raised without them, so it is never empty. `ValidationViolation::code()`
   and `toDiagnostic()`, plus `MessageValidator::diagnose()`, give validation the same
   vocabulary. Codes are public API; messages are not.
 - **Benchmark suite and CI regression gate.** `composer bench` measures the paths
   `AGENTS.md` marks as hot, over a corpus generated at runtime so nothing large lives in
   the repo. CI benchmarks the PR's base branch and its head on the same runner and fails
-  when a metric regresses beyond 1.5× — ratios measured back to back, since absolute
+  when a metric regresses beyond 1.5× - ratios measured back to back, since absolute
   timings on shared hardware are meaningless.
-- **`TransactionMessage::childrenOf()` and `contextFor()`** — go from a segment to what was
+- **`TransactionMessage::childrenOf()` and `contextFor()`** - go from a segment to what was
   grouped under it. Both accept either the segment or the `ContextSegment` itself, and
   resolve in O(1). `contextSegments()` is unchanged.
 - **Pluggable tokenizing** via `Tokenizer\TokenizerInterface`.
   `Tokenizer\NativeTokenizer` is the default: a regex-free single pass, **1.8× faster at
   tokenizing and 1.3× on `parse()`** for a 2.6 MB / 151k-segment interchange, and it
-  **preserves non-ASCII data**. `Tokenizer\SabasTokenizer` wraps `sabas/edifact` — the 6.x
-  default — and remains available for bug-for-bug compatibility. Choose one with
+  **preserves non-ASCII data**. `Tokenizer\SabasTokenizer` wraps `sabas/edifact` - the 6.x
+  default - and remains available for bug-for-bug compatibility. Choose one with
   `new EdifactParser($factory, tokenizer: new SabasTokenizer())` or the `tokenizer:`
   argument on either parser's `createWithDefaultSegments()`.
   The two are verified segment-for-segment identical on ASCII input across the fixtures
@@ -110,16 +117,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - **Non-ASCII data is no longer silently destroyed.** `NativeTokenizer` is now the default,
   so `NAD+BY+++Müller GmbH` keeps its name instead of parsing as `Mller GmbH`. The old
-  behaviour came from `sabas/edifact` stripping every byte in `\x80-\xFF` — which made
+  behaviour came from `sabas/edifact` stripping every byte in `\x80-\xFF` - which made
   `UNOC` (Latin-1) and `UNOY` (UTF-8) interchanges, i.e. most European traffic, unusable
   for anything outside 7-bit ASCII, and made the bundled `Charset` helper unable to do its
   job. `SabasTokenizer` remains available for bug-for-bug compatibility.
 - **Parser errors reach the caller.** `SabasTokenizer` read `errors()` before `get()`, but
-  `loadString()` only unwraps — the per-segment work, and therefore nearly every error,
+  `loadString()` only unwraps - the per-segment work, and therefore nearly every error,
   happens in `get()`. Almost nothing was ever reported. Errors are now collected after
   parsing, so malformed input raises `InvalidFile` instead of returning mangled data.
 - **Typed accessors work on keyed lookups again.** `NAD`, `LIN` and `DOC` open a context
-  by default, and the context object replaced the segment in the keyed views — so
+  by default, and the context object replaced the segment in the keyed views - so
   `$message->segmentByTagAndSubId('NAD', 'BY')->name()` was a fatal
   `Call to undefined method EdifactParser\ContextSegment::name()`, and
   `instanceof NADNameAddress` was false. This is what the README Quick Start has always
@@ -134,7 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   files and the root documentation are all still there.
 - Removed the unused `symfony/var-dumper` dev dependency.
 - The dev container installs Composer 2 instead of a URL-pinned 1.10.13 from 2020, and
-  `docker-compose.yml` uses the current Compose schema — the old file was rejected outright
+  `docker-compose.yml` uses the current Compose schema - the old file was rejected outright
   by `docker compose`.
 - **BC break:** the default tokenizer changed from `sabas/edifact` to `NativeTokenizer`.
   Output is identical for ASCII input; non-ASCII is now preserved rather than stripped,
@@ -152,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `foreach ($result as $message)` work directly. A `TransactionMessage` iterates its
   segments in document order, which means it can be handed straight to
   `EdifactSerializer::serialize()`.
-- `TransactionMessage::has()`, `countByTag()`, `toArray()` and `toJson()` — a message can
+- `TransactionMessage::has()`, `countByTag()`, `toArray()` and `toJson()` - a message can
   now describe itself as plain data, with context children nested.
 - `ContextSegment::childByTag()`, `childrenByTag()`, `hasChildren()`, `toArray()` and
   `toJson()`. A context segment replaces the segment it wraps in the keyed views, so it
@@ -167,7 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `TransactionMessage::groupSegments()` and `ContextStackParser::parseAll()` take an
   `iterable` (a generator works), avoiding the argument unpacking of their variadic
   counterparts, which are unchanged.
-- `Segments\SegmentArray` — the single conversion of segments to plain arrays that every
+- `Segments\SegmentArray` - the single conversion of segments to plain arrays that every
   `toArray()`/`toJson()` now goes through.
 - `MessageDataBuilder\Builder::buildLineItemData()` for the raw line-item maps.
 - CI now runs the test suite on PHP 8.0 through 8.5.
@@ -184,8 +191,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Performance
 Measured on a 2.6 MB interchange (400 messages, ~149k segments):
-- Applying context segments is linear instead of quadratic in the number of line items —
-  parsing one message with 4000 line items went from **198 ms to 20 ms**.
+- Applying context segments is linear instead of quadratic in the number of line items.
+  Parsing one message with 4000 line items went from **198 ms to 20 ms**.
 - `StreamingParser` splits segments with `strcspn`/`substr` runs rather than one character
   at a time, and reads 64 KiB chunks: **467 ms → 342 ms**.
 - `SegmentFactory::withDefaultSegments()` no longer validates (and therefore autoloads) all
@@ -317,7 +324,7 @@ Measured on a 2.6 MB interchange (400 messages, ~149k segments):
 - Building a parser: `new EdifactParser($factory)` is unchanged; pass
   `new EdifactParser($factory, $groupingRules)` only to customize grouping.
 - Calling `TransactionMessage::groupSegmentsByMessage(...$segments)` directly:
-  pass rules first — `groupSegmentsByMessage(GroupingRules::default(), ...$segments)`.
+  pass rules first - `groupSegmentsByMessage(GroupingRules::default(), ...$segments)`.
 - If you relied on `count($message)` returning the distinct-tag count, use
   `count($message->allSegments())` instead.
 
@@ -329,19 +336,19 @@ Measured on a 2.6 MB interchange (400 messages, ~149k segments):
   message is buffered), instead of building the whole result up front. (#61)
 - **Structural validation** (`Validation\MessageValidator` + `MessageRuleSet`):
   check a message against a pluggable rule set (required segments and per-tag
-  cardinality) and get a list of `ValidationViolation`s back — never throws;
+  cardinality) and get a list of `ValidationViolation`s back - never throws;
   empty means conforming. (#60)
 - **Functional groups (UNG/UNE)**: typed `UNGFunctionalGroupHeader` /
   `UNEFunctionalGroupTrailer` segments and `ParserResult::functionalGroups()`
   returning `FunctionalGroup` objects (header, trailer, messages). Interchanges
-  without groups are unaffected — messages stay available flat via
+  without groups are unaffected - messages stay available flat via
   `transactionMessages()`. (#59)
 - **Typed `MOA` (monetary amount) segment** (`Segments\MOAMonetaryAmount`), now
   registered by default with `amountQualifier()`/`amount()`/`amountAsFloat()`/
   `currencyCode()`. `MessageAnalyzer` uses it (previously `MOA` was an
   `UnknownSegment` read via raw values). (#62)
 - **EDIFACT writer/serializer** (`Serializer\EdifactSerializer`): render any
-  `iterable<SegmentInterface>` back into an EDIFACT string — the inverse of parsing.
+  `iterable<SegmentInterface>` back into an EDIFACT string - the inverse of parsing.
   Pairs with the fluent builders to generate messages. Separators and the release
   char are configurable via `Serializer\UnaSeparators` and can prepend a `UNA` segment.
   Round-trips the sample file byte-for-byte through the low-level parser. (#58)

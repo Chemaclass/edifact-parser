@@ -3,7 +3,7 @@
 ## 6.x → 7.0
 
 Three behaviours changed. Two of them are bug fixes that were impossible to make
-compatibly — the old behaviour destroyed data or made documented code impossible — and one
+compatibly - the old behaviour destroyed data or made documented code impossible - and one
 is a return-type change with a one-line replacement.
 
 Most applications need no changes at all. Work through the three checks below.
@@ -14,7 +14,7 @@ Most applications need no changes at all. Work through the three checks below.
 
 **What changed.** `NAD`, `LIN` and `DOC` open a context by default, and the context object
 used to replace the segment in the keyed views. `ContextSegment` proxies `tag()`, `subId()`
-and `rawValues()` but none of the typed accessors — so this was a fatal error:
+and `rawValues()` but none of the typed accessors - so this was a fatal error:
 
 ```php
 $buyer = $message->segmentByTagAndSubId('NAD', 'BY');
@@ -27,7 +27,7 @@ That is the README Quick Start, and it could not work. It now does.
 `TransactionMessage` and `LineItem`.
 
 **You need to change something only if** you called `children()` on the result of a keyed
-lookup — which required knowing the accessors did *not* work, so this is rare.
+lookup - which required knowing the accessors did *not* work, so this is rare.
 
 ```php
 // 6.x
@@ -59,7 +59,7 @@ $message->segmentByTagAndSubId('NAD', 'BY')->name();
 // 7.0: "Müller GmbH"
 ```
 
-`UNOC` is Latin-1 and `UNOY` is UTF-8 — between them, most European traffic. All of it was
+`UNOC` is Latin-1 and `UNOY` is UTF-8 - between them, most European traffic. All of it was
 unusable outside 7-bit ASCII.
 
 **You need to change something only if** you depend on the stripping, for example because a
@@ -73,7 +73,7 @@ new EdifactParser(SegmentFactory::withDefaultSegments(), tokenizer: new SabasTok
 EdifactParser::createWithDefaultSegments(tokenizer: new SabasTokenizer());
 ```
 
-For ASCII input the two tokenize identically — verified segment-for-segment across the test
+For ASCII input the two tokenize identically - verified segment-for-segment across the test
 fixtures and a generated corpus.
 
 ---
@@ -85,7 +85,7 @@ done the work that raises them, so almost nothing was ever reported. Input that 
 accepted and returned mangled now throws.
 
 **You need to change something only if** you were feeding the parser malformed interchanges
-and processing whatever came back. Those will now surface as exceptions — which is the
+and processing whatever came back. Those will now surface as exceptions - which is the
 point, but it may be a new failure mode in your pipeline.
 
 ```php
@@ -95,7 +95,7 @@ try {
     $result = $parser->parseFile($path);
 } catch (InvalidFile $e) {
     foreach ($e->getDiagnostics() as $diagnostic) {
-        $diagnostic->code();          // 'segment.unterminated' — stable, match on this
+        $diagnostic->code();          // 'segment.unterminated' - stable, match on this
         $diagnostic->segmentIndex();  // where it stopped
         $diagnostic->tag();
     }
@@ -112,10 +112,10 @@ Nothing below is required by the upgrade.
 
 | | |
 | --- | --- |
-| `edifact` CLI | `edifact parse\|inspect\|validate\|segments` — JSON on stdout, exit 0/1/2 |
+| `edifact` CLI | `edifact parse\|inspect\|validate\|segments` - JSON on stdout, exit 0/1/2 |
 | Directory validation | `DirectoryValidator` checks elements, lengths, representations and code lists against UNTDID data |
 | Segment groups | `StructureGrouper` groups against the directory's real nested `SG1…SGn`, instead of the `GroupingRules` heuristic |
-| More typed segments | `SegmentFactory::withDirectorySegments()` — 134 tags instead of 32 |
+| More typed segments | `SegmentFactory::withDirectorySegments()` - 134 tags instead of 32 |
 | Diagnostics | Stable `DiagnosticCode` values across parsing and validation |
 | Introspection | `registeredTags()`, `classForTag()`, `describeTag()` |
 | Syntax 4 | The `UNA` repetition separator is read and honoured |
